@@ -3,6 +3,8 @@
 Text processing framework: Parse / Transform / Compile.
 
 This library provides the boilerplate to make parsing and compiling pluggable.
+It’s in use by [**mdast**](https://github.com/wooorm/mdast) and
+[**retext**](https://github.com/wooorm/retext).
 
 ## Installation
 
@@ -42,12 +44,15 @@ module.exports = unified({
 
     *   [Processor([processor])](#processorprocessor)
 
+    *   [processor.Parser](#processorparser)
+
+    *   [processor.Compiler](#processorcompiler)
+
     *   [Processor#use(plugin[, input...])](#processoruseplugin-input)
 
         *   [Plugin](#plugin)
-
-            *   [function attacher(processor[, input...])](#function-attacherprocessor-input)
-            *   [function transformer(node, file[, next])](#function-transformernode-file-next)
+        *   [function attacher(processor[, input...])](#function-attacherprocessor-input)
+        *   [function transformer(node, file[, next])](#function-transformernode-file-next)
 
     *   [Processor#parse(file[, options])](#processorparsefile-options)
 
@@ -103,7 +108,7 @@ Create a new `Processor` constructor.
 
 > Note that all methods on the instance are also available as functions on the
 > constructor, which, when invoked, create a new instance.
-> 
+>
 > Thus, invoking `new Processor().process()` is the same as
 > `Processor.process()`.
 
@@ -117,6 +122,21 @@ Create a new `Processor` instance.
 **Returns**
 
 `Processor`.
+
+### processor.Parser
+
+### processor.Compiler
+
+The constructors passed to [`unified`](#unifiedoptions) at `'Parser'`
+and `'Compiler'` are stored on `Processor` instances. The `Parser`
+is responsible for parsing a virtual file into a syntax tree, and the
+`Compiler` for compiling a syntax tree into something else.
+
+When a processor is constructed, both are passed to [unherit](https://github.com/wooorm/unherit),
+which ensures that plug-ins can change how the processor instance parses
+and compiles without affecting other processors.
+
+`Parser`s must have a `parse` method, `Compiler`s a `compile` method.
 
 ### Processor#use(plugin\[, input...\])
 
@@ -150,7 +170,7 @@ Both have their own function. The first is called an
 [“transformer”](#function-transformernode-file-next). An “attacher” may
 return a “transformer”.
 
-##### function attacher([processor](#processorprocessor)\[, input...\])
+#### function attacher([processor](#processorprocessor)\[, input...\])
 
 To modify the processor, create an attacher. An attacher is the thing passed to
 [`use`](#processoruseplugin-input). It can
@@ -178,7 +198,7 @@ return a transformer which will be called on subsequent
 
 [`transformer`](#function-transformernode-file-next) (optional).
 
-##### function transformer(node, file\[, next\])
+#### function transformer(node, file\[, next\])
 
 To transform a syntax tree, create a transformer. A transformer is a simple
 (generator) function which is invoked each time a file is
