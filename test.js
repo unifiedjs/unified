@@ -36,7 +36,6 @@ describe('unified()', function () {
     it('should create a new constructor', function () {
         Processor = unified({
             'name': 'foo',
-            'type': 'bar',
             'Parser': noop,
             'Compiler': noop
         });
@@ -200,7 +199,6 @@ describe('unified()', function () {
 
                 var parse = unified({
                     'name': 'foo',
-                    'type': 'bar',
                     'Parser': Bound,
                     'Compiler': noop
                 }).parse;
@@ -262,7 +260,7 @@ describe('unified()', function () {
                 'value': 'bar'
             };
 
-            vfile.namespace('foo').bar = node;
+            vfile.namespace('foo').tree = node;
 
             new Processor().run(vfile, function (err, tree, file) {
                 equal(err, null);
@@ -280,7 +278,7 @@ describe('unified()', function () {
                 'value': 'bar'
             };
 
-            vfile.namespace('foo').bar = node;
+            vfile.namespace('foo').tree = node;
 
             new Processor().run(node, vfile, function (err, tree, file) {
                 equal(err, null);
@@ -317,7 +315,7 @@ describe('unified()', function () {
             function Compiler(file, options) {
                 self = this;
 
-                equal(file.namespace('foo').bar, node);
+                equal(file.namespace('foo').tree, node);
                 equal(options, 'bar');
             }
 
@@ -361,7 +359,7 @@ describe('unified()', function () {
 
             Compiler.prototype.compile = done;
 
-            vfile.namespace('foo').bar = tree;
+            vfile.namespace('foo').tree = tree;
 
             Processor.Compiler = Compiler;
 
@@ -409,7 +407,7 @@ describe('unified()', function () {
 
             Processor.Compiler = Compiler;
 
-            vfile.namespace('foo').bar = tree;
+            vfile.namespace('foo').tree = tree;
 
             Processor.stringify(vfile);
 
@@ -438,7 +436,7 @@ describe('unified()', function () {
 
             Processor.Compiler = Compiler;
 
-            vfile.namespace('foo').bar = tree;
+            vfile.namespace('foo').tree = tree;
 
             Processor.stringify(tree, vfile, settings);
 
@@ -467,7 +465,6 @@ describe('unified()', function () {
 
                 var stringify = unified({
                     'name': 'foo',
-                    'type': 'bar',
                     'Parser': noop,
                     'Compiler': Bound
                 }).stringify;
@@ -520,7 +517,6 @@ describe('unified()', function () {
 
             Processor2 = unified({
                 'name': 'foo',
-                'type': 'bar',
                 'Parser': Parser,
                 'Compiler': Compiler
             });
@@ -576,7 +572,6 @@ describe('unified()', function () {
 
             Processor2 = unified({
                 'name': 'foo',
-                'type': 'bar',
                 'Parser': Parser,
                 'Compiler': Compiler
             });
@@ -629,7 +624,6 @@ describe('unified()', function () {
 
             Processor2 = unified({
                 'name': 'foo',
-                'type': 'bar',
                 'Parser': Parser,
                 'Compiler': Compiler
             });
@@ -686,7 +680,6 @@ describe('unified()', function () {
 
             Processor2 = unified({
                 'name': 'foo',
-                'type': 'bar',
                 'Parser': Parser,
                 'Compiler': Compiler
             });
@@ -746,7 +739,6 @@ describe('unified()', function () {
 
             Processor2 = unified({
                 'name': 'foo',
-                'type': 'bar',
                 'Parser': Parser,
                 'Compiler': Compiler
             });
@@ -805,7 +797,6 @@ describe('unified()', function () {
 
             Processor2 = unified({
                 'name': 'foo',
-                'type': 'bar',
                 'Parser': Parser,
                 'Compiler': Compiler
             });
@@ -868,7 +859,6 @@ describe('unified()', function () {
 
             processor = unified({
                 'name': 'foo',
-                'type': 'bar',
                 'Parser': Parser,
                 'Compiler': Compiler
             });
@@ -905,7 +895,6 @@ describe('unified()', function () {
 
             processor = unified({
                 'name': 'foo',
-                'type': 'bar',
                 'Parser': Parser,
                 'Compiler': noop
             });
@@ -952,7 +941,6 @@ describe('unified()', function () {
 
             processor = unified({
                 'name': 'foo',
-                'type': 'bar',
                 'Parser': Parser,
                 'Compiler': Compiler
             });
@@ -984,7 +972,6 @@ describe('unified()', function () {
 
             processor = unified({
                 'name': 'foo',
-                'type': 'bar',
                 'Parser': Parser,
                 'Compiler': noop
             }).use(function () {
@@ -1017,7 +1004,6 @@ describe('unified()', function () {
 
             unified({
                 'name': 'foo',
-                'type': 'bar',
                 'Parser': Parser,
                 'Compiler': noop
             }).process('foo', function (err) {
@@ -1061,7 +1047,6 @@ describe('unified()', function () {
 
             unified({
                 'name': 'foo',
-                'type': 'bar',
                 'Parser': Parser,
                 'Compiler': Compiler
             }).process('foo', function (err) {
@@ -1090,7 +1075,6 @@ describe('unified()', function () {
 
             unified({
                 'name': 'foo',
-                'type': 'bar',
                 'Parser': Parser,
                 'Compiler': noop
             }).use(function () {

@@ -30,7 +30,6 @@ var Compiler = require('./lib/stringify.js');
 
 module.exports = unified({
     'name': 'mdast',
-    'type': 'ast',
     'Parser': Parser,
     'Compiler': Compiler
 });
@@ -78,13 +77,6 @@ Create a new `Processor` constructor.
 
 *   `name` (`string`) — Unique namespace, e.g. `'mdast'` or `'retext'`.
 
-*   `type` (`string`) — Type of the produced syntax tree. For example,
-    **mdast** uses an `'ast'` (Abstract Syntax Tree), whereas **retext**
-    uses a `'cst'` (Concrete Syntax Tree).
-
-    Used to store the syntax tree after parsing on the file (at
-    `file.namespace(name)[type]`).
-
 *   `Parser` (`Function`) — Constructor which transforms a virtual file
     into a syntax tree. When input is parsed, this function will be
     constructed with a `file` and `settings`. `Parser` instances should
@@ -100,7 +92,7 @@ Create a new `Processor` constructor.
     have a `compile` method which returns a `string`.
 
     The syntax tree representation of a file can be accessed by executing
-    `file.namespace(name)[type]`.
+    `file.namespace(name).tree`.
 
 **Returns** — `Function` (`Processor` constructor).
 
@@ -108,7 +100,7 @@ Create a new `Processor` constructor.
 
 > Note that all methods on the instance are also available as functions on the
 > constructor, which, when invoked, create a new instance.
->
+> 
 > Thus, invoking `new Processor().process()` is the same as
 > `Processor.process()`.
 

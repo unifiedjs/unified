@@ -39,7 +39,6 @@ var pipeline = ware()
  *
  * @param {Object} options - Configuration.
  * @param {string} options.name - Private storage.
- * @param {string} options.type - Type of syntax tree.
  * @param {Function} options.Parser - Class to turn a
  *   virtual file into a syntax tree.
  * @param {Function} options.Compiler - Class to turn a
@@ -48,7 +47,6 @@ var pipeline = ware()
  */
 function unified(options) {
     var name = options.name;
-    var type = options.type;
     var Parser = options.Parser;
     var Compiler = options.Compiler;
 
@@ -129,9 +127,9 @@ function unified(options) {
         space = file.namespace(name);
 
         if (!node) {
-            node = space[type] || node;
-        } else if (!space[type]) {
-            space[type] = node;
+            node = space.tree || node;
+        } else if (!space.tree) {
+            space.tree = node;
         }
 
         if (!node) {
@@ -171,7 +169,7 @@ function unified(options) {
         var CustomParser = (this && this.Parser) || Parser;
         var node = new CustomParser(file, settings).parse();
 
-        file.namespace(name)[type] = node;
+        file.namespace(name).tree = node;
 
         return node;
     }
@@ -180,7 +178,7 @@ function unified(options) {
      * Compile a file.
      *
      * Used the parsed node at the `name`
-     * namespace at `type` when no node was given.
+     * namespace at `'tree'` when no node was given.
      *
      * @this {Processor?} - Either a Processor instance or
      *   the Processor constructor.
@@ -207,9 +205,9 @@ function unified(options) {
         space = file.namespace(name);
 
         if (!node) {
-            node = space[type] || node;
-        } else if (!space[type]) {
-            space[type] = node;
+            node = space.tree || node;
+        } else if (!space.tree) {
+            space.tree = node;
         }
 
         if (!node) {
