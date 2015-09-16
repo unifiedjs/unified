@@ -1,6 +1,6 @@
 'use strict';
 
-/* eslint-env mocha */
+/* eslint-env node, mocha */
 
 /*
  * Dependencies.
