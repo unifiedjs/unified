@@ -3,8 +3,9 @@
 Text processing framework: Parse / Transform / Compile.
 
 This library provides the boilerplate to make parsing and compiling pluggable.
-It’s in use by [**mdast**](https://github.com/wooorm/mdast) and
-[**retext**](https://github.com/wooorm/retext).
+It’s in use by [**mdast**](https://github.com/wooorm/mdast),
+[**retext**](https://github.com/wooorm/retext), and
+[**hast**](https://github.com/wooorm/hast).
 
 ## Installation
 
