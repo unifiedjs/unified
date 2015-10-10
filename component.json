@@ -15,7 +15,8 @@
     "wooorm/attach-ware": "^1.0.0",
     "wooorm/bail": "^1.0.0",
     "wooorm/unherit": "^1.0.4",
-    "wooorm/vfile": "^1.0.0"
+    "wooorm/vfile": "^1.0.0",
+    "justmoon/node-extend": "^3.0.0"
   },
   "repository": "wooorm/unified",
   "scripts": [

@@ -16,6 +16,7 @@
 
 var bail = require('bail');
 var ware = require('ware');
+var extend = require('extend');
 var AttachWare = require('attach-ware')(ware);
 var VFile = require('vfile');
 var unherit = require('unherit');
@@ -51,6 +52,7 @@ function unified(options) {
     var name = options.name;
     var Parser = options.Parser;
     var Compiler = options.Compiler;
+    var data = options.data;
 
     /**
      * Construct a Processor instance.
@@ -70,6 +72,10 @@ function unified(options) {
 
         self.Parser = unherit(Parser);
         self.Compiler = unherit(Compiler);
+
+        if (self.data) {
+            self.data = extend(true, {}, self.data);
+        }
     }
 
     /**
@@ -169,7 +175,7 @@ function unified(options) {
     function parse(value, settings) {
         var file = new VFile(value);
         var CustomParser = (this && this.Parser) || Parser;
-        var node = new CustomParser(file, settings).parse();
+        var node = new CustomParser(file, settings, instance(this)).parse();
 
         file.namespace(name).tree = node;
 
@@ -216,7 +222,7 @@ function unified(options) {
             throw new Error('Expected node, got ' + node);
         }
 
-        return new CustomCompiler(file, settings).compile();
+        return new CustomCompiler(file, settings, instance(this)).compile();
     }
 
     /**
@@ -268,6 +274,7 @@ function unified(options) {
     Processor.run = proto.run = run;
     Processor.stringify = proto.stringify = stringify;
     Processor.process = proto.process = process;
+    Processor.data = proto.data = data || null;
 
     return Processor;
 }

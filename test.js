@@ -24,6 +24,7 @@ noop.parse = noop;
 
 var equal = assert.strictEqual;
 var dequal = assert.deepEqual;
+var notEqual = assert.notStrictEqual;
 
 /*
  * Tests.
@@ -101,6 +102,54 @@ describe('unified()', function () {
         });
     });
 
+    describe('Processor#data', function () {
+        it('Should expose data', function  () {
+            var data = {
+                'one': true,
+                'two': false
+            };
+
+            Processor = unified({
+                'name': 'foo',
+                'Parser': noop,
+                'Compiler': noop
+            });
+
+            equal(Processor.data, null);
+            equal(Processor.prototype.data, null);
+
+            Processor = unified({
+                'name': 'foo',
+                'Parser': noop,
+                'Compiler': noop,
+                'data': data
+            });
+
+            dequal(Processor.data, data);
+            dequal(Processor.prototype.data, data);
+            equal(Processor.data, Processor.prototype.data);
+            equal(Processor.data, data);
+        });
+
+        it('Should clone data to instances', function  () {
+            var processor;
+            var data = {
+                'one': true,
+                'two': false
+            };
+
+            processor = unified({
+                'name': 'foo',
+                'Parser': noop,
+                'Compiler': noop,
+                'data': data
+            })();
+
+            dequal(processor.data, data);
+            notEqual(processor.data, data);
+        });
+    });
+
     describe('Processor#use()', function () {
         it('should return itself', function () {
             var p = new Processor();
@@ -160,11 +209,12 @@ describe('unified()', function () {
             /**
              * Example Parser.
              */
-            function Parser(file, options) {
+            function Parser(file, options, context) {
                 self = this;
 
                 equal(file.toString(), 'foo');
                 equal(options, 'bar');
+                assert(context instanceof Processor);
             }
 
             /**
@@ -312,11 +362,12 @@ describe('unified()', function () {
             /**
              * Example `Compiler`.
              */
-            function Compiler(file, options) {
+            function Compiler(file, options, processor) {
                 self = this;
 
                 equal(file.namespace('foo').tree, node);
                 equal(options, 'bar');
+                assert(processor instanceof Processor);
             }
 
             /**

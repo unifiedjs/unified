@@ -17,6 +17,7 @@
 
 var bail = require('bail');
 var ware = require('ware');
+var extend = require('extend');
 var AttachWare = require('attach-ware')(ware);
 var VFile = require('vfile');
 var unherit = require('unherit');
@@ -52,6 +53,7 @@ function unified(options) {
     var name = options.name;
     var Parser = options.Parser;
     var Compiler = options.Compiler;
+    var data = options.data;
 
     /**
      * Construct a Processor instance.
@@ -71,6 +73,10 @@ function unified(options) {
 
         self.Parser = unherit(Parser);
         self.Compiler = unherit(Compiler);
+
+        if (self.data) {
+            self.data = extend(true, {}, self.data);
+        }
     }
 
     /**
@@ -170,7 +176,7 @@ function unified(options) {
     function parse(value, settings) {
         var file = new VFile(value);
         var CustomParser = (this && this.Parser) || Parser;
-        var node = new CustomParser(file, settings).parse();
+        var node = new CustomParser(file, settings, instance(this)).parse();
 
         file.namespace(name).tree = node;
 
@@ -217,7 +223,7 @@ function unified(options) {
             throw new Error('Expected node, got ' + node);
         }
 
-        return new CustomCompiler(file, settings).compile();
+        return new CustomCompiler(file, settings, instance(this)).compile();
     }
 
     /**
@@ -269,6 +275,7 @@ function unified(options) {
     Processor.run = proto.run = run;
     Processor.stringify = proto.stringify = stringify;
     Processor.process = proto.process = process;
+    Processor.data = proto.data = data || null;
 
     return Processor;
 }
@@ -279,7 +286,7 @@ function unified(options) {
 
 module.exports = unified;
 
-},{"attach-ware":2,"bail":3,"unherit":11,"vfile":12,"ware":13}],2:[function(require,module,exports){
+},{"attach-ware":2,"bail":3,"extend":8,"unherit":12,"vfile":13,"ware":14}],2:[function(require,module,exports){
 /**
  * @author Titus Wormer
  * @copyright 2015 Titus Wormer
@@ -432,7 +439,7 @@ function patch(Ware) {
 
 module.exports = patch;
 
-},{"unherit":11}],3:[function(require,module,exports){
+},{"unherit":12}],3:[function(require,module,exports){
 /**
  * @author Titus Wormer
  * @copyright 2015 Titus Wormer. All rights reserved.
@@ -2144,7 +2151,7 @@ function blitBuffer (src, dst, offset, length) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":4,"ieee754":8,"is-array":10}],6:[function(require,module,exports){
+},{"base64-js":4,"ieee754":9,"is-array":11}],6:[function(require,module,exports){
 (function (Buffer){
 var clone = (function() {
 'use strict';
@@ -2605,6 +2612,94 @@ function error(err) {
 }
 
 },{}],8:[function(require,module,exports){
+'use strict';
+
+var hasOwn = Object.prototype.hasOwnProperty;
+var toStr = Object.prototype.toString;
+
+var isArray = function isArray(arr) {
+	if (typeof Array.isArray === 'function') {
+		return Array.isArray(arr);
+	}
+
+	return toStr.call(arr) === '[object Array]';
+};
+
+var isPlainObject = function isPlainObject(obj) {
+	if (!obj || toStr.call(obj) !== '[object Object]') {
+		return false;
+	}
+
+	var hasOwnConstructor = hasOwn.call(obj, 'constructor');
+	var hasIsPrototypeOf = obj.constructor && obj.constructor.prototype && hasOwn.call(obj.constructor.prototype, 'isPrototypeOf');
+	// Not own constructor property must be Object
+	if (obj.constructor && !hasOwnConstructor && !hasIsPrototypeOf) {
+		return false;
+	}
+
+	// Own properties are enumerated firstly, so to speed up,
+	// if last one is own, then all properties are own.
+	var key;
+	for (key in obj) {/**/}
+
+	return typeof key === 'undefined' || hasOwn.call(obj, key);
+};
+
+module.exports = function extend() {
+	var options, name, src, copy, copyIsArray, clone,
+		target = arguments[0],
+		i = 1,
+		length = arguments.length,
+		deep = false;
+
+	// Handle a deep copy situation
+	if (typeof target === 'boolean') {
+		deep = target;
+		target = arguments[1] || {};
+		// skip the boolean and the target
+		i = 2;
+	} else if ((typeof target !== 'object' && typeof target !== 'function') || target == null) {
+		target = {};
+	}
+
+	for (; i < length; ++i) {
+		options = arguments[i];
+		// Only deal with non-null/undefined values
+		if (options != null) {
+			// Extend the base object
+			for (name in options) {
+				src = target[name];
+				copy = options[name];
+
+				// Prevent never-ending loop
+				if (target !== copy) {
+					// Recurse if we're merging plain objects or arrays
+					if (deep && copy && (isPlainObject(copy) || (copyIsArray = isArray(copy)))) {
+						if (copyIsArray) {
+							copyIsArray = false;
+							clone = src && isArray(src) ? src : [];
+						} else {
+							clone = src && isPlainObject(src) ? src : {};
+						}
+
+						// Never move original objects, clone them
+						target[name] = extend(deep, clone, copy);
+
+					// Don't bring in undefined values
+					} else if (typeof copy !== 'undefined') {
+						target[name] = copy;
+					}
+				}
+			}
+		}
+	}
+
+	// Return the modified object
+	return target;
+};
+
+
+},{}],9:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -2690,7 +2785,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -2715,7 +2810,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 
 /**
  * isArray
@@ -2750,7 +2845,7 @@ module.exports = isArray || function (val) {
   return !! val && '[object Array]' == str.call(val);
 };
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /**
  * @author Titus Wormer
  * @copyright 2015 Titus Wormer
@@ -2837,7 +2932,7 @@ function unherit(Super) {
 
 module.exports = unherit;
 
-},{"clone":6,"inherits":9}],12:[function(require,module,exports){
+},{"clone":6,"inherits":10}],13:[function(require,module,exports){
 /**
  * @author Titus Wormer
  * @copyright 2015 Titus Wormer
@@ -3385,7 +3480,7 @@ vFilePrototype.namespace = namespace;
 
 module.exports = VFile;
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /**
  * Module Dependencies
  */
@@ -3478,7 +3573,7 @@ Ware.prototype.run = function () {
   return this;
 };
 
-},{"wrap-fn":14}],14:[function(require,module,exports){
+},{"wrap-fn":15}],15:[function(require,module,exports){
 /**
  * Module Dependencies
  */
