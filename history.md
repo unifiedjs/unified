@@ -2,6 +2,11 @@
 
 <!--lint disable no-multiple-toplevel-headings-->
 
+2.1.1 / 2015-10-14
+==================
+
+*   Fix component and duo support ([3eacf6a](https://github.com/wooorm/unified/commit/3eacf6a))
+
 2.1.0 / 2015-10-10
 ==================
 
