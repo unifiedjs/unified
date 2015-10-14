@@ -56,7 +56,7 @@
     "lint": "npm run lint-api && npm run lint-style",
     "make": "npm run lint && npm run test-coverage",
     "build-md": "mdast . --quiet",
-    "build-bundle": "browserify index.js -s AttachWare > unified.js",
+    "build-bundle": "browserify index.js -s AttachWare -u node-extend > unified.js",
     "postbuild-bundle": "esmangle unified.js > unified.min.js",
     "build": "npm run build-md && npm run build-bundle"
   }

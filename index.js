@@ -16,10 +16,16 @@
 
 var bail = require('bail');
 var ware = require('ware');
-var extend = require('extend');
 var AttachWare = require('attach-ware')(ware);
 var VFile = require('vfile');
 var unherit = require('unherit');
+var extend;
+
+try {
+    extend = require('node-extend');
+} catch (e) {
+    extend = require('extend');
+}
 
 /*
  * Processing pipeline.

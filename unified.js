@@ -17,10 +17,16 @@
 
 var bail = require('bail');
 var ware = require('ware');
-var extend = require('extend');
 var AttachWare = require('attach-ware')(ware);
 var VFile = require('vfile');
 var unherit = require('unherit');
+var extend;
+
+try {
+    extend = require('node-extend');
+} catch (e) {
+    extend = require('extend');
+}
 
 /*
  * Processing pipeline.
@@ -286,7 +292,7 @@ function unified(options) {
 
 module.exports = unified;
 
-},{"attach-ware":2,"bail":3,"extend":8,"unherit":12,"vfile":13,"ware":14}],2:[function(require,module,exports){
+},{"attach-ware":2,"bail":3,"extend":8,"node-extend":undefined,"unherit":12,"vfile":13,"ware":14}],2:[function(require,module,exports){
 /**
  * @author Titus Wormer
  * @copyright 2015 Titus Wormer
