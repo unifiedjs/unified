@@ -21,6 +21,9 @@
     "vfile": "^1.0.0",
     "ware": "^1.3.0"
   },
+  "browser": {
+    "node-extend": "extend"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/wooorm/unified.git"
@@ -56,7 +59,7 @@
     "lint": "npm run lint-api && npm run lint-style",
     "make": "npm run lint && npm run test-coverage",
     "build-md": "mdast . --quiet",
-    "build-bundle": "browserify index.js -s AttachWare -u node-extend > unified.js",
+    "build-bundle": "browserify index.js -s AttachWare > unified.js",
     "postbuild-bundle": "esmangle unified.js > unified.min.js",
     "build": "npm run build-md && npm run build-bundle"
   }
