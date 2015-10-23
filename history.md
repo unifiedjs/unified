@@ -2,6 +2,11 @@
 
 <!--lint disable no-multiple-toplevel-headings-->
 
+2.1.2 / 2015-10-23
+==================
+
+*   Refactor browserify system ([c95686d](https://github.com/wooorm/unified/commit/c95686d))
+
 2.1.1 / 2015-10-14
 ==================
 
