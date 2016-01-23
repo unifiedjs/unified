@@ -3,9 +3,7 @@
 Text processing framework: Parse / Transform / Compile.
 
 This library provides the boilerplate to make parsing and compiling pluggable.
-It’s in use by [**remark**][remark],
-[**retext**][retext], and
-[**hast**][hast].
+It’s in use by [**remark**][remark], [**retext**][retext], and [**hast**][hast].
 
 ## Installation
 
@@ -128,9 +126,9 @@ and `'Compiler'` are stored on `Processor` instances. The `Parser`
 is responsible for parsing a virtual file into a syntax tree, and the
 `Compiler` for compiling a syntax tree into something else.
 
-When a processor is constructed, both are passed to [unherit][],
-which ensures that plug-ins can change how the processor instance parses
-and compiles without affecting other processors.
+When a processor is constructed, both are passed to [unherit][], which
+ensures that plug-ins can change how the processor instance parses and
+compiles without affecting other processors.
 
 `Parser`s must have a `parse` method, `Compiler`s a `compile` method.
 
@@ -161,22 +159,18 @@ two things:
 *   It modifies the instance: such as changing the Parser or the Compiler;
 *   It transforms a syntax tree representation of a file.
 
-Both have their own function. The first is called an
-[“attacher”][attacher]. The second is named a
-[“transformer”][transformer]. An “attacher” may
-return a “transformer”.
+Both have their own function. The first is called an [“attacher”][attacher].
+The second is named a [“transformer”][transformer]. An “attacher” may return
+a “transformer”.
 
 #### `function attacher(processor[, input...])`
 
 To modify the processor, create an attacher. An attacher is the thing passed to
-[`use`][use]. It can
-receive plugin specific options, but that’s entirely up to the third-party
-developer.
+[`use`][use]. It can receive plugin specific options, but that’s entirely up to
+the third-party developer.
 
-An **attacher** is invoked when the plugin is
-[`use`][use]d, and can
-return a transformer which will be called on subsequent
-[`process()`][process]s and
+An **attacher** is invoked when the plugin is [`use`][use]d, and can return
+a transformer which will be called on subsequent [`process()`][process]s and
 [`run()`][run]s.
 
 **Signatures**
@@ -185,9 +179,7 @@ return a transformer which will be called on subsequent
 
 **Parameters**
 
-*   `processor` (`Processor`) — Context on which the plugin was
-    [`use`][use]d;
-
+*   `processor` (`Processor`) — Context on which the plugin was [`use`][use]d;
 *   `input` (`*`) — Passed by the user of a plug-in.
 
 **Returns**
@@ -198,8 +190,8 @@ return a transformer which will be called on subsequent
 
 To transform a syntax tree, create a transformer. A transformer is a simple
 (generator) function which is invoked each time a file is
-[`process()`][process]s and [`run()`][run]s. A transformer should
-change the syntax tree representation of a file.
+[`process()`][process]s and [`run()`][run]s. A transformer should change
+the syntax tree representation of a file.
 
 **Signatures**
 
