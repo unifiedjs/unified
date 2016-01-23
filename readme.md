@@ -15,9 +15,9 @@ It’s in use by [**remark**][remark],
 npm install unified
 ```
 
-**unified** is also available for [bower][bower-install],
-[component][component-install], and [duo][duo-install], and as an AMD,
-CommonJS, and globals module, [uncompressed and compressed][releases].
+**unified** is also available for [component][component-install], and
+[duo][duo-install], and as an AMD, CommonJS, and globals module,
+[uncompressed and compressed][releases].
 
 ## Usage
 
@@ -373,8 +373,6 @@ and plug-ins. Cloned when a `Processor` is constructed and to `processor.data`.
 [codecov]: https://codecov.io/github/wooorm/unified
 
 [npm-install]: https://docs.npmjs.com/cli/install
-
-[bower-install]: http://bower.io/#install-packages
 
 [component-install]: https://github.com/componentjs/component
 
