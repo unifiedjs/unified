@@ -28,6 +28,7 @@
     "type": "git",
     "url": "https://github.com/wooorm/unified.git"
   },
+  "bugs": "https://github.com/wooorm/unified/issues",
   "author": "Titus Wormer <tituswormer@gmail.com>",
   "files": [
     "index.js"
