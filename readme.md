@@ -34,6 +34,10 @@ module.exports = unified({
 
 ## Table of Contents
 
+*   [List of Processors](#list-of-processors)
+
+*   [Bridges](#bridges)
+
 *   [API](#api)
 
     *   [unified(options)](#unifiedoptions)
@@ -76,6 +80,15 @@ module.exports = unified({
 
 *   [**hast**][hast]
     — HTML processor powered by plugins.
+
+## Bridges
+
+Bridges are a concept which support two-way transformation between processors.
+See [**unified-bridge**][unified-bridge] for more information.
+
+*   [**remark-retext**][remark-retext]
+    — Transformation from markdown to natural language (currently
+    it’s not possible to return to markdown);
 
 ## API
 
@@ -393,6 +406,10 @@ and plug-ins. Cloned when a `Processor` is constructed and to `processor.data`.
 [unherit]: https://github.com/wooorm/unherit
 
 [vfile]: https://github.com/wooorm/vfile
+
+[unified-bridge]: https://github.com/wooorrm/unified-bridge
+
+[remark-retext]: https://github.com/wooorrm/remark-retext
 
 [remark-index]: https://github.com/wooorm/remark/blob/master/index.js
 
