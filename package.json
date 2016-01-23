@@ -33,10 +33,10 @@
     "index.js"
   ],
   "devDependencies": {
-    "browserify": "^11.0.0",
+    "browserify": "^13.0.0",
     "eslint": "^1.0.0",
     "esmangle": "^1.0.0",
-    "istanbul": "^0.3.0",
+    "istanbul": "^0.4.0",
     "jscs": "^2.0.0",
     "jscs-jsdoc": "^1.0.0",
     "remark": "^3.0.0",
