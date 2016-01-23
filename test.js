@@ -1,12 +1,20 @@
+/**
+ * @author Titus Wormer
+ * @copyright 2015 Titus Wormer
+ * @license MIT
+ * @module unified
+ * @fileoverview Test suite for `unified`.
+ */
+
 'use strict';
 
-/* eslint-env node, mocha */
+/* eslint-env node */
 
 /*
  * Dependencies.
  */
 
-var assert = require('assert');
+var test = require('tape');
 var VFile = require('vfile');
 var unified = require('./');
 
@@ -19,69 +27,63 @@ noop.compile = noop;
 noop.parse = noop;
 
 /*
- * Methods.
- */
-
-var equal = assert.strictEqual;
-var dequal = assert.deepEqual;
-var notEqual = assert.notStrictEqual;
-
-/*
  * Tests.
  */
 
-describe('unified()', function () {
+test('unified()', function (t) {
     var Processor;
     var proto;
 
-    it('should create a new constructor', function () {
+    t.test('should create a new constructor', function (st) {
         Processor = unified({
             'name': 'foo',
             'Parser': noop,
             'Compiler': noop
         });
 
-        equal(typeof Processor, 'function');
+        st.equal(typeof Processor, 'function');
 
         proto = Processor.prototype;
 
-        equal(typeof proto, 'object');
+        st.equal(typeof proto, 'object');
+
+        st.end();
     });
 
-    it('should expose the correct methods', function () {
-        equal(typeof proto.use, 'function');
-        equal(typeof proto.parse, 'function');
-        equal(typeof proto.run, 'function');
-        equal(typeof proto.stringify, 'function');
-        equal(typeof proto.process, 'function');
+    t.test('should expose the correct methods', function (st) {
+        st.equal(typeof proto.use, 'function');
+        st.equal(typeof proto.parse, 'function');
+        st.equal(typeof proto.run, 'function');
+        st.equal(typeof proto.stringify, 'function');
+        st.equal(typeof proto.process, 'function');
+
+        st.end();
     });
 
-    it('should expose the correct functions', function () {
-        equal(typeof Processor.use, 'function');
-        equal(typeof Processor.parse, 'function');
-        equal(typeof Processor.run, 'function');
-        equal(typeof Processor.stringify, 'function');
-        equal(typeof Processor.process, 'function');
+    t.test('should expose the correct functions', function (st) {
+        st.equal(typeof Processor.use, 'function');
+        st.equal(typeof Processor.parse, 'function');
+        st.equal(typeof Processor.run, 'function');
+        st.equal(typeof Processor.stringify, 'function');
+        st.equal(typeof Processor.process, 'function');
+
+        st.end();
     });
 
-    describe('Processor', function () {
-        it('should create an instance', function () {
-            assert(new Processor() instanceof Processor);
-        });
+    t.test('Processor', function (st) {
+        st.ok(
+            new Processor() instanceof Processor,
+            'should create an instance'
+        );
 
-        it('should create an instance when without `new`', function () {
-            /* eslint-disable new-cap */
-            assert(Processor() instanceof Processor);
-            /* eslint-enable new-cap */
-        });
+        /* eslint-disable new-cap */
+        st.ok(
+            Processor() instanceof Processor,
+            'should create an instance when without `new`'
+        );
+        /* eslint-enable new-cap */
 
-        it('should create an instance when without `new`', function () {
-            /* eslint-disable new-cap */
-            assert(Processor() instanceof Processor);
-            /* eslint-enable new-cap */
-        });
-
-        it('should use the given processor', function () {
+        st.test('should use the given processor', function (sst) {
             var p;
             var q;
 
@@ -95,15 +97,19 @@ describe('unified()', function () {
             p = new Processor().use(plugin);
             q = new Processor(p);
 
-            dequal(p.ware.attachers, [plugin]);
-            dequal(p.ware.fns, [noop]);
-            dequal(q.ware.attachers, [plugin]);
-            dequal(q.ware.fns, [noop]);
+            sst.deepEqual(p.ware.attachers, [plugin]);
+            sst.deepEqual(p.ware.fns, [noop]);
+            sst.deepEqual(q.ware.attachers, [plugin]);
+            sst.deepEqual(q.ware.fns, [noop]);
+
+            sst.end();
         });
+
+        st.end();
     });
 
-    describe('Processor#data', function () {
-        it('Should expose data', function  () {
+    test('Processor#data', function (st) {
+        st.test('Should expose data', function  (sst) {
             var data = {
                 'one': true,
                 'two': false
@@ -115,8 +121,8 @@ describe('unified()', function () {
                 'Compiler': noop
             });
 
-            equal(Processor.data, null);
-            equal(Processor.prototype.data, null);
+            sst.equal(Processor.data, null);
+            sst.equal(Processor.prototype.data, null);
 
             Processor = unified({
                 'name': 'foo',
@@ -125,18 +131,22 @@ describe('unified()', function () {
                 'data': data
             });
 
-            dequal(Processor.data, data);
-            dequal(Processor.prototype.data, data);
-            equal(Processor.data, Processor.prototype.data);
-            equal(Processor.data, data);
+            sst.deepEqual(Processor.data, data);
+            sst.deepEqual(Processor.prototype.data, data);
+            sst.equal(Processor.data, Processor.prototype.data);
+            sst.equal(Processor.data, data);
+
+            sst.end();
         });
 
-        it('Should clone data to instances', function  () {
+        st.test('Should clone data to instances', function  (sst) {
             var processor;
             var data = {
                 'one': true,
                 'two': false
             };
+
+            sst.plan(2);
 
             processor = unified({
                 'name': 'foo',
@@ -145,43 +155,42 @@ describe('unified()', function () {
                 'data': data
             })();
 
-            dequal(processor.data, data);
-            notEqual(processor.data, data);
+            sst.deepEqual(processor.data, data);
+            sst.notEqual(processor.data, data);
         });
     });
 
-    describe('Processor#use()', function () {
-        it('should return itself', function () {
+    t.test('Processor#use()', function (st) {
+        var p = new Processor();
+
+        st.ok(p.use(noop), p, 'should return itself');
+
+        st.ok(
+            Processor.use(noop) instanceof Processor,
+            'should return a new instance when without context'
+        );
+
+        st.test('should invoke the attacher', function (sst) {
             var p = new Processor();
 
-            assert(p.use(noop), p);
-        });
-
-        it('should return a new instance when without context', function () {
-            assert(Processor.use(noop) instanceof Processor);
-        });
-
-        it('should invoke the attacher', function (done) {
-            var p = new Processor();
+            sst.plan(5);
 
             /**
              * Example plugin.
              */
             function plugin(context, one, two, three) {
-                assert(context, p);
-                assert(one, 1);
-                assert(two, 2);
-                assert(three, 3);
-
-                done();
+                sst.equal(context, p);
+                sst.equal(one, 1);
+                sst.equal(two, 2);
+                sst.equal(three, 3);
             }
 
             p.use(plugin, 1, 2, 3);
 
-            dequal(p.ware.attachers, [plugin]);
+            sst.deepEqual(p.ware.attachers, [plugin]);
         });
 
-        it('should be able to return a transformer', function () {
+        st.test('should be able to return a transformer', function (sst) {
             var p = new Processor();
 
             /**
@@ -193,18 +202,24 @@ describe('unified()', function () {
 
             p.use(plugin);
 
-            dequal(p.ware.attachers, [plugin]);
-            dequal(p.ware.fns, [noop]);
+            sst.deepEqual(p.ware.attachers, [plugin]);
+            sst.deepEqual(p.ware.fns, [noop]);
+
+            sst.end();
         });
+
+        st.end();
     });
 
-    describe('Processor#parse()', function () {
-        it('should invoke the parser', function (done) {
+    t.test('Processor#parse()', function (st) {
+        st.test('should invoke the parser', function (sst) {
             var self;
             var node = {
                 'type': 'baz',
                 'value': 'qux'
             };
+
+            sst.plan(5);
 
             /**
              * Example Parser.
@@ -212,18 +227,16 @@ describe('unified()', function () {
             function Parser(file, options, context) {
                 self = this;
 
-                equal(file.toString(), 'foo');
-                equal(options, 'bar');
-                assert(context instanceof Processor);
+                sst.equal(file.toString(), 'foo');
+                sst.equal(options, 'bar');
+                sst.ok(context instanceof Processor);
             }
 
             /**
              * Example parse methods.
              */
             function parse() {
-                equal(this, self);
-
-                done();
+                sst.equal(this, self);
 
                 return node;
             }
@@ -232,20 +245,23 @@ describe('unified()', function () {
 
             Processor.Parser = Parser;
 
-            dequal(Processor.parse('foo', 'bar'), node);
+            sst.deepEqual(Processor.parse('foo', 'bar'), node);
 
             Processor.Parser = noop;
         });
 
-        it('should invoke the bound parser when none is available on the ' +
+        st.test(
+            'should invoke the bound parser when none is available on the ' +
             'context object',
-            function (done) {
+            function (sst) {
                 /**
                  * Example parser.
                  */
                 function Bound() {}
 
-                Bound.prototype.parse = done;
+                Bound.prototype.parse = sst.pass;
+
+                sst.plan(1);
 
                 var parse = unified({
                     'name': 'foo',
@@ -258,18 +274,20 @@ describe('unified()', function () {
         );
     });
 
-    describe('Processor#run()', function () {
-        it('should invoke a transformer', function (done) {
+    t.test('Processor#run()', function (st) {
+        st.test('should invoke a transformer', function (sst) {
             var tree = {
                 'type': 'foo',
                 'value': 'bar'
             };
 
+            sst.plan(2);
+
             /**
              * Example transformer.
              */
             function transformer() {
-                done();
+                sst.pass();
             }
 
             /**
@@ -279,31 +297,34 @@ describe('unified()', function () {
                 return transformer;
             }
 
-            equal(new Processor().use(attacher).run(tree), tree);
+            sst.equal(new Processor().use(attacher).run(tree), tree);
         });
 
-        it('should throw without node', function () {
-            assert.throws(function () {
+        st.throws(
+            function () {
                 new Processor().run();
-            }, /Expected node, got undefined/);
-        });
+            },
+            /Expected node, got undefined/,
+            'should throw without node'
+        );
 
-        it('should invoke `done`', function (done) {
+        st.test('should invoke `done`', function (sst) {
             var node = {
                 'type': 'foo',
                 'value': 'bar'
             };
 
-            new Processor().run(node, function (err, tree, file) {
-                equal(err, null);
-                equal(tree, node);
-                equal(file.toString(), '');
+            sst.plan(4);
 
-                done(err);
+            new Processor().run(node, function (err, tree, file) {
+                sst.ifError(err);
+                sst.equal(err, null);
+                sst.equal(tree, node);
+                sst.equal(file.toString(), '');
             });
         });
 
-        it('should work with a file', function (done) {
+        st.test('should work with a file', function (sst) {
             var vfile = new VFile();
             var node = {
                 'type': 'foo',
@@ -312,52 +333,60 @@ describe('unified()', function () {
 
             vfile.namespace('foo').tree = node;
 
-            new Processor().run(vfile, function (err, tree, file) {
-                equal(err, null);
-                equal(tree, node);
-                equal(file, vfile);
+            sst.plan(4);
 
-                done(err);
+            new Processor().run(vfile, function (err, tree, file) {
+                sst.ifError(err);
+                sst.equal(err, null);
+                sst.equal(tree, node);
+                sst.equal(file, vfile);
             });
         });
 
-        it('should work with a file and a node', function (done) {
+        st.test('should work with a file and a node', function (sst) {
             var vfile = new VFile();
             var node = {
                 'type': 'foo',
                 'value': 'bar'
             };
+
+            sst.plan(4);
 
             vfile.namespace('foo').tree = node;
 
             new Processor().run(node, vfile, function (err, tree, file) {
-                equal(err, null);
-                equal(tree, node);
-                equal(file, vfile);
-
-                done(err);
+                sst.ifError(err);
+                sst.equal(err, null);
+                sst.equal(tree, node);
+                sst.equal(file, vfile);
             });
         });
 
-        it('should work when used as a function', function (done) {
+        st.test('should work when used as a function', function (sst) {
             var node = {
                 'type': 'foo',
                 'value': 'bar'
             };
 
+            sst.plan(1);
+
             Processor.run(node, function (err) {
-                done(err);
+                sst.ifError(err);
             });
         });
+
+        st.end();
     });
 
-    describe('Processor#stringify()', function () {
-        it('should invoke with node and settings', function (done) {
+    t.test('Processor#stringify()', function (st) {
+        st.test('should invoke with node and settings', function (sst) {
             var self;
             var node = {
                 'type': 'baz',
                 'value': 'qux'
             };
+
+            sst.plan(5);
 
             /**
              * Example `Compiler`.
@@ -365,18 +394,16 @@ describe('unified()', function () {
             function Compiler(file, options, processor) {
                 self = this;
 
-                equal(file.namespace('foo').tree, node);
-                equal(options, 'bar');
-                assert(processor instanceof Processor);
+                sst.equal(file.namespace('foo').tree, node);
+                sst.equal(options, 'bar');
+                sst.ok(processor instanceof Processor);
             }
 
             /**
              * Example `compile`.
              */
             function compile() {
-                equal(this, self);
-
-                done();
+                sst.equal(this, self);
 
                 return 'qux';
             }
@@ -385,12 +412,12 @@ describe('unified()', function () {
 
             Processor.Compiler = Compiler;
 
-            equal(Processor.stringify(node, 'bar'), 'qux');
+            sst.equal(Processor.stringify(node, 'bar'), 'qux');
 
             Processor.Compiler = noop;
         });
 
-        it('should work with a file and settings', function (done) {
+        st.test('should work with a file and settings', function (sst) {
             var vfile = new VFile();
             var settings = {
                 'qux': 'quux'
@@ -400,15 +427,17 @@ describe('unified()', function () {
                 'value': 'bar'
             };
 
+            sst.plan(2);
+
             /**
              * Example `Compiler`.
              */
             function Compiler(file, options) {
-                equal(file, vfile);
-                equal(options, settings);
+                sst.equal(file, vfile);
+                sst.equal(options, settings);
             }
 
-            Compiler.prototype.compile = done;
+            Compiler.prototype.compile = noop;
 
             vfile.namespace('foo').tree = tree;
 
@@ -419,15 +448,17 @@ describe('unified()', function () {
             Processor.Compiler = noop;
         });
 
-        it('should work with just a node', function (done) {
+        st.test('should work with just a node', function (sst) {
+            sst.plan(1);
+
             /**
              * Example `Compiler`.
              */
             function Compiler(file, options) {
-                equal(options, undefined);
+                sst.equal(options, undefined);
             }
 
-            Compiler.prototype.compile = done;
+            Compiler.prototype.compile = noop;
 
             Processor.Compiler = Compiler;
 
@@ -439,22 +470,24 @@ describe('unified()', function () {
             Processor.Compiler = noop;
         });
 
-        it('should with just a node', function (done) {
+        st.test('should with just a node', function (sst) {
             var vfile = new VFile();
             var tree = {
                 'type': 'foo',
                 'value': 'bar'
             };
 
+            sst.plan(2);
+
             /**
              * Example `Compiler`.
              */
             function Compiler(file, options) {
-                equal(file, vfile);
-                equal(options, undefined);
+                sst.equal(file, vfile);
+                sst.equal(options, undefined);
             }
 
-            Compiler.prototype.compile = done;
+            Compiler.prototype.compile = noop;
 
             Processor.Compiler = Compiler;
 
@@ -465,7 +498,7 @@ describe('unified()', function () {
             Processor.Compiler = noop;
         });
 
-        it('should with all arguments', function (done) {
+        st.test('should with all arguments', function (sst) {
             var vfile = new VFile();
             var settings = {
                 'qux': 'quux'
@@ -475,15 +508,17 @@ describe('unified()', function () {
                 'value': 'bar'
             };
 
+            sst.plan(2);
+
             /**
              * Example `Compiler`.
              */
             function Compiler(file, options) {
-                equal(file, vfile);
-                equal(options, settings);
+                sst.equal(file, vfile);
+                sst.equal(options, settings);
             }
 
-            Compiler.prototype.compile = done;
+            Compiler.prototype.compile = noop;
 
             Processor.Compiler = Compiler;
 
@@ -494,25 +529,39 @@ describe('unified()', function () {
             Processor.Compiler = noop;
         });
 
-        it('should throw without node', function () {
-            assert.throws(function () {
+        st.throws(
+            function () {
                 Processor.stringify(new VFile());
-            }, /Expected node, got null/);
+            },
+            /Expected node, got null/,
+            'should throw without node (#1)'
+        );
 
-            assert.throws(function () {
+        st.throws(
+            function () {
                 Processor.stringify();
-            }, /Expected node, got undefined/);
-        });
+            },
+            /Expected node, got undefined/,
+            'should throw without node (#2)'
+        );
 
-        it('should invoke the bound compiler when none is available on the ' +
-            'context object',
-            function (done) {
+        st.test(
+            'should invoke the bound compiler when none is available ' +
+            'on the context object',
+            function (sst) {
+                sst.plan(1);
+
                 /**
                  * Example `Processor`.
                  */
                 function Bound() {}
 
-                Bound.prototype.compile = done;
+                /**
+                 * Example `compile`.
+                 */
+                Bound.prototype.compile = function () {
+                    sst.pass();
+                };
 
                 var stringify = unified({
                     'name': 'foo',
@@ -526,10 +575,12 @@ describe('unified()', function () {
                 });
             }
         );
+
+        st.end();
     });
 
-    describe('Processor#process()', function () {
-        it('should support a value', function () {
+    t.test('Processor#process()', function (st) {
+        st.test('should support a value', function (sst) {
             var Processor2;
             var isParsed;
             var isCompiled;
@@ -572,23 +623,27 @@ describe('unified()', function () {
                 'Compiler': Compiler
             });
 
-            equal(new Processor2().process('bar'), 'bar');
-            equal(isParsed, true);
-            equal(isCompiled, true);
+            sst.equal(new Processor2().process('bar'), 'bar');
+            sst.equal(isParsed, true);
+            sst.equal(isCompiled, true);
+
+            sst.end();
         });
 
-        it('should support a value and settings', function () {
+        st.test('should support a value and settings', function (sst) {
             var settings;
             var Processor2;
             var isParsed;
             var isCompiled;
 
+            sst.plan(7);
+
             /**
              * Example `Parser`.
              */
             function Parser(file, options) {
-                equal(file.toString(), 'bar');
-                equal(options, settings);
+                sst.equal(file.toString(), 'bar');
+                sst.equal(options, settings);
             }
 
             /**
@@ -606,8 +661,8 @@ describe('unified()', function () {
              * Example `Compiler`.
              */
             function Compiler(file, options) {
-                equal(file.toString(), 'bar');
-                equal(options, settings);
+                sst.equal(file.toString(), 'bar');
+                sst.equal(options, settings);
             }
 
             /**
@@ -631,15 +686,17 @@ describe('unified()', function () {
                 'baz': 'qux'
             };
 
-            equal(new Processor2().process('bar', settings), 'bar');
-            equal(isParsed, true);
-            equal(isCompiled, true);
+            sst.equal(new Processor2().process('bar', settings), 'bar');
+            sst.equal(isParsed, true);
+            sst.equal(isCompiled, true);
         });
 
-        it('should support a value and a callback', function (done) {
+        st.test('should support a value and a callback', function (sst) {
             var Processor2;
             var isParsed;
             var isCompiled;
+
+            sst.plan(3);
 
             /**
              * Example `Parser`.
@@ -679,24 +736,26 @@ describe('unified()', function () {
                 'Compiler': Compiler
             });
 
-            equal(new Processor2().process('bar', done), 'bar');
-            equal(isParsed, true);
-            equal(isCompiled, true);
+            sst.equal(new Processor2().process('bar'), 'bar');
+            sst.equal(isParsed, true);
+            sst.equal(isCompiled, true);
         });
 
-        it('should support a file and settings', function () {
+        st.test('should support a file and settings', function (sst) {
             var vfile;
             var settings;
             var Processor2;
             var isParsed;
             var isCompiled;
 
+            sst.plan(7);
+
             /**
              * Example `Parser`.
              */
             function Parser(file, options) {
-                equal(file, vfile);
-                equal(options, settings);
+                sst.equal(file, vfile);
+                sst.equal(options, settings);
             }
 
             /**
@@ -714,8 +773,8 @@ describe('unified()', function () {
              * Example `Compiler`.
              */
             function Compiler(file, options) {
-                equal(file, vfile);
-                equal(options, settings);
+                sst.equal(file, vfile);
+                sst.equal(options, settings);
             }
 
             /**
@@ -741,22 +800,24 @@ describe('unified()', function () {
                 'baz': 'qux'
             };
 
-            equal(new Processor2().process(vfile, settings), 'bar');
-            equal(isParsed, true);
-            equal(isCompiled, true);
+            sst.equal(new Processor2().process(vfile, settings), 'bar');
+            sst.equal(isParsed, true);
+            sst.equal(isCompiled, true);
         });
 
-        it('should support a file and a callback', function (done) {
+        st.test('should support a file and a callback', function (sst) {
             var vfile;
             var Processor2;
             var isParsed;
             var isCompiled;
 
+            sst.plan(5);
+
             /**
              * Example `Parser`.
              */
             function Parser(file) {
-                equal(file, vfile);
+                sst.equal(file, vfile);
             }
 
             /**
@@ -774,7 +835,7 @@ describe('unified()', function () {
              * Example `Compiler`.
              */
             function Compiler(file) {
-                equal(file, vfile);
+                sst.equal(file, vfile);
             }
 
             /**
@@ -796,24 +857,26 @@ describe('unified()', function () {
 
             vfile = new VFile('bar');
 
-            equal(new Processor2().process(vfile, done), 'bar');
-            equal(isParsed, true);
-            equal(isCompiled, true);
+            sst.equal(new Processor2().process(vfile), 'bar');
+            sst.equal(isParsed, true);
+            sst.equal(isCompiled, true);
         });
 
-        it('should support a file and settings', function () {
+        st.test('should support a file and settings', function (sst) {
             var vfile;
             var settings;
             var Processor2;
             var isParsed;
             var isCompiled;
 
+            sst.plan(7);
+
             /**
              * Example `Parser`.
              */
             function Parser(file, options) {
-                equal(file, vfile);
-                equal(options, settings);
+                sst.equal(file, vfile);
+                sst.equal(options, settings);
             }
 
             /**
@@ -831,8 +894,8 @@ describe('unified()', function () {
              * Example `Compiler`.
              */
             function Compiler(file, options) {
-                equal(file, vfile);
-                equal(options, settings);
+                sst.equal(file, vfile);
+                sst.equal(options, settings);
             }
 
             /**
@@ -858,75 +921,82 @@ describe('unified()', function () {
                 'baz': 'qux'
             };
 
-            equal(new Processor2().process(vfile, settings), 'bar');
-            equal(isParsed, true);
-            equal(isCompiled, true);
+            sst.equal(new Processor2().process(vfile, settings), 'bar');
+            sst.equal(isParsed, true);
+            sst.equal(isCompiled, true);
         });
 
-        it('should support file, settings, and a callback', function (done) {
-            var vfile;
-            var settings;
-            var processor;
-            var isParsed;
-            var isCompiled;
+        st.test(
+            'should support file, settings, and a callback',
+            function (sst) {
+                var vfile;
+                var settings;
+                var processor;
+                var isParsed;
+                var isCompiled;
 
-            /**
-             * Example `Parser`.
-             */
-            function Parser(file, options) {
-                equal(file, vfile);
-                equal(options, settings);
-            }
+                sst.plan(7);
 
-            /**
-             * Example `parse` function.
-             */
-            function parse() {
-                isParsed = true;
-                return {
-                    'type': 'foo',
-                    'value': 'bar'
+                /**
+                 * Example `Parser`.
+                 */
+                function Parser(file, options) {
+                    sst.equal(file, vfile);
+                    sst.equal(options, settings);
+                }
+
+                /**
+                 * Example `parse` function.
+                 */
+                function parse() {
+                    isParsed = true;
+                    return {
+                        'type': 'foo',
+                        'value': 'bar'
+                    };
+                }
+
+                /**
+                 * Example `Compiler`.
+                 */
+                function Compiler(file, options) {
+                    sst.equal(file, vfile);
+                    sst.equal(options, settings);
+                }
+
+                /**
+                 * Example `compile`.
+                 */
+                function compile() {
+                    isCompiled = true;
+                    return 'bar';
+                }
+
+                Parser.prototype.parse = parse;
+                Compiler.prototype.compile = compile;
+
+                processor = unified({
+                    'name': 'foo',
+                    'Parser': Parser,
+                    'Compiler': Compiler
+                });
+
+                vfile = new VFile('bar');
+
+                settings = {
+                    'baz': 'qux'
                 };
+
+                sst.equal(processor.process(vfile, settings), 'bar');
+                sst.equal(isParsed, true);
+                sst.equal(isCompiled, true);
             }
+        );
 
-            /**
-             * Example `Compiler`.
-             */
-            function Compiler(file, options) {
-                equal(file, vfile);
-                equal(options, settings);
-            }
-
-            /**
-             * Example `compile`.
-             */
-            function compile() {
-                isCompiled = true;
-                return 'bar';
-            }
-
-            Parser.prototype.parse = parse;
-            Compiler.prototype.compile = compile;
-
-            processor = unified({
-                'name': 'foo',
-                'Parser': Parser,
-                'Compiler': Compiler
-            });
-
-            vfile = new VFile('bar');
-
-            settings = {
-                'baz': 'qux'
-            };
-
-            equal(processor.process(vfile, settings, done), 'bar');
-            equal(isParsed, true);
-            equal(isCompiled, true);
-        });
-
-        it('should throw a sync parse error', function () {
+        st.test('should throw a sync parse error', function (sst) {
             var processor;
+
+            sst.plan(1);
 
             /**
              * Example `Parser`.
@@ -950,13 +1020,18 @@ describe('unified()', function () {
                 'Compiler': noop
             });
 
-            assert.throws(function () {
-                processor.process('foo');
-            }, /1:1: Warning/);
+            sst.throws(
+                function () {
+                    processor.process('foo');
+                },
+                /1:1: Warning/
+            );
         });
 
-        it('should throw a sync compile error', function () {
+        st.test('should throw a sync compile error', function (sst) {
             var processor;
+
+            sst.plan(1);
 
             /**
              * Example `Parser`.
@@ -996,13 +1071,18 @@ describe('unified()', function () {
                 'Compiler': Compiler
             });
 
-            assert.throws(function () {
-                processor.process('foo');
-            }, /1:1: Warning/);
+            sst.throws(
+                function () {
+                    processor.process('foo');
+                },
+                /1:1: Warning/
+            );
         });
 
-        it('should throw a sync run error', function () {
+        st.test('should throw a sync run error', function (sst) {
             var processor;
+
+            sst.plan(1);
 
             /**
              * Example `Parser`.
@@ -1031,12 +1111,17 @@ describe('unified()', function () {
                 };
             });
 
-            assert.throws(function () {
-                processor.process('foo');
-            }, /1:1: Warning/);
+            sst.throws(
+                function () {
+                    processor.process('foo');
+                },
+                /1:1: Warning/
+            );
         });
 
-        it('should pass an async parse error', function (done) {
+        st.test('should pass an async parse error', function (sst) {
+            sst.plan(1);
+
             /**
              * Example `Parser`.
              */
@@ -1058,12 +1143,13 @@ describe('unified()', function () {
                 'Parser': Parser,
                 'Compiler': noop
             }).process('foo', function (err) {
-                equal(String(err), '1:1: Warning');
-                done();
+                sst.equal(String(err), '1:1: Warning');
             });
         });
 
-        it('should pass an async compile error', function (done) {
+        st.test('should pass an async compile error', function (sst) {
+            sst.plan(1);
+
             /**
              * Example `Parser`.
              */
@@ -1101,12 +1187,13 @@ describe('unified()', function () {
                 'Parser': Parser,
                 'Compiler': Compiler
             }).process('foo', function (err) {
-                equal(String(err), '1:1: Warning');
-                done();
+                sst.equal(String(err), '1:1: Warning');
             });
         });
 
-        it('should pass an async run error', function (done) {
+        st.test('should pass an async run error', function (sst) {
+            sst.plan(1);
+
             /**
              * Example `Parser`.
              */
@@ -1133,9 +1220,10 @@ describe('unified()', function () {
                     file.fail('Warning');
                 };
             }).process('bar', function (err) {
-                equal(String(err), '1:1: Warning');
-                done();
+                sst.equal(String(err), '1:1: Warning');
             });
         });
     });
+
+    t.end();
 });
