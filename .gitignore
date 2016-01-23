@@ -4,3 +4,5 @@ bower_components/
 components/
 coverage/
 node_modules/
+unified.js
+unified.min.js

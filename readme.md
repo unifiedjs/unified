@@ -17,7 +17,7 @@ npm install unified
 
 **unified** is also available for [bower][bower-install],
 [component][component-install], and [duo][duo-install], and as an AMD,
-CommonJS, and globals module, [uncompressed][] and [compressed][].
+CommonJS, and globals module, [uncompressed and compressed][releases].
 
 ## Usage
 
@@ -380,9 +380,7 @@ and plug-ins. Cloned when a `Processor` is constructed and to `processor.data`.
 
 [duo-install]: http://duojs.org/#getting-started
 
-[uncompressed]: unified.js
-
-[compressed]: unified.min.js
+[releases]: https://github.com/wooorm/unified/releases
 
 [license]: LICENSE
 
