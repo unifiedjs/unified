@@ -66,6 +66,17 @@ module.exports = unified({
 
 *   [License](#license)
 
+## List of Processors
+
+*   [**remark**][remark]
+    — Markdown processor powered by plugins.
+
+*   [**retext**][retext]
+    — Extensible system for analysing and manipulating natural language.
+
+*   [**hast**][hast]
+    — HTML processor powered by plugins.
+
 ## API
 
 ### `unified(options)`
