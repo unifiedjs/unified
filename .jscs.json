@@ -1,10 +1,8 @@
 {
   "excludeFiles": [
-    "build/",
     "components/",
     "coverage/",
     "node_modules/",
-    "build.js",
     "unified.js",
     "unified.min.js"
   ],

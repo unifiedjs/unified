@@ -23,13 +23,11 @@
     "*.md",
     "*.sh",
     "*.svg",
-    "build/",
     "components/",
     "coverage/",
     "node_modules/",
     "component.json",
     "package.json",
-    "build.js",
     "index.js"
   ]
 }
