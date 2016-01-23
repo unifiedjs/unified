@@ -41,27 +41,27 @@ module.exports = unified({
 
     *   [unified(options)](#unifiedoptions)
 
-    *   [Processor([processor])](#processorprocessor)
+    *   [Processor(\[processor\])](#processorprocessor)
 
     *   [processor.Parser](#processorparser)
 
     *   [processor.Compiler](#processorcompiler)
 
-    *   [Processor#use(plugin[, input...])](#processoruseplugin-input)
+    *   [Processor#use(plugin\[, input...\])](#processoruseplugin-input)
 
         *   [Plugin](#plugin)
-        *   [function attacher(processor[, input...])](#function-attacherprocessor-input)
-        *   [function transformer(node, file[, next])](#function-transformernode-file-next)
+        *   [function attacher(processor\[, input...\])](#function-attacherprocessor-input)
+        *   [function transformer(node, file\[, next\])](#function-transformernode-file-next)
 
-    *   [Processor#parse(file[, options])](#processorparsefile-options)
+    *   [Processor#parse(file\[, options\])](#processorparsefile-options)
 
-    *   [Processor#run(node[, file][, done])](#processorrunnode-file-done)
+    *   [Processor#run(node\[, file\]\[, done\])](#processorrunnode-file-done)
 
         *   [function done(err, node, file)](#function-doneerr-node-file)
 
-    *   [Processor#stringify(node[, file][, options])](#processorstringifynode-file-options)
+    *   [Processor#stringify(node\[, file\]\[, options\])](#processorstringifynode-file-options)
 
-    *   [Processor#process(file[, options][, done])](#processorprocessfile-options-done)
+    *   [Processor#process(file\[, options\]\[, done\])](#processorprocessfile-options-done)
 
         *   [function done(err, doc, file)](#function-doneerr-doc-file)
 
@@ -105,7 +105,7 @@ Create a new `Processor` constructor.
 
 > Note that all methods on the instance are also available as functions on the
 > constructor, which, when invoked, create a new instance.
-> 
+>
 > Thus, invoking `new Processor().process()` is the same as
 > `Processor.process()`.
 
