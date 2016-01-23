@@ -1,28 +1,27 @@
-# unified [![Build Status](https://img.shields.io/travis/wooorm/unified.svg)](https://travis-ci.org/wooorm/unified) [![Coverage Status](https://img.shields.io/codecov/c/github/wooorm/unified.svg)](https://codecov.io/github/wooorm/unified)
+# unified [![Build Status][travis-badge]][travis] [![Coverage Status][codecov-badge]][codecov]
 
 Text processing framework: Parse / Transform / Compile.
 
 This library provides the boilerplate to make parsing and compiling pluggable.
-It’s in use by [**mdast**](https://github.com/wooorm/mdast),
-[**retext**](https://github.com/wooorm/retext), and
-[**hast**](https://github.com/wooorm/hast).
+It’s in use by [**remark**][remark],
+[**retext**][retext], and
+[**hast**][hast].
 
 ## Installation
 
-[npm](https://docs.npmjs.com/cli/install):
+[npm][npm-install]:
 
 ```bash
 npm install unified
 ```
 
-**unified** is also available for [bower](http://bower.io/#install-packages),
-[component](https://github.com/componentjs/component), and [duo](http://duojs.org/#getting-started),
-and as an AMD, CommonJS, and globals module, [uncompressed](unified.js) and
-[compressed](unified.min.js).
+**unified** is also available for [bower][bower-install],
+[component][component-install], and [duo][duo-install], and as an AMD,
+CommonJS, and globals module, [uncompressed][] and [compressed][].
 
 ## Usage
 
-From [**mdast**](https://github.com/wooorm/mdast/blob/master/index.js):
+From [**remark**][remark-index]:
 
 ```js
 var unified = require('unified');
@@ -72,7 +71,7 @@ module.exports = unified({
 
 ## API
 
-### unified(options)
+### `unified(options)`
 
 Create a new `Processor` constructor.
 
@@ -102,7 +101,7 @@ Create a new `Processor` constructor.
 
 **Returns** — `Function` (`Processor` constructor).
 
-### Processor(\[processor\])
+### `Processor([processor])`
 
 > Note that all methods on the instance are also available as functions on the
 > constructor, which, when invoked, create a new instance.
@@ -121,22 +120,22 @@ Create a new `Processor` instance.
 
 `Processor`.
 
-### processor.Parser
+### `processor.Parser`
 
-### processor.Compiler
+### `processor.Compiler`
 
-The constructors passed to [`unified`](#unifiedoptions) at `'Parser'`
+The constructors passed to [`unified`][unified-options] at `'Parser'`
 and `'Compiler'` are stored on `Processor` instances. The `Parser`
 is responsible for parsing a virtual file into a syntax tree, and the
 `Compiler` for compiling a syntax tree into something else.
 
-When a processor is constructed, both are passed to [unherit](https://github.com/wooorm/unherit),
+When a processor is constructed, both are passed to [unherit][],
 which ensures that plug-ins can change how the processor instance parses
 and compiles without affecting other processors.
 
 `Parser`s must have a `parse` method, `Compiler`s a `compile` method.
 
-### Processor#use(plugin\[, input...\])
+### `Processor#use(plugin[, input...])`
 
 Change the way the processor works by using a plugin.
 
@@ -147,7 +146,7 @@ Change the way the processor works by using a plugin.
 
 **Parameters**
 
-*   `plugin` (`Function`) — [Plugin](#plugin).
+*   `plugin` (`Function`) — [Plugin][].
 *   `plugins` (`Array.<Function>`) — List of plugins.
 *   `input` (`*`) — Passed to plugin.  Specified by its documentation.
 
@@ -155,7 +154,7 @@ Change the way the processor works by using a plugin.
 
 `Processor` — `this` (the context object).
 
-#### Plugin
+#### `Plugin`
 
 A **uniware** plugin changes the way the applied-on processor works. It does
 two things:
@@ -164,22 +163,22 @@ two things:
 *   It transforms a syntax tree representation of a file.
 
 Both have their own function. The first is called an
-[“attacher”](#function-attacherprocessor-input). The second is named a
-[“transformer”](#function-transformernode-file-next). An “attacher” may
+[“attacher”][attacher]. The second is named a
+[“transformer”][transformer]. An “attacher” may
 return a “transformer”.
 
-#### function attacher([processor](#processorprocessor)\[, input...\])
+#### `function attacher(processor[, input...])`
 
 To modify the processor, create an attacher. An attacher is the thing passed to
-[`use`](#processoruseplugin-input). It can
+[`use`][use]. It can
 receive plugin specific options, but that’s entirely up to the third-party
 developer.
 
 An **attacher** is invoked when the plugin is
-[`use`](https://github.com/wooorm/mdast#mdastuseplugin-options)d, and can
+[`use`][use]d, and can
 return a transformer which will be called on subsequent
-[`process()`](#processorprocessfile-options-done)s and
-[`run()`](#processorrunnode-file-done)s.
+[`process()`][process]s and
+[`run()`][run]s.
 
 **Signatures**
 
@@ -188,20 +187,19 @@ return a transformer which will be called on subsequent
 **Parameters**
 
 *   `processor` (`Processor`) — Context on which the plugin was
-    [`use`](https://github.com/wooorm/mdast#mdastuseplugin-options)d;
+    [`use`][use]d;
 
 *   `input` (`*`) — Passed by the user of a plug-in.
 
 **Returns**
 
-[`transformer`](#function-transformernode-file-next) (optional).
+[`transformer`][transformer] (optional).
 
-#### function transformer(node, file\[, next\])
+#### `function transformer(node, file[, next])`
 
 To transform a syntax tree, create a transformer. A transformer is a simple
 (generator) function which is invoked each time a file is
-[`process()`](#processorprocessfile-options-done)s and
-[`run()`](#processorrunnode-file-done)s. A transformer should
+[`process()`][process]s and [`run()`][run]s. A transformer should
 change the syntax tree representation of a file.
 
 **Signatures**
@@ -215,7 +213,7 @@ change the syntax tree representation of a file.
 
 *   `node` (`Node`) — Syntax tree representation of a file;
 
-*   `file` (`VFile`) — [Virtual file](https://github.com/wooorm/vfile);
+*   `file` (`VFile`) — [Virtual file][vfile];
 
 *   `next` (`function([err])`, optional) — If the signature includes both
     `next`, `transformer` **may** finish asynchronous, and **must**
@@ -228,7 +226,7 @@ change the syntax tree representation of a file.
 *   `Promise.<null, Error>` — Promise which must be resolved or rejected
     on completion.
 
-### Processor#parse(file\[, options\])
+### `Processor#parse(file[, options])`
 
 Parse a document into a syntax tree.
 
@@ -240,7 +238,7 @@ When given a file, stores the returned node on that file.
 
 **Parameters**
 
-*   `file` (`VFile`) — [Virtual file](https://github.com/wooorm/vfile).
+*   `file` (`VFile`) — [Virtual file][vfile].
 *   `value` (`string`) — String representation of a file.
 *   `options` (`Object`) — Configuration given to the parser.
 
@@ -248,7 +246,7 @@ When given a file, stores the returned node on that file.
 
 `Node` — (`Object`).
 
-### Processor#run(node\[, file\]\[, done\])
+### `Processor#run(node[, file][, done])`
 
 Transform a syntax tree by applying plug-ins to it.
 
@@ -263,9 +261,9 @@ must be given.
 **Parameters**
 
 *   `node` (`Object`) — Syntax tree as returned by `parse()`;
-*   `file` (`VFile`) — [Virtual file](https://github.com/wooorm/vfile).
+*   `file` (`VFile`) — [Virtual file][vfile].
 *   `value` (`string`) — String representation of a file.
-*   `done` ([`function done(err, node, file)`](#function-doneerr-node-file)).
+*   `done` ([`function done(err, node, file)`][run-done]).
 
 **Returns**
 
@@ -275,7 +273,7 @@ must be given.
 
 When no `node` was given and no node was found on the file.
 
-#### function done(err, node, file)
+#### `function done(err, node, file)`
 
 Invoked when transformation is complete.
 
@@ -290,7 +288,7 @@ Invoked when transformation is complete.
 *   `doc` (`string`) — Document generated by the process;
 *   `file` (`File`) — File object representing the input file;
 
-### Processor#stringify(node\[, file\]\[, options\])
+### `Processor#stringify(node[, file][, options])`
 
 Compile a syntax tree into a document.
 
@@ -305,7 +303,7 @@ must be given.
 **Parameters**
 
 *   `node` (`Object`) — Syntax tree as returned by `parse()`;
-*   `file` (`VFile`) — [Virtual file](https://github.com/wooorm/vfile).
+*   `file` (`VFile`) — [Virtual file][vfile].
 *   `value` (`string`) — String representation of a file.
 *   `options` (`Object`) — Configuration.
 
@@ -317,7 +315,7 @@ must be given.
 
 When no `node` was given and no node was found on the file.
 
-### Processor#process(file\[, options\]\[, done\])
+### `Processor#process(file[, options][, done])`
 
 Parse / Transform / Compile. When an async transformer is used,
 `null` is returned and `done` must be given to receive the results
@@ -329,16 +327,16 @@ upon completion.
 
 **Parameters**
 
-*   `file` (`File`) — [Virtual file](https://github.com/wooorm/vfile);
+*   `file` (`File`) — [Virtual file][vfile];
 *   `value` (`string`) — String representation of a file;
 *   `options` (`Object`) — Configuration.
-*   `done` ([`function done(err?, doc?, file?)`](#function-doneerr-doc-file)).
+*   `done` ([`function done(err?, doc?, file?)`][process-done]).
 
 **Returns**
 
 `string` — Document generated by the process;
 
-#### function done(err, doc, file)
+#### `function done(err, doc, file)`
 
 Invoked when processing is complete.
 
@@ -353,7 +351,7 @@ Invoked when processing is complete.
 *   `doc` (`string`) — Document generated by the process;
 *   `file` (`File`) — File object representing the input file;
 
-### Processor#data
+### `Processor#data`
 
 `JSON.stringify`able dictionary providing information to `Parser`, `Compiler`,
 and plug-ins. Cloned when a `Processor` is constructed and to `processor.data`.
@@ -362,4 +360,60 @@ and plug-ins. Cloned when a `Processor` is constructed and to `processor.data`.
 
 ## License
 
-[MIT](LICENSE) © [Titus Wormer](http://wooorm.com)
+[MIT][license] © [Titus Wormer][author]
+
+<!-- Definitions -->
+
+[travis-badge]: https://img.shields.io/travis/wooorm/unified.svg
+
+[travis]: https://travis-ci.org/wooorm/unified
+
+[codecov-badge]: https://img.shields.io/codecov/c/github/wooorm/unified.svg
+
+[codecov]: https://codecov.io/github/wooorm/unified
+
+[npm-install]: https://docs.npmjs.com/cli/install
+
+[bower-install]: http://bower.io/#install-packages
+
+[component-install]: https://github.com/componentjs/component
+
+[duo-install]: http://duojs.org/#getting-started
+
+[uncompressed]: unified.js
+
+[compressed]: unified.min.js
+
+[license]: LICENSE
+
+[author]: http://wooorm.com
+
+[remark]: https://github.com/wooorm/remark
+
+[retext]: https://github.com/wooorm/retext
+
+[hast]: https://github.com/wooorm/hast
+
+[unherit]: https://github.com/wooorm/unherit
+
+[vfile]: https://github.com/wooorm/vfile
+
+[remark-index]: https://github.com/wooorm/remark/blob/master/index.js
+
+[unified-options]: #unifiedoptions
+
+[plugin]: #plugin
+
+[attacher]: #function-attacherprocessor-input
+
+[transformer]: #function-transformernode-file-next
+
+[use]: #processoruseplugin-input
+
+[process]: #processorprocessfile-options-done
+
+[process-done]: #function-doneerr-doc-file
+
+[run]: #processorrunnode-file-done
+
+[run-done]: #function-doneerr-node-file
