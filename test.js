@@ -177,6 +177,11 @@ test('unified()', function (t) {
 
             /**
              * Example plugin.
+             *
+             * @param {Processor} context - Processor.
+             * @param {number} one - Example value.
+             * @param {number} two - Example value.
+             * @param {number} three - Example value.
              */
             function plugin(context, one, two, three) {
                 sst.equal(context, p);
@@ -223,6 +228,10 @@ test('unified()', function (t) {
 
             /**
              * Example Parser.
+             *
+             * @param {VFile} file - Example file.
+             * @param {Object} options - Example configuration.
+             * @param {Processor} context - Example processor.
              */
             function Parser(file, options, context) {
                 self = this;
@@ -390,6 +399,10 @@ test('unified()', function (t) {
 
             /**
              * Example `Compiler`.
+             *
+             * @param {VFile} file - Example file.
+             * @param {Object} options - Example configuration.
+             * @param {Processor} processor - Example processor.
              */
             function Compiler(file, options, processor) {
                 self = this;
@@ -431,6 +444,9 @@ test('unified()', function (t) {
 
             /**
              * Example `Compiler`.
+             *
+             * @param {VFile} file - Example file.
+             * @param {Object} options - Example configuration.
              */
             function Compiler(file, options) {
                 sst.equal(file, vfile);
@@ -453,6 +469,9 @@ test('unified()', function (t) {
 
             /**
              * Example `Compiler`.
+             *
+             * @param {VFile} file - Example file.
+             * @param {Object} options - Example configuration.
              */
             function Compiler(file, options) {
                 sst.equal(options, undefined);
@@ -481,6 +500,9 @@ test('unified()', function (t) {
 
             /**
              * Example `Compiler`.
+             *
+             * @param {VFile} file - Example file.
+             * @param {Object} options - Example configuration.
              */
             function Compiler(file, options) {
                 sst.equal(file, vfile);
@@ -512,6 +534,9 @@ test('unified()', function (t) {
 
             /**
              * Example `Compiler`.
+             *
+             * @param {VFile} file - Example file.
+             * @param {Object} options - Example configuration.
              */
             function Compiler(file, options) {
                 sst.equal(file, vfile);
@@ -640,6 +665,9 @@ test('unified()', function (t) {
 
             /**
              * Example `Parser`.
+             *
+             * @param {VFile} file - Example file.
+             * @param {Object} options - Example configuration.
              */
             function Parser(file, options) {
                 sst.equal(file.toString(), 'bar');
@@ -659,6 +687,9 @@ test('unified()', function (t) {
 
             /**
              * Example `Compiler`.
+             *
+             * @param {VFile} file - Example file.
+             * @param {Object} options - Example configuration.
              */
             function Compiler(file, options) {
                 sst.equal(file.toString(), 'bar');
@@ -752,6 +783,9 @@ test('unified()', function (t) {
 
             /**
              * Example `Parser`.
+             *
+             * @param {VFile} file - Example file.
+             * @param {Object} options - Example configuration.
              */
             function Parser(file, options) {
                 sst.equal(file, vfile);
@@ -771,6 +805,9 @@ test('unified()', function (t) {
 
             /**
              * Example `Compiler`.
+             *
+             * @param {VFile} file - Example file.
+             * @param {Object} options - Example configuration.
              */
             function Compiler(file, options) {
                 sst.equal(file, vfile);
@@ -815,6 +852,8 @@ test('unified()', function (t) {
 
             /**
              * Example `Parser`.
+             *
+             * @param {VFile} file - Example file.
              */
             function Parser(file) {
                 sst.equal(file, vfile);
@@ -833,6 +872,8 @@ test('unified()', function (t) {
 
             /**
              * Example `Compiler`.
+             *
+             * @param {VFile} file - Example file.
              */
             function Compiler(file) {
                 sst.equal(file, vfile);
@@ -873,6 +914,9 @@ test('unified()', function (t) {
 
             /**
              * Example `Parser`.
+             *
+             * @param {VFile} file - Example file.
+             * @param {Object} options - Example configuration.
              */
             function Parser(file, options) {
                 sst.equal(file, vfile);
@@ -892,6 +936,9 @@ test('unified()', function (t) {
 
             /**
              * Example `Compiler`.
+             *
+             * @param {VFile} file - Example file.
+             * @param {Object} options - Example configuration.
              */
             function Compiler(file, options) {
                 sst.equal(file, vfile);
@@ -939,6 +986,9 @@ test('unified()', function (t) {
 
                 /**
                  * Example `Parser`.
+                 *
+                 * @param {VFile} file - Example file.
+                 * @param {Object} options - Example configuration.
                  */
                 function Parser(file, options) {
                     sst.equal(file, vfile);
@@ -958,6 +1008,9 @@ test('unified()', function (t) {
 
                 /**
                  * Example `Compiler`.
+                 *
+                 * @param {VFile} file - Example file.
+                 * @param {Object} options - Example configuration.
                  */
                 function Compiler(file, options) {
                     sst.equal(file, vfile);
@@ -1000,6 +1053,8 @@ test('unified()', function (t) {
 
             /**
              * Example `Parser`.
+             *
+             * @param {VFile} file - Example file.
              */
             function Parser(file) {
                 this.file = file;
@@ -1050,6 +1105,8 @@ test('unified()', function (t) {
 
             /**
              * Example `Compiler`.
+             *
+             * @param {VFile} file - Example file.
              */
             function Compiler(file) {
                 this.file = file;
@@ -1124,6 +1181,8 @@ test('unified()', function (t) {
 
             /**
              * Example `Parser`.
+             *
+             * @param {VFile} file - Example file.
              */
             function Parser(file) {
                 this.file = file;
@@ -1167,6 +1226,8 @@ test('unified()', function (t) {
 
             /**
              * Example `Compiler`.
+             *
+             * @param {VFile} file - Example file.
              */
             function Compiler(file) {
                 this.file = file;

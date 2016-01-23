@@ -103,7 +103,8 @@ function unified(options) {
      *
      * @this {Processor?} - Either a Processor instance or
      *   the Processor constructor.
-     * @return {Processor}
+     * @return {Processor} - Either `context` or a new
+     *   Processor instance.
      */
     function use() {
         var self = instance(this);
