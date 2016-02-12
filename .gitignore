@@ -1,6 +1,5 @@
 .DS_Store
 *.log
-components/
 coverage/
 node_modules/
 unified.js

@@ -13,8 +13,8 @@ It’s in use by [**remark**][remark], [**retext**][retext], and [**hast**][hast
 npm install unified
 ```
 
-**unified** is also available for [duo][duo-install], and as an AMD,
-CommonJS, and globals module, [uncompressed and compressed][releases].
+**unified** is also available as an AMD, CommonJS, and globals module,
+[uncompressed and compressed][releases].
 
 ## Usage
 
@@ -388,8 +388,6 @@ and plug-ins. Cloned when a `Processor` is constructed and to `processor.data`.
 [codecov]: https://codecov.io/github/wooorm/unified
 
 [npm-install]: https://docs.npmjs.com/cli/install
-
-[duo-install]: http://duojs.org/#getting-started
 
 [releases]: https://github.com/wooorm/unified/releases
 

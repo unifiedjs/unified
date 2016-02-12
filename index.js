@@ -19,13 +19,7 @@ var ware = require('ware');
 var AttachWare = require('attach-ware')(ware);
 var VFile = require('vfile');
 var unherit = require('unherit');
-var extend;
-
-try {
-    extend = require('node-extend');
-} catch (e) {
-    extend = require('extend');
-}
+var extend = require('extend');
 
 /*
  * Processing pipeline.
