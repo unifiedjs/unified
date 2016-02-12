@@ -44,7 +44,6 @@
     "remark-comment-config": "^2.0.0",
     "remark-github": "^4.0.0",
     "remark-lint": "^2.0.0",
-    "remark-man": "^2.0.0",
     "remark-toc": "^2.0.0",
     "remark-validate-links": "^2.0.0",
     "tape": "^4.4.0"
