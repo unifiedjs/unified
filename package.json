@@ -14,7 +14,7 @@
     "remark"
   ],
   "dependencies": {
-    "attach-ware": "^1.0.0",
+    "attach-ware": "^2.0.0",
     "bail": "^1.0.0",
     "extend": "^3.0.0",
     "unherit": "^1.0.4",

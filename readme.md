@@ -162,13 +162,22 @@ Change the way the processor works by using a plugin.
 
 **Signatures**
 
-*   `unified = unified.use(plugin[, input...])`;
-*   `unified = unified.use(plugins)`.
+*   `processor.use(plugin[, input...])`;
+*   `processor.use(plugins[, input...])`;
+*   `processor.use(list)`;
+*   `processor.use(matrix)`.
 
 **Parameters**
 
 *   `plugin` (`Function`) — [Plugin][].
+
 *   `plugins` (`Array.<Function>`) — List of plugins.
+
+*   `list` (`Array`) — List where the first value is a `plugin`,
+    and further values are `input`;
+
+*   `matrix` (`Array`) — Matrix where each entry is a `list`.
+
 *   `input` (`*`) — Passed to plugin.  Specified by its documentation.
 
 **Returns**
