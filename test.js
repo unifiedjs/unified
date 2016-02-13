@@ -83,28 +83,6 @@ test('unified()', function (t) {
         );
         /* eslint-enable new-cap */
 
-        st.test('should use the given processor', function (sst) {
-            var p;
-            var q;
-
-            /**
-             * Example plugin.
-             */
-            function plugin() {
-                return noop;
-            }
-
-            p = new Processor().use(plugin);
-            q = new Processor(p);
-
-            sst.deepEqual(p.ware.attachers, [plugin]);
-            sst.deepEqual(p.ware.fns, [noop]);
-            sst.deepEqual(q.ware.attachers, [plugin]);
-            sst.deepEqual(q.ware.fns, [noop]);
-
-            sst.end();
-        });
-
         st.end();
     });
 

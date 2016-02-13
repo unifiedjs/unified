@@ -67,7 +67,7 @@ function unified(options) {
             return new Processor(processor);
         }
 
-        self.ware = new AttachWare(processor && processor.ware);
+        self.ware = new AttachWare();
         self.ware.context = self;
 
         self.Parser = unherit(Parser);
