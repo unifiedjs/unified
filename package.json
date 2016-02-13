@@ -56,7 +56,7 @@
   },
   "scripts": {
     "build-md": "remark . --quiet --frail",
-    "build-bundle": "browserify index.js -s AttachWare > unified.js",
+    "build-bundle": "browserify index.js -s unified > unified.js",
     "build-mangle": "esmangle unified.js > unified.min.js",
     "build": "npm run build-md && npm run build-bundle && npm run build-mangle",
     "lint-api": "eslint .",
