@@ -1,6 +1,6 @@
 {
   "name": "unified",
-  "version": "2.1.4",
+  "version": "3.0.0",
   "description": "Text processing framework: Parse / Transform / Compile",
   "license": "MIT",
   "keywords": [

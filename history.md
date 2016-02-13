@@ -2,6 +2,12 @@
 
 <!--lint disable no-multiple-toplevel-headings-->
 
+3.0.0 / 2016-02-13
+==================
+
+*   Update `use` interface ([`37e4d67`](https://github.com/wooorm/unified/commit/37e4d67))
+*   Remove support for cloning processors ([`d672875`](https://github.com/wooorm/unified/commit/d672875))
+
 2.1.4 / 2016-01-24
 ==================
 
