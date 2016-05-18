@@ -87,7 +87,7 @@ test('unified()', function (t) {
     });
 
     test('Processor#data', function (st) {
-        st.test('Should expose data', function  (sst) {
+        st.test('Should expose data', function (sst) {
             var data = {
                 'one': true,
                 'two': false
@@ -117,7 +117,7 @@ test('unified()', function (t) {
             sst.end();
         });
 
-        st.test('Should clone data to instances', function  (sst) {
+        st.test('Should clone data to instances', function (sst) {
             var processor;
             var data = {
                 'one': true,
@@ -241,6 +241,8 @@ test('unified()', function (t) {
             'should invoke the bound parser when none is available on the ' +
             'context object',
             function (sst) {
+                var parse;
+
                 /**
                  * Example parser.
                  */
@@ -250,7 +252,7 @@ test('unified()', function (t) {
 
                 sst.plan(1);
 
-                var parse = unified({
+                parse = unified({
                     'name': 'foo',
                     'Parser': Bound,
                     'Compiler': noop
@@ -552,6 +554,8 @@ test('unified()', function (t) {
             'should invoke the bound compiler when none is available ' +
             'on the context object',
             function (sst) {
+                var stringify;
+
                 sst.plan(1);
 
                 /**
@@ -566,7 +570,7 @@ test('unified()', function (t) {
                     sst.pass();
                 };
 
-                var stringify = unified({
+                stringify = unified({
                     'name': 'foo',
                     'Parser': noop,
                     'Compiler': Bound

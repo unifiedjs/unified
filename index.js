@@ -53,6 +53,7 @@ function unified(options) {
     var Parser = options.Parser;
     var Compiler = options.Compiler;
     var data = options.data;
+    var proto;
 
     /**
      * Construct a Processor instance.
@@ -268,7 +269,7 @@ function unified(options) {
      * Methods / functions.
      */
 
-    var proto = Processor.prototype;
+    proto = Processor.prototype;
 
     Processor.use = proto.use = use;
     Processor.parse = proto.parse = parse;
