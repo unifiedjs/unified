@@ -31,10 +31,12 @@
     "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)"
   ],
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=0.11.0"
   },
   "files": [
-    "index.js"
+    "index.js",
+    "lib/trough.js",
+    "lib/unified.js"
   ],
   "devDependencies": {
     "browserify": "^13.0.0",
