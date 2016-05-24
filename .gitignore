@@ -2,5 +2,5 @@
 *.log
 coverage/
 node_modules/
-unified.js
-unified.min.js
+/unified.js
+/unified.min.js
