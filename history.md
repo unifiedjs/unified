@@ -2,6 +2,11 @@
 
 <!--lint disable no-multiple-toplevel-headings-->
 
+4.0.1 / 2016-05-24
+==================
+
+*   Update `package.json` ([`c4a50f9`](https://github.com/wooorm/unified/commit/c4a50f9))
+
 4.0.0 / 2016-05-24
 ==================
 
