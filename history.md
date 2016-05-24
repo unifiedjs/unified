@@ -2,6 +2,12 @@
 
 <!--lint disable no-multiple-toplevel-headings-->
 
+4.0.0 / 2016-05-24
+==================
+
+*   Rewrite library ([`a070ad0`](https://github.com/wooorm/unified/commit/a070ad0) and [`b64f512`](https://github.com/wooorm/unified/commit/b64f512))
+*   Update dev-dependencies ([`fa9ac36`](https://github.com/wooorm/unified/commit/fa9ac36))
+
 3.0.0 / 2016-02-13
 ==================
 
