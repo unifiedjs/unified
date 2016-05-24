@@ -5,7 +5,7 @@ node_js:
 - '0.12'
 - '4.0'
 - '5.0'
-- iojs
+- '6.0'
 sudo: false
 after_script: npm install codecov.io && cat ./coverage/lcov.info | codecov
 deploy:
@@ -15,7 +15,7 @@ deploy:
       secure: Cg0X32hu0tUOPKaKnkrLj+QhpJAPVY5P0EjRnP1YRJa3Y1RzEicDnKReFhG5YMbMORHZ+t8FruJQjieER+UUF2WQYKqRJWyOXKNWjWW8IUxAIMI7JSMhjysrJSRbU8NLMiaGGKv/UeITazcZQGUe1dXsTL2P4ZgRywxeo0BUc46N5cxTs4Nbi4E7MZ0i4PheeiZOiXeQSxV8W72ucwr8MyZWmxEW8tS46kSEf18y8uFW/4m0f7PKwfVbhtGTR3XXkP7c9udDtLKBDTc1WD1/K6XbmxrR8ZnqlGlfs2J7uDUDqe928vpSrXpG2UbjoEezkjPDC6Lj3hMvrWczsGAiL+YMZ2sociS8eELoyeagV8+6y3Tqkaml/mTTLp6TMoy8tZ9A9IA774p+bvT99EgLvC4pc0WBsFW+tuR8jX6thpmenfX+e3f3cbu48Wl14T+fQ1oUHMJsMvZs+ViCdw8j1US9lGBLj1pJqStgBRY/ChCPLKSuCSTRk4fxQgVdUlodBBG1dlnSABn1KrVqnbrGH6dsbW0dDD+J7y59uDieelnPGoNI5W61ifimQGUpe1KNN2hMIGbTp0IZiEGkRTBorGT0qccXEFQ0ixlb/PubWgZcUNgvKrymWMwBfo8o+60yp7O8Xw39uZbEB0qS+z2GNuHvN5SL5aW8GcaGlrKKwXo=
     on:
       tags: true
-      node: '5.0'
+      node: '6.0'
   - provider: releases
     api_key:
       secure: A16yUNG+m/p98L0mFLIy4IYWJsjWOKujHGEnJ2SwwIGvndLCtIig1BTp3C9Wkwf356UfHwcsPSa95bnpHXEsNZZwsVfzF4Hb2Csn0A9JKrpzoc+VdSgSDl+rUoq71x1TnLn4B2sC6k5/webcU26GBtVfeLka47OIUtuzcn8sxWHDr1JgRtSfVsasO4Iw21bSUnKKrIcgVLBoMrjRbJdCt3yzGaWbr/GuEQ/kXJfFY8zYh1iaJ12Nkqrof1lV766TJPL585uiuXQaHv0u+Hq6MNdKQqN1Tb+CgWB9VJrJaN/DxZpKfsl3FkO21c7UokvWIGP9WV/z5JVDcWhjfH7qRk+joMPYpHzUAlFnOWAz/PTWo0o65hKMrQKSYRxVsmWDSE+0EUV79mOaSUasEPHihXuwzqxrJtkCFW0rAs46Jvu0Z8hLtznH8FuiDU9l3BZsQA8/V5dFJ0Z6yLbvhs0Hwv/+IrLVpeDRixwaaar3EL6RE2zKAharSEgUw78lLkqSI6cDHVsIZVp22kAoeXB3m2JPAO0AAf1EbgZW1RA0kNb8gX3e5AoDsDgRb4ULlCCVXE6EXkH8lfa79Yr+7AUNk3v8orXJ5Qkofzby6js+t3qyTV8+i5T2vHj35lE+hq2KdH5LRVi2+0cmOP+8suJcUq3Two8TKPQXmyIsBOnSQBc=

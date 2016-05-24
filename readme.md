@@ -1,9 +1,14 @@
 # unified [![Build Status][travis-badge]][travis] [![Coverage Status][codecov-badge]][codecov]
 
-Text processing framework: Parse / Transform / Compile.
+<!--lint disable heading-increment no-duplicate-headings-->
 
-This library provides the boilerplate to make parsing and compiling pluggable.
-It’s in use by [**remark**][remark], [**retext**][retext], and [**hast**][hast].
+> **unified** recently changed its interface.  These changes have
+> yet to bubble through to other processors before all examples
+> start working.
+
+**unified** is an interface for processing text using syntax trees.
+It’s what powers [**remark**][remark], [**retext**][retext], and
+others, but it also allows for processing between multiple syntaxes.
 
 ## Installation
 
@@ -18,353 +23,593 @@ npm install unified
 
 ## Usage
 
-From [**remark**][remark-index]:
-
 ```js
 var unified = require('unified');
-var Parser = require('./lib/parse.js');
-var Compiler = require('./lib/stringify.js');
+var markdown = require('remark-parse');
+var lint = require('remark-lint');
+var html = require('remark-html');
 
-module.exports = unified({
-    'name': 'mdast',
-    'Parser': Parser,
-    'Compiler': Compiler
-});
+process.stdin
+    .pipe(unified())
+    .use(markdown)
+    .use(lint)
+    .use(html)
+    .pipe(process.stdout);
 ```
 
 ## Table of Contents
 
-*   [List of Processors](#list-of-processors)
-
-*   [Bridges](#bridges)
+*   [Description](#description)
 
 *   [API](#api)
 
-    *   [unified(options)](#unifiedoptions)
-
-    *   [Processor(\[processor\])](#processorprocessor)
-
-    *   [processor.Parser](#processorparser)
-
-    *   [processor.Compiler](#processorcompiler)
-
-    *   [Processor#use(plugin\[, input...\])](#processoruseplugin-input)
-
-        *   [Plugin](#plugin)
-        *   [function attacher(processor\[, input...\])](#function-attacherprocessor-input)
-        *   [function transformer(node, file\[, next\])](#function-transformernode-file-next)
-
-    *   [Processor#parse(file\[, options\])](#processorparsefile-options)
-
-    *   [Processor#run(node\[, file\]\[, done\])](#processorrunnode-file-done)
-
-        *   [function done(err, node, file)](#function-doneerr-node-file)
-
-    *   [Processor#stringify(node\[, file\]\[, options\])](#processorstringifynode-file-options)
-
-    *   [Processor#process(file\[, options\]\[, done\])](#processorprocessfile-options-done)
-
-        *   [function done(err, doc, file)](#function-doneerr-doc-file)
-
-    *   [Processor#data](#processordata)
+    *   [processor()](#processor)
+    *   [processor.use(plugin\[, options\])](#processoruseplugin-options)
+    *   [processor.parse(file|value\[, options\])](#processorparsefilevalue-options)
+    *   [processor.stringify(node\[, file|value\]\[, options\])](#processorstringifynode-filevalue-options)
+    *   [processor.run(node\[, file|value\]\[, done\])](#processorrunnode-filevalue-done)
+    *   [processor.process(file|value\[, options\]\[, done\])](#processorprocessfilevalue-options-done)
+    *   [processor.write(chunk\[, encoding\]\[, callback\])](#processorwritechunk-encoding-callback)
+    *   [processor.end()](#processorend)
+    *   [processor.pipe(stream\[, options\])](#processorpipestream-options)
+    *   [processor.data(key\[, value\])](#processordatakey-value)
+    *   [processor.abstract()](#processorabstract)
 
 *   [License](#license)
 
-## List of Processors
+## Description
 
-*   [**remark**][remark]
-    — Markdown processor powered by plugins.
+**unified** is an interface for processing text using syntax trees.
+Syntax trees are a representation understandable to programs.
+Those programs, called [**plug-in**][plugin]s, take these trees and
+modify them, amongst other things.  To get to the syntax tree from
+input text, there’s a [**parser**][parser], and, to get from that
+back to text, there’s a [**compiler**][compiler].  This is the
+[**process**][process] of a **processor**.
 
-*   [**retext**][retext]
-    — Extensible system for analysing and manipulating natural language.
+```ascii
+                     ┌──────────────┐
+                  ┌─ │ Transformers │ ─┐
+                  ▲  └──────────────┘  ▼
+                  └───────┐    ┌───────┘
+                          │    │
+  ┌───────┐              ┌──────┐              ┌────────┐
+  │ Input │ ── Parser ─▶ │ Tree │ ─ Compiler ▶ │ Output │
+  └───────┘              └──────┘              └────────┘
+```
 
-*   [**hast**][hast]
-    — HTML processor powered by plugins.
+###### Processors
 
-## Bridges
+Every processor implements another processor.  To create a new
+processor, invoke another processor.  This creates a new processor
+which is configured to function the same as its ancestor.  But, when
+the descendant processor is configured in the future, that
+configuration does not change the ancestral processor.
 
-Bridges are a concept which support two-way transformation between processors.
+Often, when processors are exposed from a library (for example,
+unified itself), they should not be modified directly, as that
+would change their behaviour for all users.  Those processors are
+[**abstract**][abstract], and they should be made concrete before
+they are used, by invoking them.
+
+###### Node
+
+The syntax trees used in **unified** are [**Unist**][unist] nodes,
+which are plain JavaScript objects with a `type` property.  The
+semantics of those `type`s are defined by other projects.
+
+There are several [utilities][unist-utilities] for working with these
+nodes.
+
+###### List of Processors
+
+The following projects process different syntax trees.  They parse
+text to their respective syntax tree, and they compile their syntax
+trees back to text.  These processors can be used as-is, or their
+parser and compilers can be mixed and matched with other plug-ins
+to allow processing between different syntaxes.
+
+*   [**rehype**][rehype] ([**HAST**][hast]) — HTML;
+*   [**remark**][remark] ([**MDAST**][mdast]) — Markdown;
+*   [**retext**][retext] ([**NLCST**][nlcst]) — Natural language.
+
+###### File
+
+When processing documents, metadata is often gathered about that
+document.  [**VFile**][vfile] is a virtual file format which stores
+data, and handles metadata for **unified** and its plug-ins.
+
+There are several [utilities][vfile-utilities] for working with these
+files.
+
+###### Configuration
+
+To configure a processor, invoke its [`use`][use] method, supply it a
+[**plug-in**][plugin], and optionally settings.
+
+###### Streaming
+
+**unified** provides a streaming interface which enables it to plug
+into transformations outside of itself.  An example, which reads
+markdown as input, adds a table of content, and writes it out, would
+be as follows:
+
+```js
+var unified = require('unified');
+var markdown = require('remark-parse');
+var stringify = require('remark-stringify');
+var toc = require('remark-toc');
+
+process.stdin
+    .pipe(unified())
+    .use(parse)
+    .use(toc)
+    .use(stringify)
+    .pipe(process.stdout);
+```
+
+Which when given on **stdin**(4):
+
+```md
+# Alpha
+
+## Table of Content
+
+## Bravo
+```
+
+Yields, on **stdout**(4):
+
+```md
+# Alpha
+
+## Table of Content
+
+*   [Bravo](#bravo)
+
+## Bravo
+```
+
+###### Programming interface
+
+Next to streaming, there’s also a programming interface, which gives
+access to processing metadata (such as lint messages), and supports
+multiple passed through files:
+
+```js
+var unified = require('unified');
+var markdown = require('remark-parse');
+var lint = require('remark-lint');
+var html = require('remark-html');
+var remark2retext = require('remark-retext');
+var english = require('retext-english');
+var equality = require('retext-equality');
+var report = require('vfile-reporter');
+
+unified()
+    .use(markdown)
+    .use(lint)
+    .use(remark2retext, unified().use(english).use(equality))
+    .use(html)
+    .process('## Hey guys', function (err, file) {
+        console.log(report(file));
+        console.log(file.contents);
+    });
+```
+
+Which yields:
+
+```txt
+<stdin>
+   1:1-1:12  warning  First heading level should be `1`                                    first-heading-level
+   1:8-1:12  warning  `guys` may be insensitive, use `people`, `persons`, `folks` instead
+
+⚠ 2 warnings
+<h2>Hey guys</h2>
+```
+
+###### Bridge
+
+**unified** bridges transform the syntax tree from one flavour to
+another.  Then, they apply another processor’s transformations on
+that tree.  And then, if possible, mutating the origin tree based
+on changes made to the destination tree.  Finally, it continues
+running the origin process.
+
 See [**unified-bridge**][unified-bridge] for more information.
 
-*   [**remark-retext**][remark-retext]
-    — Transformation from markdown to natural language (currently
-    it’s not possible to return to markdown);
+*   [**remark-retext**][remark-retext].
 
 ## API
 
-### `unified(options)`
+### `processor()`
 
-Create a new `Processor` constructor.
+Object describing how to process text.
 
-**Parameters** — `options` (`Object`):
+###### Returns
 
-*   `name` (`string`) — Unique namespace, e.g. `'mdast'` or `'retext'`.
+`Function` — A new [**concrete**][abstract] processor which is
+configured to function the same as its ancestor.  But, when the
+descendant processor is configured in the future, that configuration
+does not change the ancestral processor.
 
-*   `data` (`Object`, optional) — `JSON.stringify`able dictionary providing
-    information to `Parser`, `Compiler`, and plug-ins.
+###### Example
 
-*   `Parser` (`Function`) — Constructor which transforms a virtual file
-    into a syntax tree. When input is parsed, this function will be
-    constructed with a `file`, `settings`, and the processor. `Parser`
-    instances must have a `parse` method which returns a `node` (an object
-    with a `type` property).
+The following example shows how a new processor can be created (from
+the remark processor) and linked to **stdin**(4) and **stdout**(4).
 
-    The string representation of a file can be accessed by executing
-    `file.toString();`.
+```js
+var remark = require('remark');
 
-*   `Compiler` (`Function`) — Constructor which transforms a node
-    into a string. When input is compiled, this function will be
-    constructed with a `file`, `settings`, and the processor. `Compiler`
-    instances must have a `compile` method which returns a `string`.
+process.stdin.pipe(remark()).pipe(process.stdout);
+```
 
-    The syntax tree representation of a file can be accessed by executing
-    `file.namespace(name).tree`.
+### `processor.use(plugin[, options])`
 
-**Returns** — `Function` (`Processor` constructor).
+Configure the processor to use a [**plug-in**][plugin], and configure
+that plug-in with optional options.
 
-### `Processor([processor])`
+###### Signatures
 
-> Note that all methods on the instance are also available as functions on the
-> constructor, which, when invoked, create a new instance.
->
-> Thus, invoking `new Processor().process()` is the same as
-> `Processor.process()`.
-
-Create a new `Processor` instance.
-
-**Parameters**:
-
-*   `processor` (`Processor`, optional) — Uses all plug-ins available on the
-    reference processor instance, on the newly constructed processor instance.
-
-**Returns**: `Processor`.
-
-### `processor.Parser`
-
-### `processor.Compiler`
-
-The constructors passed to [`unified`][unified-options] at `'Parser'`
-and `'Compiler'` are stored on `Processor` instances. The `Parser`
-is responsible for parsing a virtual file into a syntax tree, and the
-`Compiler` for compiling a syntax tree into something else.
-
-When a processor is constructed, both are passed to [unherit][], which
-ensures that plug-ins can change how the processor instance parses and
-compiles without affecting other processors.
-
-`Parser`s must have a `parse` method, `Compiler`s a `compile` method.
-
-### `Processor#use(plugin[, input...])`
-
-Change the way the processor works by using a plugin.
-
-**Signatures**:
-
-*   `processor.use(plugin[, input...])`;
-*   `processor.use(plugins[, input...])`;
+*   `processor.use(plugin[, options])`;
+*   `processor.use(plugins[, options])`;
 *   `processor.use(list)`;
 *   `processor.use(matrix)`.
 
-**Parameters**:
+###### Parameters
 
-*   `plugin` (`Function`) — [Plugin][].
+*   `plugin` ([`Plugin`][plugin]);
+*   `options` (`*`, optional) — Configuration for `plugin`.
+*   `plugins` (`Array.<Function>`) — List of plugins;
+*   `list` (`Array`) — `plugin` and `options` in an array;
+*   `matrix` (`Array`) — array where each entry is a `list`;
 
-*   `plugins` (`Array.<Function>`) — List of plugins.
+###### Returns
 
-*   `list` (`Array`) — List where the first value is a `plugin`,
-    and further values are `input`;
-
-*   `matrix` (`Array`) — Matrix where each entry is a `list`.
-
-*   `input` (`*`) — Passed to plugin.  Specified by its documentation.
-
-**Returns**: `Processor` — `this` (the context object).
+`processor` — The processor on which `use` is invoked.
 
 #### `Plugin`
 
-A **uniware** plugin changes the way the applied-on processor works. It does
-two things:
+A **unified** plugin changes the way the applied-on processor works,
+in the following ways:
 
-*   It modifies the instance: such as changing the Parser or the Compiler;
-*   It transforms a syntax tree representation of a file.
+*   It modifies the [**processor**][processor]: such as changing the
+    parser, the compiler, or linking the processor to other processors;
 
-Both have their own function. The first is called an [“attacher”][attacher].
-The second is named a [“transformer”][transformer]. An “attacher” may return
-a “transformer”.
+*   It transforms the [**syntax tree**][node] representation of a file;
 
-#### `function attacher(processor[, input...])`
+*   It modifies metadata of a file.
 
-To modify the processor, create an attacher. An attacher is the thing passed to
-[`use`][use]. It can receive plugin specific options, but that’s entirely up to
-the third-party developer.
+Plug-in’s are a concept which materialise as [**attacher**][attacher]s.
 
-An **attacher** is invoked when the plugin is [`use`][use]d, and can return
-a transformer which will be called on subsequent [`process()`][process]s and
-[`run()`][run]s.
+#### `function attacher(processor[, options])`
 
-**Signatures**:
+An attacher is the thing passed to [`use`][use].  It configures the
+processor and in turn can receive options.
 
-*   `transformer? = attacher(processor[, input...])`.
+Attachers can configure processors, such as by interacting with parsers
+and compilers, linking it to other processors, or specifying how the
+syntax tree is handled.
 
-**Parameters**:
+###### Parameters
 
-*   `processor` (`Processor`) — Context on which the plugin was [`use`][use]d;
-*   `input` (`*`) — Passed by the user of a plug-in.
+*   `processor` ([`processor`][processor]) — Context on which it’s used;
+*   `options` (`*`, optional) — Configuration.
 
-**Returns**: [`transformer`][transformer] (optional).
+###### Returns
+
+[`transformer`][transformer] — Optional.
 
 #### `function transformer(node, file[, next])`
 
-To transform a syntax tree, create a transformer. A transformer is a simple
-(generator) function which is invoked each time a file is
-[`process()`][process]s and [`run()`][run]s. A transformer should change
-the syntax tree representation of a file.
+Transformers modify the syntax tree or metadata of a file.
+A transformer is a (generator) function which is invoked each time
+a file is passed through the transform phase.  If an error occurs
+(either because it’s thrown, returned, rejected, or passed to
+[`next`][next]), the process stops.
 
-**Signatures**:
+###### Parameters
 
-*   `err? = transformer(node, file)`;
-*   `transformer(node, file, next)`;
-*   `Promise.<null, Error> = transformer(node, file)`;
-*   `transformer*(node, file)`.
+*   `node` ([**Node**][node]);
+*   `file` ([**VFile**][file]);
+*   `next` ([`Function`][next], optional).
 
-**Parameters**:
+###### Returns
 
-*   `node` (`Node`) — Syntax tree representation of a file;
+*   `Error` — Can be returned to stop the process;
 
-*   `file` (`VFile`) — [Virtual file][vfile];
+*   [**Node**][node] — Can be returned and results in further
+    transformations and `stringify`s to be performed on the new
+    tree;
 
-*   `next` (`function([err])`, optional) — If the signature includes both
-    `next`, `transformer` **may** finish asynchronous, and **must**
-    invoke `next()` on completion with an optional error.
+*   `Promise` — If a promise is returned, the function is asynchronous,
+    and **must** be resolved (optionally with a [**Node**][node]) or
+    rejected (optionally with an `Error`).
 
-**Returns** — Optionally:
+##### `function next(err[, tree[, file]])`
 
-*   `Error` — Exception which will be thrown;
+If the signature of a transformer includes `next` (third argument),
+the function **may** finish asynchronous, and **must** invoke `next()`.
 
-*   `Promise.<null, Error>` — Promise which must be resolved or rejected
-    on completion.
+###### Parameters
 
-### `Processor#parse(file[, options])`
+*   `err` (`Error`, optional) — Stop the process;
+*   `node` ([**Node**][node], optional) — New syntax tree;
+*   `file` ([**VFile**][file], optional) — New virtual file.
 
-Parse a document into a syntax tree.
+### `processor.parse(file|value[, options])`
 
-When given a file, stores the returned node on that file.
+Parse text to a syntax tree.
 
-**Signatures**:
+###### Parameters
 
-*   `node = processor.parse(file|value[, options])`.
-
-**Parameters**:
-
-*   `file` (`VFile`) — [Virtual file][vfile].
+*   `file` ([**VFile**][file]);
 *   `value` (`string`) — String representation of a file.
-*   `options` (`Object`) — Configuration given to the parser.
+*   `options` (`Object`, optional) — Configuration given to the parser.
 
-**Returns**:
+###### Returns
 
-`Node` — (`Object`).
+[**Node**][node] — Syntax tree representation of input.
 
-### `Processor#run(node[, file][, done])`
+#### `processor.Parser`
 
-Transform a syntax tree by applying plug-ins to it.
+A constructor handling the parsing of text to a syntax tree.
+It’s instantiated by the [**parse**][parse] phase in the process
+with a [**VFile**][file], `settings`, and the processor.
 
-Either a node or a file which was previously passed to `processor.parse()`,
-must be given.
+The instance must expose a `parse` method which is invoked without
+arguments, and must return a syntax tree representation of the
+[**VFile**][file].
 
-**Signatures**:
+### `processor.stringify(node[, file|value][, options])`
 
-*   `node = processor.run(node[, file|value][, done])`;
-*   `node = processor.run(file[, done])`.
+Compile a syntax tree to text.
 
-**Parameters**:
+###### Parameters
 
-*   `node` (`Object`) — Syntax tree as returned by `parse()`;
-*   `file` (`VFile`) — [Virtual file][vfile].
-*   `value` (`string`) — String representation of a file.
-*   `done` ([`function done(err, node, file)`][run-done]).
+*   `node` ([**Node**][node]);
+*   `file` ([**VFile**][file], optional);
+*   `value` (`string`, optional) — String representation of a file;
+*   `options` (`Object`, optional) — Configuration given to the parser.
 
-**Returns**: `Node` — The given syntax tree node.
+###### Returns
 
-**Throws**: When no `node` was given and no node was found on the file.
+`string` — String representation of the syntax tree file.
 
-#### `function done(err, node, file)`
+#### `processor.Compiler`
 
-Invoked when transformation is complete.
+A constructor handling the compilation of a syntax tree to text.
+It’s instantiated by the [**stringify**][stringify] phase in the
+process with a [**VFile**][file], `settings`, and the processor.
 
-**Signatures**:
+The instance must expose a `compile` method which is invoked with
+the syntax tree, and must return a string representation of that
+syntax tree.
 
-*   `function done(err)`;
-*   `function done(null, node, file)`.
+### `processor.run(node[, file|value][, done])`
 
-**Parameters**:
+Transform a syntax tree by applying [**plug-in**][plugin]s to it.
 
-*   `exception` (`Error`) — Failure;
-*   `doc` (`string`) — Document generated by the process;
-*   `file` (`File`) — File object representing the input file;
+If asynchronous [**plug-in**][plugin]s are configured, an error
+is thrown if [`done`][run-done] is not supplied.
 
-### `Processor#stringify(node[, file][, options])`
+###### Parameters
 
-Compile a syntax tree into a document.
+*   `node` ([**Node**][node]);
+*   `file` ([**VFile**][file], optional);
+*   `value` (`string`, optional) — String representation of a file.
+*   `done` ([`Function`][run-done], optional).
 
-Either a node or a file which was previously passed to `processor.parse()`,
-must be given.
+###### Returns
 
-**Signatures**:
+[**Node**][node] — The given syntax tree.
 
-*   `doc = processor.stringify(node[, file|value][, options])`;
-*   `doc = processor.stringify(file[, options])`.
+##### `function done(err[, node, file])`
 
-**Parameters**:
+Invoked when transformation is complete.  Either invoked with an
+error, or a syntax tree and a file.
 
-*   `node` (`Object`) — Syntax tree as returned by `parse()`;
-*   `file` (`VFile`) — [Virtual file][vfile].
-*   `value` (`string`) — String representation of a file.
-*   `options` (`Object`) — Configuration.
+###### Parameters
 
-**Returns**: `doc` (`string`) — Document.
+*   `err` (`Error`) — Fatal error;
+*   `node` ([**Node**][node]);
+*   `file` ([**VFile**][file]).
 
-**Throws**: When no `node` was given and no node was found on the file.
+### `processor.process(file|value[, options][, done])`
 
-### `Processor#process(file[, options][, done])`
+Process the given representation of a file as configured on the
+processor.  The process invokes `parse`, `run`, and `stringify`
+internally.
 
-Parse / Transform / Compile. When an async transformer is used,
-`null` is returned and `done` must be given to receive the results
-upon completion.
+If asynchronous [**plug-in**][plugin]s are configured, an error
+is thrown if [`done`][process-done] is not supplied.
 
-**Signatures**:
+###### Parameters
 
-*   `doc = processor.process(file|value[, options][, done])`.
+*   `file` ([**VFile**][file]);
 
-**Parameters**:
-
-*   `file` (`File`) — [Virtual file][vfile];
 *   `value` (`string`) — String representation of a file;
-*   `options` (`Object`) — Configuration.
-*   `done` ([`function done(err?, doc?, file?)`][process-done]).
 
-**Returns**: `string` — Document generated by the process;
+*   `options` (`Object`, optional) — Configuration for both the parser
+    and compiler;
 
-#### `function done(err, doc, file)`
+*   `done` ([`Function`][process-done], optional).
 
-Invoked when processing is complete.
+###### Returns
 
-**Signatures**:
+[**VFile**][file] — Virtual file with modified [`contents`][vfile-contents].
 
-*   `function done(err)`;
-*   `function done(null, doc, file)`.
+#### `function done(err, file)`
 
-**Parameters**:
+Invoked when the process is complete.  Invoked with a fatal error, if
+any, and the [**VFile**][file].
 
-*   `exception` (`Error`) — Failure;
-*   `doc` (`string`) — Document generated by the process;
-*   `file` (`File`) — File object representing the input file;
+###### Parameters
 
-### `Processor#data`
+*   `err` (`Error`, optional) — Fatal error;
+*   `file` ([**VFile**][file]).
 
-`JSON.stringify`able dictionary providing information to `Parser`, `Compiler`,
-and plug-ins. Cloned when a `Processor` is constructed and to `processor.data`.
+### `processor.write(chunk[, encoding][, callback])`
 
-**Type**: `Object`, optional.
+> **Note**: Although the interface is compatible with streams,
+> all data is currently buffered and passed through in one go.
+> This might be changed later.
+
+Write data the the in-memory buffer.
+
+###### Parameters
+
+*   `chunk` ([`Buffer`][buffer] or `string`);
+*   `encoding` (`string`, defaults to `utf8`);
+*   `callback` (`Function`) — Invoked on successful write.
+
+###### Returns
+
+`boolean` — Whether the write was successful (currently, always true).
+
+### `processor.end()`
+
+Signal the writing is complete.  Passes all arguments to a final
+[`write`][write], and starts the process (using, when available,
+options given to [`pipe`][pipe]).
+
+###### Events
+
+*   `data` (`string`)
+    — When the process was successful, triggered with the compiled
+    file;
+
+*   `error` (`Error`)
+    — When the process was unsuccessful, triggered with the fatal
+    error;
+
+*   `warning` ([`VFileMessage`][vfilemessage])
+    — Each message created by the plug-ins in the process is triggered
+    and separately passed.
+
+###### Returns
+
+`boolean` — Whether the write was successful (currently, always true).
+
+### `processor.pipe(stream[, options])`
+
+> **Note**: This does not pass all processed data (e.g., from loose
+> `process()` calls) to the destination stream.  There’s one process
+> created internally especially for streams.  Only data piped into
+> the processor is piped out.
+
+Pipe data streamed into the processor, processed, to the destination
+stream.  Optionally also set the configuration for how the data
+is processed.  Calls [`Stream#pipe`][stream-pipe]
+with the given arguments under the hood.
+
+###### Parameters
+
+*   `stream` ([`WritableStream`][writable-stream]);
+
+*   `options` (`Object`, optional) — Configuration for process and
+    `stream.pipe`.
+
+###### Returns
+
+[`WritableStream`][writable-stream] — The given stream.
+
+### `processor.data(key[, value])`
+
+Get or set information in an in-memory key-value store accessible to
+all phases of the process.  An example is a list of HTML elements
+which are self-closing (i.e., do not need a closing tag), which is
+needed when parsing, transforming, and compiling HTML.
+
+###### Parameters
+
+*   `key` (`string`) — Identifier;
+*   `value` (`*`, optional) — Value to set.  Omit if getting `key`.
+
+###### Returns
+
+*   `processor` — If setting, the processor on which `data` is invoked;
+*   `*` — If getting, the value at `key`.
+
+###### Example
+
+The following example show how to get and set information:
+
+```js
+var unified = require('unified');
+
+console.log(unified().data('alpha', 'bravo').data('alpha'))
+```
+
+Yields:
+
+```txt
+bravo
+```
+
+### `processor.abstract()`
+
+Turn a processor into an abstract processor.  Abstract processors
+are meant to be extended, and not to be configured or processed
+directly (as concrete processors are).
+
+Once a processor is abstract, it cannot be made concrete again.
+But, a new concrete processor functioning just like it can be
+created by invoking the processor.
+
+###### Returns
+
+`Processor` — The processor on which `abstract` is invoked.
+
+###### Example
+
+The following example, `index.js`, shows how [**remark**][remark]
+prevents extensions to itself:
+
+```js
+var unified = require('unified');
+var parse = require('remark-parse');
+var stringify = require('remark-stringify');
+
+module.exports = unified().use(parse).use(stringify).abstract();
+```
+
+The below example, `a.js`, shows how that processor can be used to
+create a command line interface which reformats markdown passed on
+**stdin**(4) and outputs it on **stdout**(4).
+
+```js
+var remark = require('remark');
+
+process.stdin.pipe(remark()).pipe(process.stdout);
+```
+
+The below example, `b.js`, shows a similar looking example which
+operates on the abstract [**remark**][remark] interface.  If this
+behaviour was allowed it would result in unexpected behaviour, so
+an error is thrown.  **This is invalid**:
+
+```js
+var remark = require('remark');
+
+process.stdin.pipe(remark).pipe(process.stdout);
+```
+
+Yields:
+
+```txt
+~/index.js:118
+      throw new Error(
+      ^
+
+Error: Cannot pipe into abstract processor.
+To make the processor concrete, invoke it: use `processor()` instead of `processor`.
+    at assertConcrete (~/index.js:118:13)
+    at Function.<anonymous> (~/index.js:135:7)
+    ...
+    at Object.<anonymous> (~/b.js:76:15)
+    ...
+```
 
 ## License
 
@@ -388,36 +633,72 @@ and plug-ins. Cloned when a `Processor` is constructed and to `processor.data`.
 
 [author]: http://wooorm.com
 
+[unified-bridge]: https://github.com/wooorrm/unified-bridge
+
 [remark]: https://github.com/wooorm/remark
 
 [retext]: https://github.com/wooorm/retext
 
+[rehype]: https://github.com/wooorm/rehype
+
+[mdast]: https://github.com/wooorm/mdast
+
+[nlcst]: https://github.com/wooorm/nlcst
+
 [hast]: https://github.com/wooorm/hast
 
-[unherit]: https://github.com/wooorm/unherit
+[unist]: https://github.com/wooorm/unist
+
+[remark-retext]: https://github.com/wooorm/remark-retext
+
+[unist-utilities]: https://github.com/wooorm/unist#list-of-utilities
 
 [vfile]: https://github.com/wooorm/vfile
 
-[unified-bridge]: https://github.com/wooorrm/unified-bridge
+[vfile-contents]: https://github.com/wooorm/vfile#vfilecontents
 
-[remark-retext]: https://github.com/wooorrm/remark-retext
+[vfile-utilities]: https://github.com/wooorm/vfile#related-tools
 
-[remark-index]: https://github.com/wooorm/remark/blob/master/index.js
+[vfilemessage]: https://github.com/wooorm/vfile#vfilemessage
 
-[unified-options]: #unifiedoptions
+[writable-stream]: https://nodejs.org/api/stream.html#stream_class_stream_writable_1
 
-[plugin]: #plugin
+[stream-pipe]: https://nodejs.org/api/stream.html#stream_readable_pipe_destination_options
 
-[attacher]: #function-attacherprocessor-input
+[buffer]: https://nodejs.org/api/buffer.html#buffer_buffer
+
+[file]: #file
+
+[node]: #node
+
+[processor]: #processor
+
+[process]: #processorprocessfilevalue-options-done
+
+[parse]: #processorparsefilevalue-options
+
+[parser]: #processorparser
+
+[stringify]: #processorstringifynode-filevalue-options
+
+[compiler]: #processorcompiler
+
+[use]: #processoruseplugin-options
+
+[attacher]: #function-attacherprocessor-options
 
 [transformer]: #function-transformernode-file-next
 
-[use]: #processoruseplugin-input
+[next]: #function-nexterr-tree-file
 
-[process]: #processorprocessfile-options-done
+[abstract]: #processorabstract
 
-[process-done]: #function-doneerr-doc-file
-
-[run]: #processorrunnode-file-done
+[plugin]: #plugin
 
 [run-done]: #function-doneerr-node-file
+
+[process-done]: #function-doneerr-file
+
+[write]: #processorwritechunk-encoding-callback
+
+[pipe]: #processorpipestream-options

@@ -1,12 +1,14 @@
 {
   "output": true,
-  "plugins": [
-    "lint",
-    "github",
-    "toc",
-    "validate-links",
-    "comment-config"
-  ],
+  "plugins": {
+    "lint": null,
+    "github": null,
+    "toc": {
+      "maxDepth": 3
+    },
+    "validate-links": null,
+    "comment-config": null
+  },
   "settings": {
     "bullet": "*"
   }
