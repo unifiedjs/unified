@@ -633,7 +633,7 @@ To make the processor concrete, invoke it: use `processor()` instead of `process
 
 [author]: http://wooorm.com
 
-[unified-bridge]: https://github.com/wooorrm/unified-bridge
+[unified-bridge]: https://github.com/wooorm/unified-bridge
 
 [remark]: https://github.com/wooorm/remark
 
