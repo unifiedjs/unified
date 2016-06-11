@@ -1285,8 +1285,6 @@ test('unified', function (t) {
         p
             .use(function (processor) {
                 processor.Parser = SimpleParser;
-            })
-            .use(function (processor) {
                 processor.Compiler = SimpleCompiler;
             })
             .on('data', function (value) {
@@ -1309,6 +1307,75 @@ test('unified', function (t) {
 
     t.test('pipe(destination[, options])', function (st) {
         var p;
+        var s;
+
+        p = unified().use(function (processor) {
+            processor.Parser = SimpleParser;
+            processor.Compiler = SimpleCompiler;
+        });
+
+        /* Not writable. */
+        p.pipe(new stream.Readable());
+
+        st.doesNotThrow(
+            function () {
+                p.end('foo');
+            },
+            'should not throw when piping to a non-writable stream'
+        );
+
+        p = unified().use(function (processor) {
+            processor.Parser = SimpleParser;
+            processor.Compiler = SimpleCompiler;
+        });
+
+        s = new stream.PassThrough();
+        s._isStdio = true;
+
+        p.pipe(s);
+
+        p.write('alpha');
+        p.write('bravo');
+        p.end('charlie');
+
+        st.doesNotThrow(
+            function () {
+                s.write('delta')
+            },
+            'should not `end` stdio streams'
+        );
+
+        p = unified()
+            .use(function (processor) {
+                processor.Parser = SimpleParser;
+                processor.Compiler = SimpleCompiler;
+            })
+            .on('error', function (err) {
+                st.equal(
+                    err.message,
+                    'Whoops!',
+                    'should pass errors'
+                );
+            });
+
+        p.pipe(new PassThrough());
+        p.emit('error', new Error('Whoops!'));
+
+        p = unified()
+            .use(function (processor) {
+                processor.Parser = SimpleParser;
+                processor.Compiler = SimpleCompiler;
+            });
+
+        p.pipe(new PassThrough());
+
+        st.throws(
+            function () {
+                p.emit('error', new Error('Whoops!'));
+            },
+            /Whoops!/,
+            'should throw if errors are not listened to'
+        );
 
         p = unified();
 
@@ -1359,6 +1426,14 @@ test('unified', function (t) {
             });
 
         p.end('delta');
+
+        st.throws(
+            function () {
+                p.end('foxtrot');
+            },
+            /Did not expect `write` after `end`/,
+            'should throw on write after end'
+        );
 
         st.end();
     });
