@@ -2,6 +2,11 @@
 
 <!--lint disable no-multiple-toplevel-headings-->
 
+4.1.0 / 2016-06-11
+==================
+
+*   Update to inline `pipe`, slimming down bundled size ([`712474f`](https://github.com/wooorm/unified/commit/712474f))
+
 4.0.1 / 2016-05-24
 ==================
 
