@@ -2,6 +2,11 @@
 
 <!--lint disable no-multiple-toplevel-headings-->
 
+4.1.1 / 2016-06-12
+==================
+
+*   Fix swallowed sync parse / compile error ([`f206ad2`](https://github.com/wooorm/unified/commit/f206ad2))
+
 4.1.0 / 2016-06-11
 ==================
 
