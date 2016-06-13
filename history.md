@@ -2,6 +2,11 @@
 
 <!--lint disable no-multiple-toplevel-headings-->
 
+4.1.2 / 2016-06-13
+==================
+
+*   Fix bug in chaining when using multiple attachers ([`dda5530`](https://github.com/wooorm/unified/commit/dda5530))
+
 4.1.1 / 2016-06-12
 ==================
 
