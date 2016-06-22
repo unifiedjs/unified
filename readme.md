@@ -4,7 +4,8 @@
 
 **unified** is an interface for processing text using syntax trees.
 It’s what powers [**remark**][remark], [**retext**][retext], and
-others, but it also allows for processing between multiple syntaxes.
+[**rehype**][rehype], but it also allows for processing between
+multiple syntaxes.
 
 ## Installation
 
@@ -22,13 +23,17 @@ npm install unified
 ```js
 var unified = require('unified');
 var markdown = require('remark-parse');
-var lint = require('remark-lint');
-var html = require('remark-html');
+var toc = require('remark-toc');
+var remark2rehype = require('remark-rehype');
+var document = require('rehype-document');
+var html = require('rehype-stringify');
 
 process.stdin
     .pipe(unified())
     .use(markdown)
-    .use(lint)
+    .use(toc)
+    .use(remark2rehype)
+    .use(document)
     .use(html)
     .pipe(process.stdout);
 ```
@@ -176,20 +181,22 @@ multiple passed through files:
 var unified = require('unified');
 var markdown = require('remark-parse');
 var lint = require('remark-lint');
-var html = require('remark-html');
 var remark2retext = require('remark-retext');
 var english = require('retext-english');
 var equality = require('retext-equality');
+var remark2rehype = require('remark-rehype');
+var html = require('rehype-stringify');
 var report = require('vfile-reporter');
 
 unified()
     .use(markdown)
     .use(lint)
     .use(remark2retext, unified().use(english).use(equality))
+    .use(remark2rehype)
     .use(html)
     .process('## Hey guys', function (err, file) {
         console.log(report(file));
-        console.log(file.contents);
+        console.log(file.toString());
     });
 ```
 
@@ -204,17 +211,25 @@ Which yields:
 <h2>Hey guys</h2>
 ```
 
-###### Bridge
+###### Processing between syntaxes
 
-**unified** bridges transform the syntax tree from one flavour to
-another.  Then, they apply another processor’s transformations on
-that tree.  And then, if possible, mutating the origin tree based
-on changes made to the destination tree.  Finally, it continues
-running the origin process.
+The processors can be combined in two modes.
 
-See [**unified-bridge**][unified-bridge] for more information.
+**Bridge** mode transforms the syntax tree from one flavour to another.
+Then, transformations are applied on that tree.  Finally, the origin
+processor continues transforming the original syntax tree.
+
+**Mutate** mode transforms the syntax tree from one flavour to another.
+Then, the origin processor continues transforming the destination syntax
+tree.
+
+In the previous example (“Programming interface”), `remark-retext` is
+used in bridge mode: the origin syntax tree is kept after retext is
+finished; whereas `remark-rehype` is used in mutate mode: it sets a
+new syntax tree and discards the original.
 
 *   [**remark-retext**][remark-retext].
+*   [**remark-rehype**][remark-rehype].
 
 ## API
 
@@ -299,10 +314,10 @@ syntax tree is handled.
 #### `function transformer(node, file[, next])`
 
 Transformers modify the syntax tree or metadata of a file.
-A transformer is a (generator) function which is invoked each time
-a file is passed through the transform phase.  If an error occurs
-(either because it’s thrown, returned, rejected, or passed to
-[`next`][next]), the process stops.
+A transformer is a function which is invoked each time a file is
+passed through the transform phase.  If an error occurs (either
+because it’s thrown, returned, rejected, or passed to [`next`][next]),
+the process stops.
 
 ###### Parameters
 
@@ -451,7 +466,7 @@ any, and the [**VFile**][file].
 > all data is currently buffered and passed through in one go.
 > This might be changed later.
 
-Write data the the in-memory buffer.
+Write data to the in-memory buffer.
 
 ###### Parameters
 
@@ -559,13 +574,13 @@ created by invoking the processor.
 
 ###### Example
 
-The following example, `index.js`, shows how [**remark**][remark]
+The following example, `index.js`, shows how [**rehype**][rehype]
 prevents extensions to itself:
 
 ```js
 var unified = require('unified');
-var parse = require('remark-parse');
-var stringify = require('remark-stringify');
+var parse = require('rehype-parse');
+var stringify = require('rehype-stringify');
 
 module.exports = unified().use(parse).use(stringify).abstract();
 ```
@@ -575,20 +590,20 @@ create a command line interface which reformats markdown passed on
 **stdin**(4) and outputs it on **stdout**(4).
 
 ```js
-var remark = require('remark');
+var rehype = require('rehype');
 
-process.stdin.pipe(remark()).pipe(process.stdout);
+process.stdin.pipe(rehype()).pipe(process.stdout);
 ```
 
 The below example, `b.js`, shows a similar looking example which
-operates on the abstract [**remark**][remark] interface.  If this
+operates on the abstract [**rehype**][rehype] interface.  If this
 behaviour was allowed it would result in unexpected behaviour, so
 an error is thrown.  **This is invalid**:
 
 ```js
-var remark = require('remark');
+var rehype = require('rehype');
 
-process.stdin.pipe(remark).pipe(process.stdout);
+process.stdin.pipe(rehype).pipe(process.stdout);
 ```
 
 Yields:
@@ -629,21 +644,21 @@ To make the processor concrete, invoke it: use `processor()` instead of `process
 
 [author]: http://wooorm.com
 
-[unified-bridge]: https://github.com/wooorm/unified-bridge
+[rehype]: https://github.com/wooorm/rehype
 
 [remark]: https://github.com/wooorm/remark
 
 [retext]: https://github.com/wooorm/retext
 
-[rehype]: https://github.com/wooorm/rehype
+[hast]: https://github.com/wooorm/hast
 
 [mdast]: https://github.com/wooorm/mdast
 
 [nlcst]: https://github.com/wooorm/nlcst
 
-[hast]: https://github.com/wooorm/hast
-
 [unist]: https://github.com/wooorm/unist
+
+[remark-rehype]: https://github.com/wooorm/remark-rehype
 
 [remark-retext]: https://github.com/wooorm/remark-retext
 
