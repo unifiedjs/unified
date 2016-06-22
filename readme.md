@@ -2,10 +2,6 @@
 
 <!--lint disable heading-increment no-duplicate-headings-->
 
-> **unified** recently changed its interface.  These changes have
-> yet to bubble through to other processors before all examples
-> start working.
-
 **unified** is an interface for processing text using syntax trees.
 It’s what powers [**remark**][remark], [**retext**][retext], and
 others, but it also allows for processing between multiple syntaxes.
