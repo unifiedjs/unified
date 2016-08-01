@@ -383,13 +383,9 @@ function unified() {
     }, function (err) {
       complete = true;
 
-      if (!done) {
-        bail(err);
-      }
-
-      try {
+      if (done) {
         done(err, file);
-      } catch (err) {
+      } else {
         bail(err);
       }
     });
