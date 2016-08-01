@@ -2,6 +2,13 @@
 
 <!--lint disable no-multiple-toplevel-headings-->
 
+4.2.0 / 2016-08-01
+==================
+
+*   Move `trough` over to its own module ([`81c67fb`](https://github.com/wooorm/unified/commit/81c67fb))
+*   Fix bug where exceptions in `done` were swallowed ([`2dfc932`](https://github.com/wooorm/unified/commit/2dfc932))
+*   Refactor code-style to use `xo` ([`01543d5`](https://github.com/wooorm/unified/commit/01543d5))
+
 4.1.2 / 2016-06-13
 ==================
 
