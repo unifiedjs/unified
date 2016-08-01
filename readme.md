@@ -314,6 +314,9 @@ passed through the transform phase.  If an error occurs (either
 because it’s thrown, returned, rejected, or passed to [`next`][next]),
 the process stops.
 
+The transformation process in **unified** is handled by [`trough`][trough],
+see it’s documentation for the exact semantics of transformers.
+
 ###### Parameters
 
 *   `node` ([**Node**][node]);
@@ -701,3 +704,5 @@ To make the processor concrete, invoke it: use `processor()` instead of `process
 [write]: #processorwritechunk-encoding-callback
 
 [pipe]: #processorpipestream-options
+
+[trough]: https://github.com/wooorm/trough#function-fninput-next
