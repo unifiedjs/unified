@@ -8,10 +8,5 @@
 
 'use strict';
 
-/* eslint-env commonjs */
-
-/*
- * Expose.
- */
-
-module.exports = require('./lib/unified.js');
+/* Expose. */
+module.exports = require('./lib/index.js');

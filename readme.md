@@ -1,7 +1,5 @@
 # unified [![Build Status][travis-badge]][travis] [![Coverage Status][codecov-badge]][codecov]
 
-<!--lint disable heading-increment no-duplicate-headings-->
-
 **unified** is an interface for processing text using syntax trees.
 It’s what powers [**remark**][remark], [**retext**][retext], and
 [**rehype**][rehype], but it also allows for processing between
@@ -29,13 +27,13 @@ var document = require('rehype-document');
 var html = require('rehype-stringify');
 
 process.stdin
-    .pipe(unified())
-    .use(markdown)
-    .use(toc)
-    .use(remark2rehype)
-    .use(document)
-    .use(html)
-    .pipe(process.stdout);
+  .pipe(unified())
+  .use(markdown)
+  .use(toc)
+  .use(remark2rehype)
+  .use(document)
+  .use(html)
+  .pipe(process.stdout);
 ```
 
 ## Table of Contents
@@ -142,11 +140,11 @@ var stringify = require('remark-stringify');
 var toc = require('remark-toc');
 
 process.stdin
-    .pipe(unified())
-    .use(parse)
-    .use(toc)
-    .use(stringify)
-    .pipe(process.stdout);
+  .pipe(unified())
+  .use(parse)
+  .use(toc)
+  .use(stringify)
+  .pipe(process.stdout);
 ```
 
 Which when given on **stdin**(4):
@@ -189,25 +187,24 @@ var html = require('rehype-stringify');
 var report = require('vfile-reporter');
 
 unified()
-    .use(markdown)
-    .use(lint)
-    .use(remark2retext, unified().use(english).use(equality))
-    .use(remark2rehype)
-    .use(html)
-    .process('## Hey guys', function (err, file) {
-        console.log(report(file));
-        console.log(file.toString());
-    });
+  .use(markdown)
+  .use(lint)
+  .use(remark2retext, unified().use(english).use(equality))
+  .use(remark2rehype)
+  .use(html)
+  .process('## Hey guys', function (err, file) {
+    console.err(report(err || file));
+    console.log(file.toString());
+  });
 ```
 
 Which yields:
 
 ```txt
-<stdin>
    1:1-1:12  warning  First heading level should be `1`                                    first-heading-level
-   1:8-1:12  warning  `guys` may be insensitive, use `people`, `persons`, `folks` instead
+   1:8-1:12  warning  `guys` may be insensitive, use `people`, `persons`, `folks` instead  gals-men
 
-⚠ 2 warnings
+⚠ 3 warnings
 <h2>Hey guys</h2>
 ```
 
@@ -286,9 +283,7 @@ in the following ways:
 
 *   It modifies the [**processor**][processor]: such as changing the
     parser, the compiler, or linking the processor to other processors;
-
 *   It transforms the [**syntax tree**][node] representation of a file;
-
 *   It modifies metadata of a file.
 
 Plug-in’s are a concept which materialise as [**attacher**][attacher]s.
@@ -328,11 +323,9 @@ the process stops.
 ###### Returns
 
 *   `Error` — Can be returned to stop the process;
-
 *   [**Node**][node] — Can be returned and results in further
     transformations and `stringify`s to be performed on the new
     tree;
-
 *   `Promise` — If a promise is returned, the function is asynchronous,
     and **must** be resolved (optionally with a [**Node**][node]) or
     rejected (optionally with an `Error`).
@@ -438,12 +431,9 @@ is thrown if [`done`][process-done] is not supplied.
 ###### Parameters
 
 *   `file` ([**VFile**][file]);
-
 *   `value` (`string`) — String representation of a file;
-
 *   `options` (`Object`, optional) — Configuration for both the parser
     and compiler;
-
 *   `done` ([`Function`][process-done], optional).
 
 ###### Returns
@@ -489,11 +479,9 @@ options given to [`pipe`][pipe]).
 *   `data` (`string`)
     — When the process was successful, triggered with the compiled
     file;
-
 *   `error` (`Error`)
     — When the process was unsuccessful, triggered with the fatal
     error;
-
 *   `warning` ([`VFileMessage`][vfilemessage])
     — Each message created by the plug-ins in the process is triggered
     and separately passed.
