@@ -11,7 +11,7 @@
 /* Dependencies. */
 var test = require('tape');
 var vfile = require('vfile');
-var SimpleParser = require('./util/simple').Parser;
+var simple = require('./util/simple');
 var noop = require('./util/noop');
 var unified = require('..');
 
@@ -122,7 +122,7 @@ test('process(file[, options][, done])', function (t) {
     var n = {type: 'bravo'};
     var p;
 
-    st.plan(11);
+    st.plan(12);
 
     p = unified()
       .use(function (processor) {
@@ -213,12 +213,26 @@ test('process(file[, options][, done])', function (t) {
         'should store the result of `compile()` on `file`'
       );
     });
+
+    p = unified().use(function (processor) {
+      processor.Parser = simple.Parser;
+      processor.Compiler = simple.Compiler;
+    });
+
+    st.throws(
+      function () {
+        p.process(f, function () {
+          throw new Error('Err');
+        });
+      },
+      /^Error: Err$/
+    );
   });
 
   t.test('process(file)', function (st) {
     var p = unified()
       .use(function (processor) {
-        processor.Parser = SimpleParser;
+        processor.Parser = simple.Parser;
       })
       .use(function () {
         return function () {
