@@ -70,11 +70,11 @@ back to text, there’s a [**compiler**][compiler].  This is the
                      ┌──────────────┐
                   ┌─ │ Transformers │ ─┐
                   ▲  └──────────────┘  ▼
-                  └───────┐    ┌───────┘
-                          │    │
-  ┌───────┐              ┌──────┐              ┌────────┐
-  │ Input │ ── Parser ─▶ │ Tree │ ─ Compiler ▶ │ Output │
-  └───────┘              └──────┘              └────────┘
+                  └────────┐  ┌────────┘
+                           │  │
+            ┌────────┐     │  │     ┌──────────┐
+  Input ──▶ │ Parser │ ──▶ Tree ──▶ │ Compiler │ ──▶ Output
+            └────────┘              └──────────┘
 ```
 
 ###### Processors
