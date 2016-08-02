@@ -2,6 +2,11 @@
 
 <!--lint disable no-multiple-toplevel-headings-->
 
+4.2.1 / 2016-08-02
+==================
+
+*   Refactor to simplify completion handling ([`292cc0d`](https://github.com/wooorm/unified/commit/292cc0d))
+
 4.2.0 / 2016-08-01
 ==================
 
