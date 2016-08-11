@@ -126,6 +126,14 @@ files.
 To configure a processor, invoke its [`use`][use] method, supply it a
 [**plug-in**][plugin], and optionally settings.
 
+###### Integrations
+
+**unified** can integrate with the file-system through
+[**unified-engine**][engine].  On top of that, CLI apps can be created
+with [**unified-args**][args], Gulp plug-ins with
+[**unified-engine-gulp**][gulp], and Atom Linters with
+[**unified-engine-atom**][atom].
+
 ###### Streaming
 
 **unified** provides a streaming interface which enables it to plug
@@ -648,6 +656,14 @@ To make the processor concrete, invoke it: use `processor()` instead of `process
 [nlcst]: https://github.com/wooorm/nlcst
 
 [unist]: https://github.com/wooorm/unist
+
+[engine]: https://github.com/wooorm/unified-engine
+
+[args]: https://github.com/wooorm/unified-args
+
+[gulp]: https://github.com/wooorm/unified-engine-gulp
+
+[atom]: https://github.com/wooorm/unified-engine-atom
 
 [remark-rehype]: https://github.com/wooorm/remark-rehype
 
