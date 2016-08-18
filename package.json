@@ -73,8 +73,7 @@
       "max-lines": "off"
     },
     "ignores": [
-      "unified.js",
-      "unified.min.js"
+      "unified.js"
     ]
   },
   "remarkConfig": {

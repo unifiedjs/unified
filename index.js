@@ -59,6 +59,43 @@ function unified() {
   var settings;
   var key;
 
+  /* Mix in methods. */
+  for (key in emitter) {
+    processor[key] = emitter[key];
+  }
+
+  /* Throw as early as possible.
+   * As events are triggered synchroneously, the stack
+   * is preserved. */
+  processor.on('pipe', function () {
+    assertConcrete();
+  });
+
+  /* Data management. */
+  processor.data = data;
+
+  /* Lock. */
+  processor.abstract = abstract;
+
+  /* Plug-ins. */
+  processor.use = use;
+
+  /* Streaming. */
+  processor.writable = true;
+  processor.readable = true;
+  processor.write = write;
+  processor.end = end;
+  processor.pipe = pipe;
+
+  /* API. */
+  processor.parse = parse;
+  processor.stringify = stringify;
+  processor.run = run;
+  processor.process = process;
+
+  /* Expose. */
+  return processor;
+
   /**
    * Create a new processor based on the processor
    * in the current scope.
@@ -78,11 +115,6 @@ function unified() {
     destination.data(extend(true, {}, namespace));
 
     return destination;
-  }
-
-  /* Mix in methods. */
-  for (key in emitter) {
-    processor[key] = emitter[key];
   }
 
   /* Helpers. */
@@ -155,13 +187,6 @@ function unified() {
       );
     }
   }
-
-  /* Throw as early as possible.
-   * As events are triggered synchroneously, the stack
-   * is preserved. */
-  processor.on('pipe', function () {
-    assertConcrete();
-  });
 
   /**
    * Abstract: used to signal an abstract processor which
@@ -489,15 +514,37 @@ function unified() {
    * @return {Stream} - The destination stream.
    */
   function pipe(dest, options) {
-    var onend = once(function () {
-      if (dest.end) {
-        dest.end();
-      }
-    });
+    var onend = once(onended);
 
     assertConcrete('pipe');
 
     settings = options || {};
+
+    processor.on('data', ondata);
+    processor.on('error', onerror);
+    processor.on('end', cleanup);
+    processor.on('close', cleanup);
+
+    /* If the 'end' option is not supplied, dest.end() will be
+     * called when the 'end' or 'close' events are received.
+     * Only dest.end() once. */
+    if (!dest._isStdio && settings.end !== false) {
+      processor.on('end', onend);
+    }
+
+    dest.on('error', onerror);
+    dest.on('close', cleanup);
+
+    dest.emit('pipe', processor);
+
+    return dest;
+
+    /** End destination. */
+    function onended() {
+      if (dest.end) {
+        dest.end();
+      }
+    }
 
     /**
      * Handle data.
@@ -539,51 +586,7 @@ function unified() {
         throw err; /* Unhandled stream error in pipe. */
       }
     }
-
-    processor.on('data', ondata);
-    processor.on('error', onerror);
-    processor.on('end', cleanup);
-    processor.on('close', cleanup);
-
-    /* If the 'end' option is not supplied, dest.end() will be
-     * called when the 'end' or 'close' events are received.
-     * Only dest.end() once. */
-    if (!dest._isStdio && settings.end !== false) {
-      processor.on('end', onend);
-    }
-
-    dest.on('error', onerror);
-    dest.on('close', cleanup);
-
-    dest.emit('pipe', processor);
-
-    return dest;
   }
-
-  /* Data management. */
-  processor.data = data;
-
-  /* Lock. */
-  processor.abstract = abstract;
-
-  /* Plug-ins. */
-  processor.use = use;
-
-  /* Streaming. */
-  processor.writable = true;
-  processor.readable = true;
-  processor.write = write;
-  processor.end = end;
-  processor.pipe = pipe;
-
-  /* API. */
-  processor.parse = parse;
-  processor.stringify = stringify;
-  processor.run = run;
-  processor.process = process;
-
-  /* Expose. */
-  return processor;
 }
 
 /**
