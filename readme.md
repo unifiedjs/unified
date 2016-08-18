@@ -77,8 +77,8 @@ back to text, there’s a [**compiler**][compiler].  This is the
 ###### Processors
 
 Every processor implements another processor.  To create a new
-processor, invoke another processor.  This creates a new processor
-which is configured to function the same as its ancestor.  But, when
+processor, invoke another processor.  This creates a processor that is
+configured to function the same as its ancestor.  But, when
 the descendant processor is configured in the future, that
 configuration does not change the ancestral processor.
 
@@ -102,8 +102,8 @@ nodes.
 The following projects process different syntax trees.  They parse
 text to their respective syntax tree, and they compile their syntax
 trees back to text.  These processors can be used as-is, or their
-parser and compilers can be mixed and matched with other plug-ins
-to allow processing between different syntaxes.
+parsers and compilers can be mixed and matched with other plug-ins
+to process between different syntaxes.
 
 *   [**rehype**][rehype] ([**HAST**][hast]) — HTML;
 *   [**remark**][remark] ([**MDAST**][mdast]) — Markdown;
@@ -113,7 +113,8 @@ to allow processing between different syntaxes.
 
 When processing documents, metadata is often gathered about that
 document.  [**VFile**][vfile] is a virtual file format which stores
-data, and handles metadata for **unified** and its plug-ins.
+data, and handles metadata and messages for **unified** and its
+plug-ins.
 
 There are several [utilities][vfile-utilities] for working with these
 files.
@@ -133,7 +134,7 @@ with [**unified-args**][args], Gulp plug-ins with
 
 ###### Streaming
 
-**unified** provides a streaming interface which enables it to plug
+**unified** provides a streaming interface which allows it to plug
 into transformations outside of itself.  An example, which reads
 markdown as input, adds a table of content, and writes it out, would
 be as follows:
@@ -162,7 +163,7 @@ Which when given on **stdin**(4):
 ## Bravo
 ```
 
-Yields, on **stdout**(4):
+Yields on **stdout**(4):
 
 ```md
 # Alpha
@@ -217,13 +218,14 @@ Which yields:
 
 The processors can be combined in two modes.
 
-**Bridge** mode transforms the syntax tree from one flavour to another.
-Then, transformations are applied on that tree.  Finally, the origin
-processor continues transforming the original syntax tree.
+**Bridge** mode transforms the syntax tree from one flavour (the origin)
+to another (the destination).  Then, transformations are applied on that
+tree.  Finally, the origin processor continues transforming the original
+syntax tree.
 
-**Mutate** mode transforms the syntax tree from one flavour to another.
-Then, the origin processor continues transforming the destination syntax
-tree.
+**Mutate** mode also transforms the syntax tree from one flavour to
+another.  But then the origin processor continues transforming the
+destination syntax tree.
 
 In the previous example (“Programming interface”), `remark-retext` is
 used in bridge mode: the origin syntax tree is kept after retext is
@@ -299,8 +301,8 @@ An attacher is the thing passed to [`use`][use].  It configures the
 processor and in turn can receive options.
 
 Attachers can configure processors, such as by interacting with parsers
-and compilers, linking it to other processors, or specifying how the
-syntax tree is handled.
+and compilers, linking them to other processors, or by specifying how
+the syntax tree is handled.
 
 ###### Parameters
 
@@ -365,7 +367,7 @@ Parse text to a syntax tree.
 
 #### `processor.Parser`
 
-A constructor handling the parsing of text to a syntax tree.
+Constructor handling the parsing of text to a syntax tree.
 It’s instantiated by the [**parse**][parse] phase in the process
 with a [**VFile**][file], `settings`, and the processor.
 
@@ -390,7 +392,7 @@ Compile a syntax tree to text.
 
 #### `processor.Compiler`
 
-A constructor handling the compilation of a syntax tree to text.
+Constructor handling the compilation of a syntax tree to text.
 It’s instantiated by the [**stringify**][stringify] phase in the
 process with a [**VFile**][file], `settings`, and the processor.
 
@@ -507,13 +509,12 @@ options given to [`pipe`][pipe]).
 
 Pipe data streamed into the processor, processed, to the destination
 stream.  Optionally also set the configuration for how the data
-is processed.  Calls [`Stream#pipe`][stream-pipe]
-with the given arguments under the hood.
+is processed.  Calls [`Stream#pipe`][stream-pipe] with the given
+arguments under the hood.
 
 ###### Parameters
 
 *   `stream` ([`WritableStream`][writable-stream]);
-
 *   `options` (`Object`, optional) — Configuration for process and
     `stream.pipe`.
 
