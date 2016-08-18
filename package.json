@@ -40,7 +40,7 @@
   "devDependencies": {
     "browserify": "^13.0.0",
     "esmangle": "^1.0.0",
-    "nyc": "^7.1.0",
+    "nyc": "^8.1.0",
     "remark-cli": "^1.0.0",
     "remark-comment-config": "^4.0.0",
     "remark-github": "^5.0.0",
@@ -88,7 +88,8 @@
       },
       "github": null,
       "toc": {
-        "maxDepth": 3
+        "maxDepth": 3,
+        "tight": true
       },
       "validate-links": null
     },

@@ -39,9 +39,7 @@ process.stdin
 ## Table of Contents
 
 *   [Description](#description)
-
 *   [API](#api)
-
     *   [processor()](#processor)
     *   [processor.use(plugin\[, options\])](#processoruseplugin-options)
     *   [processor.parse(file|value\[, options\])](#processorparsefilevalue-options)
@@ -53,7 +51,6 @@ process.stdin
     *   [processor.pipe(stream\[, options\])](#processorpipestream-options)
     *   [processor.data(key\[, value\])](#processordatakey-value)
     *   [processor.abstract()](#processorabstract)
-
 *   [License](#license)
 
 ## Description
