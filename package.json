@@ -19,7 +19,7 @@
     "has": "^1.0.1",
     "once": "^1.3.3",
     "trough": "^1.0.0",
-    "vfile": "^1.0.0"
+    "vfile": "^2.0.0"
   },
   "browser": {
     "node-extend": "extend"
