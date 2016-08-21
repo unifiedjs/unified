@@ -48,7 +48,7 @@
     "remark-github": "^5.0.0",
     "remark-lint": "^4.0.0",
     "remark-toc": "^3.0.0",
-    "remark-validate-links": "^4.0.0",
+    "remark-validate-links": "^5.0.0",
     "tape": "^4.4.0",
     "xo": "^0.16.0"
   },
@@ -86,7 +86,9 @@
         "heading-increment": false,
         "no-duplicate-headings": false,
         "list-item-spacing": false,
-        "no-missing-blank-lines": {"exceptTightLists": true}
+        "no-missing-blank-lines": {
+          "exceptTightLists": true
+        }
       },
       "github": null,
       "toc": {
