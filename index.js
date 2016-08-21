@@ -16,6 +16,8 @@ var extend = require('extend');
 var bail = require('bail');
 var vfile = require('vfile');
 var trough = require('trough');
+var buffer = require('is-buffer');
+var string = require('x-is-string');
 
 /* Expose an abstract processor. */
 module.exports = unified().abstract();
@@ -221,7 +223,7 @@ function unified() {
   function data(key, value) {
     assertConcrete('data');
 
-    if (typeof key === 'string') {
+    if (string(key)) {
       /* Set `key`. */
       if (arguments.length === 2) {
         namespace[key] = value;
@@ -307,7 +309,7 @@ function unified() {
    * into a Unist node using the `Parser` on the
    * processor.
    *
-   * @param {(string|VFile)?} [file] - File to process.
+   * @param {VFile?} [file] - File to process.
    * @param {Object?} [options] - Configuration.
    * @return {Node} - Unist node.
    */
@@ -336,7 +338,7 @@ function unified() {
 
     result = node;
 
-    if (!done && file && !isFile(file)) {
+    if (!done && isFunction(file)) {
       done = file;
       file = null;
     }
@@ -368,7 +370,12 @@ function unified() {
     assertCompiler('stringify');
     assertNode(node);
 
-    if (!options && file && !isFile(file)) {
+    if (
+      !options &&
+      !string(file) &&
+      !buffer(file) &&
+      !(typeof file === 'object' && 'messages' in file)
+    ) {
       options = file;
       file = null;
     }
@@ -596,17 +603,7 @@ function unified() {
  * @return {boolean} - Whether `node` is a Unist node.
  */
 function isNode(node) {
-  return node && typeof node.type === 'string' && node.type.length !== 0;
-}
-
-/**
- * Check if `file` is a VFile.
- *
- * @param {*} file - Value.
- * @return {boolean} - Whether `file` is a VFile.
- */
-function isFile(file) {
-  return file && typeof file.contents === 'string';
+  return node && string(node.type) && node.type.length !== 0;
 }
 
 /**

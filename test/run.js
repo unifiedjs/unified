@@ -45,7 +45,7 @@ test('run(node[, file][, done])', function (t) {
   unified()
     .use(function () {
       return function (tree, file) {
-        t.equal(file.contents, '', 'passes files to transformers if not given');
+        t.equal(file.toString(), '', 'passes files to transformers if not given');
       };
     })
     .run(n);
@@ -58,12 +58,12 @@ test('run(node[, file][, done])', function (t) {
 
   unified().run(n, null, function (err, tree, file) {
     t.error(err);
-    t.equal(file.contents, '', 'passes file to `done` if not given');
+    t.equal(file.toString(), '', 'passes file to `done` if not given');
   });
 
   unified().run(n, function (err, tree, file) {
     t.error(err);
-    t.equal(file.contents, '', 'passes file to `done` if omitted');
+    t.equal(file.toString(), '', 'passes file to `done` if omitted');
   });
 
   p = unified().use(function () {

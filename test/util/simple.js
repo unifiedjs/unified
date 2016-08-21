@@ -24,7 +24,7 @@ function compile(node) {
 
 /* Simple Parser. */
 function Parser(file) {
-  this.value = file.contents;
+  this.value = file.toString();
 }
 
 function parse() {

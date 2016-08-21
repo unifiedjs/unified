@@ -44,7 +44,7 @@ test('parse(file[, options])', function (t) {
 
   p.Parser = function (file, options, processor) {
     t.ok('message' in file, 'should pass a file');
-    t.equal(file.contents, 'charlie', 'should pass options');
+    t.equal(file.toString(), 'charlie', 'should pass options');
     t.equal(options, o, 'should pass options');
     t.equal(processor, p, 'should pass the processor');
   };

@@ -43,8 +43,8 @@ process.stdin
     *   [processor()](#processor)
     *   [processor.use(plugin\[, options\])](#processoruseplugin-options)
     *   [processor.parse(file|value\[, options\])](#processorparsefilevalue-options)
-    *   [processor.stringify(node\[, file|value\]\[, options\])](#processorstringifynode-filevalue-options)
-    *   [processor.run(node\[, file|value\]\[, done\])](#processorrunnode-filevalue-done)
+    *   [processor.stringify(node\[, file\]\[, options\])](#processorstringifynode-file-options)
+    *   [processor.run(node\[, file\]\[, done\])](#processorrunnode-file-done)
     *   [processor.process(file|value\[, options\]\[, done\])](#processorprocessfilevalue-options-done)
     *   [processor.write(chunk\[, encoding\]\[, callback\])](#processorwritechunk-encoding-callback)
     *   [processor.end()](#processorend)
@@ -358,7 +358,7 @@ Parse text to a syntax tree.
 ###### Parameters
 
 *   `file` ([**VFile**][file]);
-*   `value` (`string`) — String representation of a file.
+    — Or anything which can be given to `vfile()`.
 *   `options` (`Object`, optional) — Configuration given to the parser.
 
 ###### Returns
@@ -375,7 +375,7 @@ The instance must expose a `parse` method which is invoked without
 arguments, and must return a syntax tree representation of the
 [**VFile**][file].
 
-### `processor.stringify(node[, file|value][, options])`
+### `processor.stringify(node[, file][, options])`
 
 Compile a syntax tree to text.
 
@@ -383,7 +383,7 @@ Compile a syntax tree to text.
 
 *   `node` ([**Node**][node]);
 *   `file` ([**VFile**][file], optional);
-*   `value` (`string`, optional) — String representation of a file;
+    — Or anything which can be given to `vfile()`.
 *   `options` (`Object`, optional) — Configuration given to the parser.
 
 ###### Returns
@@ -400,7 +400,7 @@ The instance must expose a `compile` method which is invoked with
 the syntax tree, and must return a string representation of that
 syntax tree.
 
-### `processor.run(node[, file|value][, done])`
+### `processor.run(node[, file][, done])`
 
 Transform a syntax tree by applying [**plug-in**][plugin]s to it.
 
@@ -411,7 +411,7 @@ is thrown if [`done`][run-done] is not supplied.
 
 *   `node` ([**Node**][node]);
 *   `file` ([**VFile**][file], optional);
-*   `value` (`string`, optional) — String representation of a file.
+    — Or anything which can be given to `vfile()`.
 *   `done` ([`Function`][run-done], optional).
 
 ###### Returns
@@ -695,7 +695,7 @@ To make the processor concrete, invoke it: use `processor()` instead of `process
 
 [parser]: #processorparser
 
-[stringify]: #processorstringifynode-filevalue-options
+[stringify]: #processorstringifynode-file-options
 
 [compiler]: #processorcompiler
 

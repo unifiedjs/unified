@@ -90,7 +90,7 @@ test('stringify(node[, file][, options])', function (t) {
 
   p.Compiler = function (file) {
     t.equal(
-      file.contents,
+      file.toString(),
       '',
       'should work without file and options (#1)'
     );
@@ -108,7 +108,7 @@ test('stringify(node[, file][, options])', function (t) {
 
   p.Compiler = function (file, options) {
     t.equal(
-      file.contents,
+      file.toString(),
       '',
       'should work without file and with options (#1)'
     );

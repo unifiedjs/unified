@@ -110,7 +110,7 @@ test('process(file[, options][, done])', function (t) {
       st.error(err);
 
       st.equal(
-        file.contents,
+        file.toString(),
         'echo',
         'should store the result of `compile()` on `file`'
       );
@@ -208,7 +208,7 @@ test('process(file[, options][, done])', function (t) {
       st.error(err);
 
       st.equal(
-        file.contents,
+        file.toString(),
         'charlie',
         'should store the result of `compile()` on `file`'
       );

@@ -109,7 +109,7 @@ test('end(chunk[, encoding][, callback])', function (t) {
   p()
     .use(function () {
       return function (tree, file) {
-        file.warn('echo');
+        file.message('echo');
       };
     })
     .on('warning', function (message) {
@@ -134,7 +134,7 @@ test('end(chunk[, encoding][, callback])', function (t) {
   p()
     .use(function () {
       return function (tree, file) {
-        file.warn('golf');
+        file.message('golf');
         file.fail(e);
       };
     })

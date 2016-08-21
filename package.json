@@ -17,9 +17,11 @@
     "bail": "^1.0.0",
     "extend": "^3.0.0",
     "has": "^1.0.1",
+    "is-buffer": "^1.1.4",
     "once": "^1.3.3",
     "trough": "^1.0.0",
-    "vfile": "^1.0.0"
+    "vfile": "^2.0.0",
+    "x-is-string": "^0.1.0"
   },
   "browser": {
     "node-extend": "extend"
@@ -83,7 +85,8 @@
       "lint": {
         "heading-increment": false,
         "no-duplicate-headings": false,
-        "list-item-spacing": false
+        "list-item-spacing": false,
+        "no-missing-blank-lines": {"exceptTightLists": true}
       },
       "github": null,
       "toc": {
