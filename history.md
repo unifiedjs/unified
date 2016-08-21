@@ -2,6 +2,13 @@
 
 <!--lint disable no-multiple-toplevel-headings-->
 
+5.0.0 / 2016-08-21
+==================
+
+*   Update vfile ([`33f5a60`](https://github.com/wooorm/unified/commit/33f5a60))
+*   Add more clear language to docs ([`5d5be73`](https://github.com/wooorm/unified/commit/5d5be73))
+*   Add section on integrating with CLI, Gulp, Atom ([`64b2b07`](https://github.com/wooorm/unified/commit/64b2b07))
+
 4.2.1 / 2016-08-02
 ==================
 
