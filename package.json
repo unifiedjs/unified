@@ -43,12 +43,8 @@
     "browserify": "^13.0.0",
     "esmangle": "^1.0.0",
     "nyc": "^8.1.0",
-    "remark-cli": "^1.0.0",
-    "remark-comment-config": "^4.0.0",
-    "remark-github": "^5.0.0",
-    "remark-lint": "^4.0.0",
-    "remark-toc": "^3.0.0",
-    "remark-validate-links": "^4.0.0",
+    "remark-cli": "^2.0.0",
+    "remark-preset-wooorm": "^1.0.0",
     "tape": "^4.4.0",
     "xo": "^0.16.0"
   },
@@ -80,23 +76,6 @@
   },
   "remarkConfig": {
     "output": true,
-    "plugins": {
-      "comment-config": null,
-      "lint": {
-        "heading-increment": false,
-        "no-duplicate-headings": false,
-        "list-item-spacing": false,
-        "no-missing-blank-lines": {"exceptTightLists": true}
-      },
-      "github": null,
-      "toc": {
-        "maxDepth": 3,
-        "tight": true
-      },
-      "validate-links": null
-    },
-    "settings": {
-      "bullet": "*"
-    }
+    "presets": "wooorm"
   }
 }
