@@ -24,6 +24,7 @@ var markdown = require('remark-parse');
 var toc = require('remark-toc');
 var remark2rehype = require('remark-rehype');
 var document = require('rehype-document');
+var minify = require('rehype-preset-minify');
 var html = require('rehype-stringify');
 
 process.stdin
@@ -32,6 +33,7 @@ process.stdin
   .use(toc)
   .use(remark2rehype)
   .use(document)
+  .use(minify)
   .use(html)
   .pipe(process.stdout);
 ```
