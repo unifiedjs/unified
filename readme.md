@@ -236,6 +236,7 @@ new syntax tree and discards the original.
 
 *   [**remark-retext**][remark-retext].
 *   [**remark-rehype**][remark-rehype].
+*   [**rehype-retext**][rehype-retext].
 
 ## API
 
@@ -668,6 +669,8 @@ To make the processor concrete, invoke it: use `processor()` instead of `process
 [remark-rehype]: https://github.com/wooorm/remark-rehype
 
 [remark-retext]: https://github.com/wooorm/remark-retext
+
+[rehype-retext]: https://github.com/wooorm/rehype-retext
 
 [unist-utilities]: https://github.com/wooorm/unist#list-of-utilities
 
