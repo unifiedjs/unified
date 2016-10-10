@@ -272,7 +272,8 @@ that plug-in with optional options.
 *   `processor.use(plugin[, options])`;
 *   `processor.use(plugins[, options])`;
 *   `processor.use(list)`;
-*   `processor.use(matrix)`.
+*   `processor.use(matrix)`;
+*   `processor.use(processor)`.
 
 ###### Parameters
 
@@ -280,7 +281,9 @@ that plug-in with optional options.
 *   `options` (`*`, optional) — Configuration for `plugin`.
 *   `plugins` (`Array.<Function>`) — List of plugins;
 *   `list` (`Array`) — `plugin` and `options` in an array;
-*   `matrix` (`Array`) — array where each entry is a `list`;
+*   `matrix` (`Array`) — Array where each entry is a `list`;
+*   `processor` ([`Processor`][processor]) — Other processor whose
+    plugins to use (except for a parser).
 
 ###### Returns
 

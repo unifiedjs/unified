@@ -80,6 +80,7 @@ function unified() {
   processor.abstract = abstract;
 
   /* Plug-ins. */
+  processor.attachers = attachers;
   processor.use = use;
 
   /* Streaming. */
@@ -255,6 +256,8 @@ function unified() {
    * *   a tuple of one attacher and options.
    * *   a matrix: list containing any of the above and
    *     matrices.
+   * *   a processor: another processor to use all its
+   *     plugins (except parser if there’s already one).
    *
    * @param {...*} value - See description.
    * @return {Processor} - The operated on processor.
@@ -262,9 +265,11 @@ function unified() {
   function use(value) {
     var args = slice.call(arguments, 0);
     var params = args.slice(1);
+    var parser;
     var index;
     var length;
     var transformer;
+    var result;
 
     assertConcrete('use');
 
@@ -293,6 +298,21 @@ function unified() {
 
     /* Store attacher. */
     attachers.push(args);
+
+    /* Use a processor (except its parser if there’s already one.
+     * Note that the processor is stored on `attachers`, making
+     * it possibly mutating in the future, but also ensuring
+     * the parser isn’t overwritten in the future either. */
+    if (isProcessor(value)) {
+      parser = processor.Parser;
+      result = use(value.attachers);
+
+      if (parser) {
+        processor.Parser = parser;
+      }
+
+      return result;
+    }
 
     /* Single attacher. */
     transformer = value.apply(null, [processor].concat(params));
@@ -634,4 +654,14 @@ function isCompiler(compiler) {
  */
 function isParser(parser) {
   return isFunction(parser) && parser.prototype && isFunction(parser.prototype.parse);
+}
+
+/**
+ * Check if `processor` is a unified processor.
+ *
+ * @param {*} processor - Value.
+ * @return {boolean} - Whether `processor` is a processor.
+ */
+function isProcessor(processor) {
+  return isFunction(processor) && isFunction(processor.use) && isFunction(processor.process);
 }

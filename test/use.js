@@ -72,3 +72,77 @@ test('use(plugin[, options])', function (t) {
 
   t.end();
 });
+
+/* Processors. */
+test('use(processor)', function (t) {
+  var p = unified();
+  var q = unified();
+  var o = {};
+  var n;
+  var res;
+  var fixture;
+
+  t.plan(12);
+
+  res = p.use(q);
+
+  t.equal(res, p, 'should return the origin processor');
+  t.equal(p.attachers[0][0], q, 'should store attachers');
+
+  p = unified();
+  q = unified();
+
+  fixture = q;
+
+  q.use(function (processor, options) {
+    t.equal(processor, fixture, 'should invoke a plugin with `processor`');
+    t.equal(options, o, 'should invoke a plugin with `options`');
+  }, o);
+
+  fixture = p;
+
+  p.use(q);
+
+  q = unified();
+  p = unified().use(q);
+  n = {type: 'test'};
+
+  q.use(function () {
+    return function (node, file) {
+      t.equal(node, n, 'should attach a transformer (#1)');
+      t.ok('message' in file, 'should attach a transformer (#2)');
+
+      throw new Error('Alpha bravo charlie');
+    };
+  });
+
+  p.use(q);
+
+  t.throws(
+    function () {
+      p.run(n);
+    },
+    /Error: Alpha bravo charlie/,
+    'should attach a transformer (#3)'
+  );
+
+  p = unified().use(function (processor) {
+    processor.Parser = ParserA;
+  });
+
+  q = unified().use(function (processor) {
+    processor.Parser = ParserB;
+  });
+
+  t.equal(p.Parser, ParserA);
+  t.equal(q.Parser, ParserB);
+
+  p.use(q);
+
+  t.equal(p.Parser, ParserA);
+
+  function ParserA() {}
+  function ParserB() {}
+
+  t.end();
+});
