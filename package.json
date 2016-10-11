@@ -46,7 +46,7 @@
     "remark-cli": "^2.0.0",
     "remark-preset-wooorm": "^1.0.0",
     "tape": "^4.4.0",
-    "xo": "^0.16.0"
+    "xo": "^0.17.0"
   },
   "scripts": {
     "build-md": "remark . --quiet --frail",
@@ -67,6 +67,7 @@
   "xo": {
     "space": true,
     "rules": {
+      "import/no-unassigned-import": "off",
       "guard-for-in": "off",
       "max-lines": "off"
     },
