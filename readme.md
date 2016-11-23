@@ -7,14 +7,11 @@ multiple syntaxes.
 
 ## Installation
 
-[npm][npm-install]:
+[npm][]:
 
 ```bash
 npm install unified
 ```
-
-**unified** is also available as an AMD, CommonJS, and globals module,
-[uncompressed and compressed][releases].
 
 ## Usage
 
@@ -639,9 +636,7 @@ To make the processor concrete, invoke it: use `processor()` instead of `process
 
 [codecov]: https://codecov.io/github/wooorm/unified
 
-[npm-install]: https://docs.npmjs.com/cli/install
-
-[releases]: https://github.com/wooorm/unified/releases
+[npm]: https://docs.npmjs.com/cli/install
 
 [license]: LICENSE
 
