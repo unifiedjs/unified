@@ -9,7 +9,7 @@
     "transform",
     "compile",
     "stringify",
-    "hast",
+    "rehype",
     "retext",
     "remark"
   ],
