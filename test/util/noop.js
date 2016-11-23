@@ -1,14 +1,5 @@
-/**
- * @author Titus Wormer
- * @copyright 2015 Titus Wormer
- * @license MIT
- * @module unified
- * @fileoverview Test suite for `unified`.
- */
-
 'use strict';
 
-/* Expose. */
 module.exports = exports = noop;
 exports.Parser = Parser;
 exports.Compiler = Compiler;

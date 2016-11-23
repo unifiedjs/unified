@@ -1,19 +1,9 @@
-/**
- * @author Titus Wormer
- * @copyright 2015 Titus Wormer
- * @license MIT
- * @module unified
- * @fileoverview Test suite for `unified`.
- */
-
 'use strict';
 
-/* Dependencies. */
 var Stream = require('stream').Stream;
 var test = require('tape');
 var unified = require('..');
 
-/* Tests. */
 test('abstract()', function (t) {
   var abstract = unified().abstract();
   var concrete = unified();

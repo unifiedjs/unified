@@ -1,18 +1,9 @@
-/**
- * @author Titus Wormer
- * @copyright 2015 Titus Wormer
- * @license MIT
- * @module unified
- * @fileoverview Test suite for `unified`.
- */
-
 'use strict';
 
-/* Dependencies. */
 var test = require('tape');
 var unified = require('..');
 
-/* Tests. */
+/* Plugins. */
 test('use(plugin[, options])', function (t) {
   var p = unified();
   var o = {};

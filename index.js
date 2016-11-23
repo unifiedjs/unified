@@ -1,11 +1,3 @@
-/**
- * @author Titus Wormer
- * @copyright 2015 Titus Wormer
- * @license MIT
- * @module unified
- * @fileoverview Pluggable text processing interface.
- */
-
 'use strict';
 
 /* Dependencies. */
@@ -45,11 +37,7 @@ var pipeline = trough()
     ctx.file.contents = p.stringify(ctx.tree, ctx.file, ctx.options);
   });
 
-/**
- * Function to create the first processor.
- *
- * @return {Function} - First processor.
- */
+/* Function to create the first processor. */
 function unified() {
   var attachers = [];
   var transformers = trough();
@@ -99,13 +87,8 @@ function unified() {
   /* Expose. */
   return processor;
 
-  /**
-   * Create a new processor based on the processor
-   * in the current scope.
-   *
-   * @return {Processor} - New concrete processor based
-   *   on the descendant processor.
-   */
+  /* Create a new processor based on the processor
+   * in the current scope. */
   function processor() {
     var destination = unified();
     var length = attachers.length;
@@ -122,33 +105,21 @@ function unified() {
 
   /* Helpers. */
 
-  /**
-   * Assert a parser is available.
-   *
-   * @param {string} name - Name of callee.
-   */
+  /* Assert a parser is available. */
   function assertParser(name) {
     if (!isParser(processor.Parser)) {
       throw new Error('Cannot `' + name + '` without `Parser`');
     }
   }
 
-  /**
-   * Assert a compiler is available.
-   *
-   * @param {string} name - Name of callee.
-   */
+  /* Assert a compiler is available. */
   function assertCompiler(name) {
     if (!isCompiler(processor.Compiler)) {
       throw new Error('Cannot `' + name + '` without `Compiler`');
     }
   }
 
-  /**
-   * Assert the processor is concrete.
-   *
-   * @param {string} name - Name of callee.
-   */
+  /* Assert the processor is concrete. */
   function assertConcrete(name) {
     if (!concrete) {
       throw new Error(
@@ -161,27 +132,15 @@ function unified() {
     }
   }
 
-  /**
-   * Assert `node` is a Unist node.
-   *
-   * @param {*} node - Value to check.
-   */
+  /* Assert `node` is a Unist node. */
   function assertNode(node) {
     if (!isNode(node)) {
       throw new Error('Expected node, got `' + node + '`');
     }
   }
 
-  /**
-   * Assert, if no `done` is given, that `complete` is
-   * `true`.
-   *
-   * @param {string} name - Name of callee.
-   * @param {boolean} complete - Whether an async process
-   *   is complete.
-   * @param {Function?} done - Optional handler of async
-   *   results.
-   */
+  /* Assert, if no `done` is given, that `complete` is
+   * `true`. */
   function assertDone(name, complete, done) {
     if (!complete && !done) {
       throw new Error(
@@ -191,8 +150,7 @@ function unified() {
     }
   }
 
-  /**
-   * Abstract: used to signal an abstract processor which
+  /* Abstract: used to signal an abstract processor which
    * should made concrete before using.
    *
    * For example, take unified itself.  It’s abstract.
@@ -200,27 +158,15 @@ function unified() {
    * be made concrete (by invoking it) before modifying it.
    *
    * In essence, always invoke this when exporting a
-   * processor.
-   *
-   * @return {Processor} - The operated on processor.
-   */
+   * processor. */
   function abstract() {
     concrete = false;
 
     return processor;
   }
 
-  /**
-   * Data management.
-   *
-   * Getter / setter for processor-specific informtion.
-   *
-   * @param {string} key - Key to get or set.
-   * @param {*} value - Value to set.
-   * @return {*} - Either the operator on processor in
-   *   setter mode; or the value stored as `key` in
-   *   getter mode.
-   */
+  /* Data management.
+   * Getter / setter for processor-specific informtion. */
   function data(key, value) {
     assertConcrete('data');
 
@@ -247,8 +193,7 @@ function unified() {
     return processor;
   }
 
-  /**
-   * Plug-in management.
+  /* Plug-in management.
    *
    * Pass it:
    * *   an attacher and options,
@@ -257,11 +202,7 @@ function unified() {
    * *   a matrix: list containing any of the above and
    *     matrices.
    * *   a processor: another processor to use all its
-   *     plugins (except parser if there’s already one).
-   *
-   * @param {...*} value - See description.
-   * @return {Processor} - The operated on processor.
-   */
+   *     plugins (except parser if there’s already one). */
   function use(value) {
     var args = slice.call(arguments, 0);
     var params = args.slice(1);
@@ -324,15 +265,9 @@ function unified() {
     return processor;
   }
 
-  /**
-   * Parse a file (in string or VFile representation)
+  /* Parse a file (in string or VFile representation)
    * into a Unist node using the `Parser` on the
-   * processor.
-   *
-   * @param {VFile?} [file] - File to process.
-   * @param {Object?} [options] - Configuration.
-   * @return {Node} - Unist node.
-   */
+   * processor. */
   function parse(file, options) {
     assertConcrete('parse');
     assertParser('parse');
@@ -340,15 +275,8 @@ function unified() {
     return new processor.Parser(vfile(file), options, processor).parse();
   }
 
-  /**
-   * Run transforms on a Unist node representation of a file
-   * (in string or VFile representation).
-   *
-   * @param {Node} node - Unist node.
-   * @param {(string|VFile)?} [file] - File representation.
-   * @param {Function?} [done] - Callback.
-   * @return {Node} - The given or resulting Unist node.
-   */
+  /* Run transforms on a Unist node representation of a file
+   * (in string or VFile representation). */
   function run(node, file, done) {
     var complete = false;
     var result;
@@ -375,16 +303,9 @@ function unified() {
     return result;
   }
 
-  /**
-   * Stringify a Unist node representation of a file
+  /* Stringify a Unist node representation of a file
    * (in string or VFile representation) into a string
-   * using the `Compiler` on the processor.
-   *
-   * @param {Node} node - Unist node.
-   * @param {(string|VFile)?} [file] - File representation.
-   * @param {Object?} [options] - Configuration.
-   * @return {string} - String representation.
-   */
+   * using the `Compiler` on the processor. */
   function stringify(node, file, options) {
     assertConcrete('stringify');
     assertCompiler('stringify');
@@ -403,18 +324,11 @@ function unified() {
     return new processor.Compiler(vfile(file), options, processor).compile(node);
   }
 
-  /**
-   * Parse a file (in string or VFile representation)
+  /* Parse a file (in string or VFile representation)
    * into a Unist node using the `Parser` on the processor,
    * then run transforms on that node, and compile the
    * resulting node using the `Compiler` on the processor,
-   * and store that result on the VFile.
-   *
-   * @param {(string|VFile)?} file - File representation.
-   * @param {Object?} [options] - Configuration.
-   * @param {Function?} [done] - Callback.
-   * @return {VFile} - The given or resulting VFile.
-   */
+   * and store that result on the VFile. */
   function process(file, options, done) {
     var complete = false;
 
@@ -449,14 +363,7 @@ function unified() {
 
   /* Streams. */
 
-  /**
-   * Write a chunk into memory.
-   *
-   * @param {(Buffer|string)?} chunk - Value to write.
-   * @param {string?} [encoding] - Encoding.
-   * @param {Function?} [callback] - Callback.
-   * @return {boolean} - Whether the write was succesful.
-   */
+  /* Write a chunk into memory. */
   function write(chunk, encoding, callback) {
     assertConcrete('write');
 
@@ -479,17 +386,12 @@ function unified() {
     return true;
   }
 
-  /**
-   * End the writing.  Passes all arguments to a final
+  /* End the writing.  Passes all arguments to a final
    * `write`.  Starts the process, which will trigger
    * `error`, with a fatal error, if any; `data`, with
    * the generated document in `string` form, if
    * succesful.  If messages are triggered during the
-   * process, those are triggerd as `warning`s.
-   *
-   * @return {boolean} - Whether the last write was
-   *   succesful.
-   */
+   * process, those are triggerd as `warning`s. */
   function end() {
     assertConcrete('end');
     assertParser('end');
@@ -527,19 +429,12 @@ function unified() {
     return true;
   }
 
-  /**
-   * Pipe the processor into a writable stream.
+  /* Pipe the processor into a writable stream.
    *
    * Basically `Stream#pipe`, but inlined and
    * simplified to keep the bundled size down.
    *
-   * @see https://github.com/nodejs/node/blob/master/lib/stream.js#L26
-   *
-   * @param {Stream} dest - Writable stream.
-   * @param {Object?} [options] - Processing
-   *   configuration.
-   * @return {Stream} - The destination stream.
-   */
+   * See https://github.com/nodejs/node/blob/master/lib/stream.js#L26. */
   function pipe(dest, options) {
     var onend = once(onended);
 
@@ -566,27 +461,21 @@ function unified() {
 
     return dest;
 
-    /** End destination. */
+    /* End destination. */
     function onended() {
       if (dest.end) {
         dest.end();
       }
     }
 
-    /**
-     * Handle data.
-     *
-     * @param {*} chunk - Data to pass through.
-     */
+    /* Handle data. */
     function ondata(chunk) {
       if (dest.writable) {
         dest.write(chunk);
       }
     }
 
-    /**
-     * Clean listeners.
-     */
+    /* Clean listeners. */
     function cleanup() {
       processor.removeListener('data', ondata);
       processor.removeListener('end', onend);
@@ -598,11 +487,7 @@ function unified() {
       dest.removeListener('close', cleanup);
     }
 
-    /**
-     * Close dangling pipes and handle unheard errors.
-     *
-     * @param {Error} err - Exception.
-     */
+    /* Close dangling pipes and handle unheard errors. */
     function onerror(err) {
       var handlers = processor._events.error;
 
@@ -616,52 +501,27 @@ function unified() {
   }
 }
 
-/**
- * Check if `node` is a Unist node.
- *
- * @param {*} node - Value.
- * @return {boolean} - Whether `node` is a Unist node.
- */
+/* Check if `node` is a Unist node. */
 function isNode(node) {
   return node && string(node.type) && node.type.length !== 0;
 }
 
-/**
- * Check if `fn` is a function.
- *
- * @param {*} fn - Value.
- * @return {boolean} - Whether `fn` is a function.
- */
+/* Check if `fn` is a function. */
 function isFunction(fn) {
   return typeof fn === 'function';
 }
 
-/**
- * Check if `compiler` is a Compiler.
- *
- * @param {*} compiler - Value.
- * @return {boolean} - Whether `compiler` is a Compiler.
- */
+/* Check if `compiler` is a Compiler. */
 function isCompiler(compiler) {
   return isFunction(compiler) && compiler.prototype && isFunction(compiler.prototype.compile);
 }
 
-/**
- * Check if `parser` is a Parser.
- *
- * @param {*} parser - Value.
- * @return {boolean} - Whether `parser` is a Parser.
- */
+/* Check if `parser` is a Parser. */
 function isParser(parser) {
   return isFunction(parser) && parser.prototype && isFunction(parser.prototype.parse);
 }
 
-/**
- * Check if `processor` is a unified processor.
- *
- * @param {*} processor - Value.
- * @return {boolean} - Whether `processor` is a processor.
- */
+/* Check if `processor` is a unified processor. */
 function isProcessor(processor) {
   return isFunction(processor) && isFunction(processor.use) && isFunction(processor.process);
 }
