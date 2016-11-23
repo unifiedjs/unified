@@ -13,6 +13,16 @@
     "retext",
     "remark"
   ],
+  "repository": "https://github.com/wooorm/unified",
+  "bugs": "https://github.com/wooorm/unified/issues",
+  "author": "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)",
+  "contributors": [
+    "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)"
+  ],
+  "files": [
+    "index.js",
+    "lib"
+  ],
   "dependencies": {
     "bail": "^1.0.0",
     "extend": "^3.0.0",
@@ -23,22 +33,6 @@
     "vfile": "^2.0.0",
     "x-is-string": "^0.1.0"
   },
-  "browser": {
-    "node-extend": "extend"
-  },
-  "repository": "https://github.com/wooorm/unified",
-  "bugs": "https://github.com/wooorm/unified/issues",
-  "author": "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)",
-  "contributors": [
-    "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)"
-  ],
-  "engines": {
-    "node": ">=0.11.0"
-  },
-  "files": [
-    "index.js",
-    "lib"
-  ],
   "devDependencies": {
     "browserify": "^13.0.0",
     "esmangle": "^1.0.0",
