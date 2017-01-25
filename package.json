@@ -34,7 +34,7 @@
     "x-is-string": "^0.1.0"
   },
   "devDependencies": {
-    "browserify": "^13.0.0",
+    "browserify": "^14.0.0",
     "esmangle": "^1.0.0",
     "nyc": "^10.0.0",
     "remark-cli": "^2.0.0",
