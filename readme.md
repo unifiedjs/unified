@@ -649,13 +649,13 @@ To make the processor concrete, invoke it: use `processor()` instead of `process
 
 [retext]: https://github.com/wooorm/retext
 
-[hast]: https://github.com/wooorm/hast
+[hast]: https://github.com/syntax-tree/hast
 
-[mdast]: https://github.com/wooorm/mdast
+[mdast]: https://github.com/syntax-tree/mdast
 
-[nlcst]: https://github.com/wooorm/nlcst
+[nlcst]: https://github.com/syntax-tree/nlcst
 
-[unist]: https://github.com/wooorm/unist
+[unist]: https://github.com/syntax-tree/unist
 
 [engine]: https://github.com/wooorm/unified-engine
 
@@ -673,15 +673,15 @@ To make the processor concrete, invoke it: use `processor()` instead of `process
 
 [rehype-remark]: https://github.com/wooorm/rehype-remark
 
-[unist-utilities]: https://github.com/wooorm/unist#list-of-utilities
+[unist-utilities]: https://github.com/syntax-tree/unist#list-of-utilities
 
-[vfile]: https://github.com/wooorm/vfile
+[vfile]: https://github.com/vfile/vfile
 
-[vfile-contents]: https://github.com/wooorm/vfile#vfilecontents
+[vfile-contents]: https://github.com/vfile/vfile#vfilecontents
 
-[vfile-utilities]: https://github.com/wooorm/vfile#related-tools
+[vfile-utilities]: https://github.com/vfile/vfile#related-tools
 
-[vfilemessage]: https://github.com/wooorm/vfile#vfilemessage
+[vfilemessage]: https://github.com/vfile/vfile#vfilemessage
 
 [writable-stream]: https://nodejs.org/api/stream.html#stream_class_stream_writable_1
 
