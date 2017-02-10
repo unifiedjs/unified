@@ -231,9 +231,10 @@ used in bridge mode: the origin syntax tree is kept after retext is
 finished; whereas `remark-rehype` is used in mutate mode: it sets a
 new syntax tree and discards the original.
 
-*   [**remark-retext**][remark-retext].
-*   [**remark-rehype**][remark-rehype].
-*   [**rehype-retext**][rehype-retext].
+*   [**remark-retext**][remark-retext]
+*   [**remark-rehype**][remark-rehype]
+*   [**rehype-retext**][rehype-retext]
+*   [**rehype-remark**][rehype-remark]
 
 ## API
 
@@ -669,6 +670,8 @@ To make the processor concrete, invoke it: use `processor()` instead of `process
 [remark-retext]: https://github.com/wooorm/remark-retext
 
 [rehype-retext]: https://github.com/wooorm/rehype-retext
+
+[rehype-remark]: https://github.com/wooorm/rehype-remark
 
 [unist-utilities]: https://github.com/wooorm/unist#list-of-utilities
 
