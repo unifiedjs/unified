@@ -1,15 +1,13 @@
 'use strict';
 
 var test = require('tape');
-var noop = require('./util/noop');
 var unified = require('..');
 
-test('parse(file[, options])', function (t) {
+test('parse(file)', function (t) {
   var p = unified();
-  var o;
   var n;
 
-  t.plan(8);
+  t.plan(5);
 
   t.throws(
     function () {
@@ -19,35 +17,17 @@ test('parse(file[, options])', function (t) {
     'should throw without `Parser`'
   );
 
-  p.Parser = noop;
-
-  t.throws(
-    function () {
-      p.parse();
-    },
-    /Cannot `parse` without `Parser`/,
-    'should throw without `Parser#parse`'
-  );
-
-  o = {};
   n = {type: 'delta'};
 
-  p.Parser = function (file, options, processor) {
+  p.Parser = function (doc, file) {
+    t.ok(typeof doc, 'string', 'should pass a document');
     t.ok('message' in file, 'should pass a file');
-    t.equal(file.toString(), 'charlie', 'should pass options');
-    t.equal(options, o, 'should pass options');
-    t.equal(processor, p, 'should pass the processor');
   };
 
-  p.Parser.prototype.parse = function (value) {
-    t.equal(value, undefined, 'should not pass anything to `parse`');
-
+  p.Parser.prototype.parse = function () {
+    t.equal(arguments.length, 0, 'should not pass anything to `parse`');
     return n;
   };
 
-  t.equal(
-    p.parse('charlie', o),
-    n,
-    'should return the result `Parser#parse` returns'
-  );
+  t.equal(p.parse('charlie'), n, 'should return the result `Parser#parse` returns');
 });

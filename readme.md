@@ -58,10 +58,10 @@ no issues found
 *   [API](#api)
     *   [processor()](#processor)
     *   [processor.use(plugin\[, options\])](#processoruseplugin-options)
-    *   [processor.parse(file|value\[, options\])](#processorparsefilevalue-options)
-    *   [processor.stringify(node\[, file\]\[, options\])](#processorstringifynode-file-options)
+    *   [processor.parse(file|value)](#processorparsefilevalue)
+    *   [processor.stringify(node\[, file\])](#processorstringifynode-file)
     *   [processor.run(node\[, file\]\[, done\])](#processorrunnode-file-done)
-    *   [processor.process(file|value\[, options\]\[, done\])](#processorprocessfilevalue-options-done)
+    *   [processor.process(file|value\[, done\])](#processorprocessfilevalue-done)
     *   [processor.data(key\[, value\])](#processordatakey-value)
     *   [processor.abstract()](#processorabstract)
 *   [License](#license)
@@ -331,15 +331,14 @@ the function **may** finish asynchronous, and **must** invoke `next()`.
 *   `node` ([**Node**][node], optional) — New syntax tree;
 *   `file` ([**VFile**][file], optional) — New virtual file.
 
-### `processor.parse(file|value[, options])`
+### `processor.parse(file|value)`
 
 Parse text to a syntax tree.
 
 ###### Parameters
 
-*   `file` ([**VFile**][file]);
+*   `file` ([**VFile**][file])
     — Or anything which can be given to `vfile()`.
-*   `options` (`Object`, optional) — Configuration given to the parser.
 
 ###### Returns
 
@@ -355,7 +354,7 @@ The instance must expose a `parse` method which is invoked without
 arguments, and must return a syntax tree representation of the
 [**VFile**][file].
 
-### `processor.stringify(node[, file][, options])`
+### `processor.stringify(node[, file])`
 
 Compile a syntax tree to text.
 
@@ -364,7 +363,6 @@ Compile a syntax tree to text.
 *   `node` ([**Node**][node]);
 *   `file` ([**VFile**][file], optional);
     — Or anything which can be given to `vfile()`.
-*   `options` (`Object`, optional) — Configuration given to the parser.
 
 ###### Returns
 
@@ -409,7 +407,7 @@ error, or a syntax tree and a file.
 *   `node` ([**Node**][node]);
 *   `file` ([**VFile**][file]).
 
-### `processor.process(file|value[, options][, done])`
+### `processor.process(file|value[, done])`
 
 Process the given representation of a file as configured on the
 processor.  The process invokes `parse`, `run`, and `stringify`
@@ -422,8 +420,6 @@ is thrown if [`done`][process-done] is not supplied.
 
 *   `file` ([**VFile**][file]);
 *   `value` (`string`) — String representation of a file;
-*   `options` (`Object`, optional) — Configuration for both the parser
-    and compiler;
 *   `done` ([`Function`][process-done], optional).
 
 ###### Returns
@@ -606,13 +602,13 @@ To make the processor concrete, invoke it: use `processor()` instead of `process
 
 [processor]: #processor
 
-[process]: #processorprocessfilevalue-options-done
+[process]: #processorprocessfilevalue-done
 
-[parse]: #processorparsefilevalue-options
+[parse]: #processorparsefilevalue
 
 [parser]: #processorparser
 
-[stringify]: #processorstringifynode-file-options
+[stringify]: #processorstringifynode-file
 
 [compiler]: #processorcompiler
 

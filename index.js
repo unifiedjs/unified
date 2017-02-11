@@ -6,7 +6,6 @@ var extend = require('extend');
 var bail = require('bail');
 var vfile = require('vfile');
 var trough = require('trough');
-var buffer = require('is-buffer');
 var string = require('x-is-string');
 
 /* Expose an abstract processor. */
@@ -18,7 +17,7 @@ var slice = [].slice;
 /* Process pipeline. */
 var pipeline = trough()
   .use(function (p, ctx) {
-    ctx.tree = p.parse(ctx.file, ctx.options);
+    ctx.tree = p.parse(ctx.file);
   })
   .use(function (p, ctx, next) {
     p.run(ctx.tree, ctx.file, function (err, tree, file) {
@@ -32,7 +31,7 @@ var pipeline = trough()
     });
   })
   .use(function (p, ctx) {
-    ctx.file.contents = p.stringify(ctx.tree, ctx.file, ctx.options);
+    ctx.file.contents = p.stringify(ctx.tree, ctx.file);
   });
 
 /* Function to create the first processor. */
@@ -81,14 +80,14 @@ function unified() {
 
   /* Assert a parser is available. */
   function assertParser(name) {
-    if (!isParser(processor.Parser)) {
+    if (!isFunction(processor.Parser)) {
       throw new Error('Cannot `' + name + '` without `Parser`');
     }
   }
 
   /* Assert a compiler is available. */
   function assertCompiler(name) {
-    if (!isCompiler(processor.Compiler)) {
+    if (!isFunction(processor.Compiler)) {
       throw new Error('Cannot `' + name + '` without `Compiler`');
     }
   }
@@ -240,11 +239,13 @@ function unified() {
   /* Parse a file (in string or VFile representation)
    * into a Unist node using the `Parser` on the
    * processor. */
-  function parse(file, options) {
+  function parse(doc) {
+    var file = vfile(doc);
+
     assertConcrete('parse');
     assertParser('parse');
 
-    return new processor.Parser(vfile(file), options, processor).parse();
+    return new processor.Parser(doc.toString(), file).parse();
   }
 
   /* Run transforms on a Unist node representation of a file
@@ -278,22 +279,12 @@ function unified() {
   /* Stringify a Unist node representation of a file
    * (in string or VFile representation) into a string
    * using the `Compiler` on the processor. */
-  function stringify(node, file, options) {
+  function stringify(node, file) {
     assertConcrete('stringify');
     assertCompiler('stringify');
     assertNode(node);
 
-    if (
-      !options &&
-      !string(file) &&
-      !buffer(file) &&
-      !(typeof file === 'object' && 'messages' in file)
-    ) {
-      options = file;
-      file = null;
-    }
-
-    return new processor.Compiler(vfile(file), options, processor).compile(node);
+    return new processor.Compiler(node, vfile(file)).compile();
   }
 
   /* Parse a file (in string or VFile representation)
@@ -301,24 +292,17 @@ function unified() {
    * then run transforms on that node, and compile the
    * resulting node using the `Compiler` on the processor,
    * and store that result on the VFile. */
-  function process(file, options, done) {
+  function process(doc, done) {
     var complete = false;
+    var file;
 
     assertConcrete('process');
     assertParser('process');
     assertCompiler('process');
 
-    if (!done && isFunction(options)) {
-      done = options;
-      options = null;
-    }
+    file = vfile(doc);
 
-    file = vfile(file);
-
-    pipeline.run(processor, {
-      file: file,
-      options: options || {}
-    }, function (err) {
+    pipeline.run(processor, {file: file}, function (err) {
       complete = true;
 
       if (done) {
@@ -342,16 +326,6 @@ function isNode(node) {
 /* Check if `fn` is a function. */
 function isFunction(fn) {
   return typeof fn === 'function';
-}
-
-/* Check if `compiler` is a Compiler. */
-function isCompiler(compiler) {
-  return isFunction(compiler) && compiler.prototype && isFunction(compiler.prototype.compile);
-}
-
-/* Check if `parser` is a Parser. */
-function isParser(parser) {
-  return isFunction(parser) && parser.prototype && isFunction(parser.prototype.parse);
 }
 
 /* Check if `processor` is a unified processor. */
