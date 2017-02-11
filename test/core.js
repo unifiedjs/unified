@@ -20,9 +20,9 @@ test('unified()', function (t) {
 
   t.equal(typeof p, 'function', 'should return a function');
 
-  p.use(function (processor) {
+  p.use(function () {
     count++;
-    processor.data('foo', 'bar');
+    this.data('foo', 'bar');
   });
 
   count = 0;

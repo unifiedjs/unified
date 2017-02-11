@@ -228,7 +228,7 @@ function unified() {
     }
 
     /* Single attacher. */
-    transformer = value.apply(null, [processor].concat(params));
+    transformer = value.apply(processor, params);
 
     if (isFunction(transformer)) {
       transformers.use(transformer);

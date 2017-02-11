@@ -272,7 +272,7 @@ in the following ways:
 
 Plug-in’s are a concept which materialise as [**attacher**][attacher]s.
 
-#### `function attacher(processor[, options])`
+#### `function attacher([options])`
 
 An attacher is the thing passed to [`use`][use].  It configures the
 processor and in turn can receive options.
@@ -281,9 +281,12 @@ Attachers can configure processors, such as by interacting with parsers
 and compilers, linking them to other processors, or by specifying how
 the syntax tree is handled.
 
+###### Context
+
+The context object is set to the invoked on [`processor`][processor].
+
 ###### Parameters
 
-*   `processor` ([`processor`][processor]) — Context on which it’s used;
 *   `options` (`*`, optional) — Configuration.
 
 ###### Returns
@@ -615,7 +618,7 @@ To make the processor concrete, invoke it: use `processor()` instead of `process
 
 [use]: #processoruseplugin-options
 
-[attacher]: #function-attacherprocessor-options
+[attacher]: #function-attacheroptions
 
 [transformer]: #function-transformernode-file-next
 

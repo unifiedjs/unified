@@ -11,34 +11,34 @@ test('use(plugin[, options])', function (t) {
 
   t.plan(11);
 
-  p.use(function (processor, options) {
-    t.equal(processor, p, 'should invoke a plugin with `processor`');
+  p.use(function (options) {
+    t.equal(this, p, 'should invoke a plugin with `processor` as the context');
     t.equal(options, o, 'should invoke a plugin with `options`');
   }, o);
 
   p.use([
-    function (processor) {
-      t.equal(processor, p, 'should support a list of plugins (#1)');
+    function () {
+      t.equal(this, p, 'should support a list of plugins (#1)');
     },
-    function (processor) {
-      t.equal(processor, p, 'should support a list of plugins (#2)');
+    function () {
+      t.equal(this, p, 'should support a list of plugins (#2)');
     }
   ]);
 
-  p.use([function (processor) {
-    t.equal(processor, p, 'should support a list of one plugin');
+  p.use([function () {
+    t.equal(this, p, 'should support a list of one plugin');
   }]);
 
-  p.use([function (processor, options) {
+  p.use([function (options) {
     t.equal(options, o, 'should support a plugin--options tuple');
   }, o]);
 
   p.use([
-    [function (processor, options) {
+    [function (options) {
       t.equal(options, o, 'should support a matrix (#1)');
     }, o],
-    [function (processor) {
-      t.equal(processor, p, 'should support a matrix (#2)');
+    [function () {
+      t.equal(this, p, 'should support a matrix (#2)');
     }]
   ]);
 
@@ -85,8 +85,8 @@ test('use(processor)', function (t) {
 
   fixture = q;
 
-  q.use(function (processor, options) {
-    t.equal(processor, fixture, 'should invoke a plugin with `processor`');
+  q.use(function (options) {
+    t.equal(this, fixture, 'should invoke a plugin with `processor` as the context');
     t.equal(options, o, 'should invoke a plugin with `options`');
   }, o);
 
@@ -117,12 +117,12 @@ test('use(processor)', function (t) {
     'should attach a transformer (#3)'
   );
 
-  p = unified().use(function (processor) {
-    processor.Parser = ParserA;
+  p = unified().use(function () {
+    this.Parser = ParserA;
   });
 
-  q = unified().use(function (processor) {
-    processor.Parser = ParserB;
+  q = unified().use(function () {
+    this.Parser = ParserB;
   });
 
   t.equal(p.Parser, ParserA);

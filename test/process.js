@@ -58,7 +58,7 @@ test('process(file[, options][, done])', function (t) {
     st.plan(11);
 
     p = unified()
-      .use(function (processor) {
+      .use(function () {
         function Parser(file, options, processor) {
           st.equal(file, f, 'should pass `file` to `Parser`');
           st.equal(options, o, 'should pass `options` to `Parser`');
@@ -70,7 +70,7 @@ test('process(file[, options][, done])', function (t) {
         }
 
         Parser.prototype.parse = parse;
-        processor.Parser = Parser;
+        this.Parser = Parser;
       })
       .use(function () {
         return function (tree, file) {
@@ -78,7 +78,7 @@ test('process(file[, options][, done])', function (t) {
           st.equal(file, f, 'should pass `file` to transformers');
         };
       })
-      .use(function (processor) {
+      .use(function () {
         function Compiler(file, options, processor) {
           st.equal(file, f, 'should pass `file` to `Compiler`');
           st.equal(options, o, 'should pass `options` to `Compiler`');
@@ -93,7 +93,7 @@ test('process(file[, options][, done])', function (t) {
 
         Compiler.prototype.compile = compile;
 
-        processor.Compiler = Compiler;
+        this.Compiler = Compiler;
       });
 
     p.process(f, o, function (err, file) {
@@ -115,7 +115,7 @@ test('process(file[, options][, done])', function (t) {
     st.plan(12);
 
     p = unified()
-      .use(function (processor) {
+      .use(function () {
         function Parser(file, options, processor) {
           st.equal(
             file,
@@ -141,7 +141,7 @@ test('process(file[, options][, done])', function (t) {
         }
 
         Parser.prototype.parse = parse;
-        processor.Parser = Parser;
+        this.Parser = Parser;
       })
       .use(function () {
         return function (tree, file) {
@@ -158,7 +158,7 @@ test('process(file[, options][, done])', function (t) {
           );
         };
       })
-      .use(function (processor) {
+      .use(function () {
         function Compiler(file, options, processor) {
           st.equal(
             file,
@@ -191,7 +191,7 @@ test('process(file[, options][, done])', function (t) {
 
         Compiler.prototype.compile = compile;
 
-        processor.Compiler = Compiler;
+        this.Compiler = Compiler;
       });
 
     p.process(f, function (err, file) {
@@ -204,9 +204,9 @@ test('process(file[, options][, done])', function (t) {
       );
     });
 
-    p = unified().use(function (processor) {
-      processor.Parser = simple.Parser;
-      processor.Compiler = simple.Compiler;
+    p = unified().use(function () {
+      this.Parser = simple.Parser;
+      this.Compiler = simple.Compiler;
     });
 
     st.throws(
@@ -221,16 +221,16 @@ test('process(file[, options][, done])', function (t) {
 
   t.test('process(file)', function (st) {
     var p = unified()
-      .use(function (processor) {
-        processor.Parser = simple.Parser;
+      .use(function () {
+        this.Parser = simple.Parser;
       })
       .use(function () {
         return function () {
           return new Error('bravo');
         };
       })
-      .use(function (processor) {
-        processor.Compiler = noop.Compiler;
+      .use(function () {
+        this.Compiler = noop.Compiler;
       });
 
     st.throws(
