@@ -7,6 +7,7 @@ var bail = require('bail');
 var vfile = require('vfile');
 var trough = require('trough');
 var string = require('x-is-string');
+var func = require('x-is-function');
 
 /* Expose an abstract processor. */
 module.exports = unified().abstract();
@@ -76,51 +77,6 @@ function unified() {
     return destination;
   }
 
-  /* Helpers. */
-
-  /* Assert a parser is available. */
-  function assertParser(name) {
-    if (!isFunction(processor.Parser)) {
-      throw new Error('Cannot `' + name + '` without `Parser`');
-    }
-  }
-
-  /* Assert a compiler is available. */
-  function assertCompiler(name) {
-    if (!isFunction(processor.Compiler)) {
-      throw new Error('Cannot `' + name + '` without `Compiler`');
-    }
-  }
-
-  /* Assert the processor is concrete. */
-  function assertConcrete(name) {
-    if (!concrete) {
-      throw new Error(
-        'Cannot invoke `' + name + '` on abstract processor.\n' +
-        'To make the processor concrete, invoke it: ' +
-        'use `processor()` instead of `processor`.'
-      );
-    }
-  }
-
-  /* Assert `node` is a Unist node. */
-  function assertNode(node) {
-    if (!isNode(node)) {
-      throw new Error('Expected node, got `' + node + '`');
-    }
-  }
-
-  /* Assert, if no `done` is given, that `complete` is
-   * `true`. */
-  function assertDone(name, complete, done) {
-    if (!complete && !done) {
-      throw new Error(
-        'Expected `done` to be given to `' + name + '` ' +
-        'as async plug-ins are used'
-      );
-    }
-  }
-
   /* Abstract: used to signal an abstract processor which
    * should made concrete before using.
    *
@@ -139,7 +95,7 @@ function unified() {
   /* Data management.
    * Getter / setter for processor-specific informtion. */
   function data(key, value) {
-    assertConcrete('data');
+    assertConcrete('data', concrete);
 
     if (string(key)) {
       /* Set `key`. */
@@ -183,19 +139,19 @@ function unified() {
     var transformer;
     var result;
 
-    assertConcrete('use');
+    assertConcrete('use', concrete);
 
     /* Multiple attachers. */
-    if ('length' in value && !isFunction(value)) {
+    if ('length' in value && !func(value)) {
       index = -1;
       length = value.length;
 
-      if (!isFunction(value[0])) {
+      if (!func(value[0])) {
         /* Matrix of things. */
         while (++index < length) {
           use(value[index]);
         }
-      } else if (isFunction(value[1])) {
+      } else if (func(value[1])) {
         /* List of things. */
         while (++index < length) {
           use.apply(null, [value[index]].concat(params));
@@ -215,7 +171,7 @@ function unified() {
      * Note that the processor is stored on `attachers`, making
      * it possibly mutating in the future, but also ensuring
      * the parser isn’t overwritten in the future either. */
-    if (isProcessor(value)) {
+    if (proc(value)) {
       parser = processor.Parser;
       result = use(value.attachers);
 
@@ -229,7 +185,7 @@ function unified() {
     /* Single attacher. */
     transformer = value.apply(processor, params);
 
-    if (isFunction(transformer)) {
+    if (func(transformer)) {
       transformers.use(transformer);
     }
 
@@ -243,10 +199,10 @@ function unified() {
     var Parser = processor.Parser;
     var file = vfile(doc);
 
-    assertConcrete('parse');
-    assertParser('parse');
+    assertConcrete('parse', concrete);
+    assertParser('parse', Parser);
 
-    if (isConstructor(Parser)) {
+    if (newable(Parser)) {
       return new Parser(String(file), file).parse();
     }
 
@@ -259,12 +215,12 @@ function unified() {
     var complete = false;
     var result;
 
-    assertConcrete('run');
+    assertConcrete('run', concrete);
     assertNode(node);
 
     result = node;
 
-    if (!done && isFunction(file)) {
+    if (!done && func(file)) {
       done = file;
       file = null;
     }
@@ -288,11 +244,11 @@ function unified() {
     var Compiler = processor.Compiler;
     var file = vfile(doc);
 
-    assertConcrete('stringify');
-    assertCompiler('stringify');
+    assertConcrete('stringify', concrete);
+    assertCompiler('stringify', Compiler);
     assertNode(node);
 
-    if (isConstructor(Compiler)) {
+    if (newable(Compiler)) {
       return new Compiler(node, file).compile();
     }
 
@@ -308,9 +264,9 @@ function unified() {
     var complete = false;
     var file;
 
-    assertConcrete('process');
-    assertParser('process');
-    assertCompiler('process');
+    assertConcrete('process', concrete);
+    assertParser('process', processor.Parser);
+    assertCompiler('process', processor.Compiler);
 
     file = vfile(doc);
 
@@ -330,31 +286,64 @@ function unified() {
   }
 }
 
-/* Check if `node` is a Unist node. */
-function isNode(node) {
-  return node && node.type && string(node.type);
-}
-
-/* Check if `fn` is a function. */
-function isFunction(fn) {
-  return typeof fn === 'function';
-}
-
 /* Check if `processor` is a unified processor. */
-function isProcessor(processor) {
-  return isFunction(processor) && isFunction(processor.use) && isFunction(processor.process);
+function proc(processor) {
+  return func(processor) && func(processor.use) && func(processor.process);
 }
 
 /* Check if `func` is a constructor. */
-function isConstructor(func) {
-  return isFunction(func) && hasKeys(func.prototype);
+function newable(value) {
+  return func(value) && keys(value.prototype);
 }
 
 /* Check if `func` is a constructor. */
-function hasKeys(value) {
+function keys(value) {
   var key;
   for (key in value) {
     return true;
   }
   return false;
+}
+
+/* Assert a parser is available. */
+function assertParser(name, Parser) {
+  if (!func(Parser)) {
+    throw new Error('Cannot `' + name + '` without `Parser`');
+  }
+}
+
+/* Assert a compiler is available. */
+function assertCompiler(name, Compiler) {
+  if (!func(Compiler)) {
+    throw new Error('Cannot `' + name + '` without `Compiler`');
+  }
+}
+
+/* Assert the processor is concrete. */
+function assertConcrete(name, concrete) {
+  if (!concrete) {
+    throw new Error(
+      'Cannot invoke `' + name + '` on abstract processor.\n' +
+      'To make the processor concrete, invoke it: ' +
+      'use `processor()` instead of `processor`.'
+    );
+  }
+}
+
+/* Assert `node` is a Unist node. */
+function assertNode(node) {
+  if (!node || !node.type || !string(node.type)) {
+    throw new Error('Expected node, got `' + node + '`');
+  }
+}
+
+/* Assert, if no `done` is given, that `complete` is
+ * `true`. */
+function assertDone(name, complete, done) {
+  if (!complete && !done) {
+    throw new Error(
+      'Expected `done` to be given to `' + name + '` ' +
+      'as async plug-ins are used'
+    );
+  }
 }
