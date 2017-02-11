@@ -346,13 +346,16 @@ Parse text to a syntax tree.
 
 #### `processor.Parser`
 
-Constructor handling the parsing of text to a syntax tree.
-It’s instantiated by the [**parse**][parse] phase in the process
-with a [**VFile**][file], `settings`, and the processor.
+Function handling the parsing of text to a syntax tree.  Used in the
+[**parse**][parse] phase in the process and invoked with a `string`
+and [**VFile**][file] representation of the document to parse.
 
-The instance must expose a `parse` method which is invoked without
-arguments, and must return a syntax tree representation of the
-[**VFile**][file].
+If `Parser` is a normal parser, it should return a [`Node`][node]: the syntax
+tree representation of the given file.
+
+`Parser` can also be a constructor function, in which case it’s invoked with
+`new`.  In that case, instances should have a `parse` method, which is invoked
+(without arguments), and should return a [`Node`][node].
 
 ### `processor.stringify(node[, file])`
 
@@ -370,13 +373,17 @@ Compile a syntax tree to text.
 
 #### `processor.Compiler`
 
-Constructor handling the compilation of a syntax tree to text.
-It’s instantiated by the [**stringify**][stringify] phase in the
-process with a [**VFile**][file], `settings`, and the processor.
+Function handling the compilation of syntax tree to a text.  Used in the
+[**stringify**][stringify] phase in the process and invoked with a
+[`Node`][node] and [**VFile**][file] representation of the document to
+stringify.
 
-The instance must expose a `compile` method which is invoked with
-the syntax tree, and must return a string representation of that
-syntax tree.
+If `Compiler` is a normal stringifier, it should return a `string`: the text
+representation of the given syntax tree.
+
+`Compiler` can also be a constructor function, in which case it’s invoked with
+`new`.  In that case, instances should have a `compile` method, which is invoked
+(without arguments), and should return a `string`.
 
 ### `processor.run(node[, file][, done])`
 

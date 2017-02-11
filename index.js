@@ -240,12 +240,17 @@ function unified() {
    * into a Unist node using the `Parser` on the
    * processor. */
   function parse(doc) {
+    var Parser = processor.Parser;
     var file = vfile(doc);
 
     assertConcrete('parse');
     assertParser('parse');
 
-    return new processor.Parser(doc.toString(), file).parse();
+    if (isConstructor(Parser)) {
+      return new Parser(String(file), file).parse();
+    }
+
+    return Parser(String(file), file); // eslint-disable-line new-cap
   }
 
   /* Run transforms on a Unist node representation of a file
@@ -279,12 +284,19 @@ function unified() {
   /* Stringify a Unist node representation of a file
    * (in string or VFile representation) into a string
    * using the `Compiler` on the processor. */
-  function stringify(node, file) {
+  function stringify(node, doc) {
+    var Compiler = processor.Compiler;
+    var file = vfile(doc);
+
     assertConcrete('stringify');
     assertCompiler('stringify');
     assertNode(node);
 
-    return new processor.Compiler(node, vfile(file)).compile();
+    if (isConstructor(Compiler)) {
+      return new Compiler(node, file).compile();
+    }
+
+    return Compiler(node, file); // eslint-disable-line new-cap
   }
 
   /* Parse a file (in string or VFile representation)
@@ -320,7 +332,7 @@ function unified() {
 
 /* Check if `node` is a Unist node. */
 function isNode(node) {
-  return node && string(node.type) && node.type.length !== 0;
+  return node && node.type && string(node.type);
 }
 
 /* Check if `fn` is a function. */
@@ -331,4 +343,18 @@ function isFunction(fn) {
 /* Check if `processor` is a unified processor. */
 function isProcessor(processor) {
   return isFunction(processor) && isFunction(processor.use) && isFunction(processor.process);
+}
+
+/* Check if `func` is a constructor. */
+function isConstructor(func) {
+  return isFunction(func) && hasKeys(func.prototype);
+}
+
+/* Check if `func` is a constructor. */
+function hasKeys(value) {
+  var key;
+  for (key in value) {
+    return true;
+  }
+  return false;
 }

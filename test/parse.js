@@ -7,7 +7,7 @@ test('parse(file)', function (t) {
   var p = unified();
   var n;
 
-  t.plan(5);
+  t.plan(8);
 
   t.throws(
     function () {
@@ -20,7 +20,7 @@ test('parse(file)', function (t) {
   n = {type: 'delta'};
 
   p.Parser = function (doc, file) {
-    t.ok(typeof doc, 'string', 'should pass a document');
+    t.equal(typeof doc, 'string', 'should pass a document');
     t.ok('message' in file, 'should pass a file');
   };
 
@@ -30,4 +30,12 @@ test('parse(file)', function (t) {
   };
 
   t.equal(p.parse('charlie'), n, 'should return the result `Parser#parse` returns');
+
+  p.Parser = function (doc, file) {
+    t.equal(typeof doc, 'string', 'should pass a document');
+    t.ok('message' in file, 'should pass a file');
+    return n;
+  };
+
+  t.equal(p.parse('charlie'), n, 'should return the result `parser` returns if it’s not a constructor');
 });
