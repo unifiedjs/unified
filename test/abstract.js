@@ -1,6 +1,5 @@
 'use strict';
 
-var Stream = require('stream').Stream;
 var test = require('tape');
 var unified = require('..');
 
@@ -61,38 +60,6 @@ test('abstract()', function (t) {
     },
     /Cannot invoke `process` on abstract processor/,
     '`run` cannot be invoked on abstract interfaces'
-  );
-
-  t.throws(
-    function () {
-      abstract.pipe();
-    },
-    /Cannot invoke `pipe` on abstract processor/,
-    '`pipe` cannot be invoked on abstract interfaces'
-  );
-
-  t.throws(
-    function () {
-      abstract.write();
-    },
-    /Cannot invoke `write` on abstract processor/,
-    '`write` cannot be invoked on abstract interfaces'
-  );
-
-  t.throws(
-    function () {
-      abstract.end();
-    },
-    /Cannot invoke `end` on abstract processor/,
-    '`end` cannot be invoked on abstract interfaces'
-  );
-
-  t.throws(
-    function () {
-      new Stream().pipe(abstract);
-    },
-    /Cannot pipe into abstract processor/,
-    'cannot pipe into abstract interfaces'
   );
 
   t.end();

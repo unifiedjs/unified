@@ -18,21 +18,38 @@ npm install unified
 ```js
 var unified = require('unified');
 var markdown = require('remark-parse');
-var toc = require('remark-toc');
 var remark2rehype = require('remark-rehype');
 var document = require('rehype-document');
-var minify = require('rehype-preset-minify');
+var format = require('rehype-format');
 var html = require('rehype-stringify');
+var report = require('vfile-reporter');
 
-process.stdin
-  .pipe(unified())
+unified()
   .use(markdown)
-  .use(toc)
   .use(remark2rehype)
   .use(document)
-  .use(minify)
+  .use(format)
   .use(html)
-  .pipe(process.stdout);
+  .process(`# Hello world!`, function (err, file) {
+    console.error(report(err || file));
+    console.log(String(file));
+  });
+```
+
+Yields:
+
+```html
+no issues found
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <h1>Hello world!</h1>
+  </body>
+</html>
 ```
 
 ## Table of Contents
@@ -45,9 +62,6 @@ process.stdin
     *   [processor.stringify(node\[, file\]\[, options\])](#processorstringifynode-file-options)
     *   [processor.run(node\[, file\]\[, done\])](#processorrunnode-file-done)
     *   [processor.process(file|value\[, options\]\[, done\])](#processorprocessfilevalue-options-done)
-    *   [processor.write(chunk\[, encoding\]\[, callback\])](#processorwritechunk-encoding-callback)
-    *   [processor.end()](#processorend)
-    *   [processor.pipe(stream\[, options\])](#processorpipestream-options)
     *   [processor.data(key\[, value\])](#processordatakey-value)
     *   [processor.abstract()](#processorabstract)
 *   [License](#license)
@@ -131,54 +145,10 @@ with [**unified-args**][args], Gulp plug-ins with
 [**unified-engine-gulp**][gulp], and Atom Linters with
 [**unified-engine-atom**][atom].
 
-###### Streaming
-
-**unified** provides a streaming interface which allows it to plug
-into transformations outside of itself.  An example, which reads
-markdown as input, adds a table of content, and writes it out, would
-be as follows:
-
-```js
-var unified = require('unified');
-var markdown = require('remark-parse');
-var stringify = require('remark-stringify');
-var toc = require('remark-toc');
-
-process.stdin
-  .pipe(unified())
-  .use(parse)
-  .use(toc)
-  .use(stringify)
-  .pipe(process.stdout);
-```
-
-Which when given on **stdin**(4):
-
-```md
-# Alpha
-
-## Table of Content
-
-## Bravo
-```
-
-Yields on **stdout**(4):
-
-```md
-# Alpha
-
-## Table of Content
-
-*   [Bravo](#bravo)
-
-## Bravo
-```
-
 ###### Programming interface
 
-Next to streaming, there’s also a programming interface, which gives
-access to processing metadata (such as lint messages), and supports
-multiple passed through files:
+The API gives access to processing metadata (such as lint messages), and
+supports multiple passed through files:
 
 ```js
 var unified = require('unified');
@@ -256,8 +226,11 @@ the remark processor) and linked to **stdin**(4) and **stdout**(4).
 
 ```js
 var remark = require('remark');
+var concat = require('concat-stream');
 
-process.stdin.pipe(remark()).pipe(process.stdout);
+process.stdin.pipe(concat(function (buf) {
+  process.stdout.write(remark().process(buf))
+}));
 ```
 
 ### `processor.use(plugin[, options])`
@@ -464,68 +437,6 @@ any, and the [**VFile**][file].
 *   `err` (`Error`, optional) — Fatal error;
 *   `file` ([**VFile**][file]).
 
-### `processor.write(chunk[, encoding][, callback])`
-
-> **Note**: Although the interface is compatible with streams,
-> all data is currently buffered and passed through in one go.
-> This might be changed later.
-
-Write data to the in-memory buffer.
-
-###### Parameters
-
-*   `chunk` ([`Buffer`][buffer] or `string`);
-*   `encoding` (`string`, defaults to `utf8`);
-*   `callback` (`Function`) — Invoked on successful write.
-
-###### Returns
-
-`boolean` — Whether the write was successful (currently, always true).
-
-### `processor.end()`
-
-Signal the writing is complete.  Passes all arguments to a final
-[`write`][write], and starts the process (using, when available,
-options given to [`pipe`][pipe]).
-
-###### Events
-
-*   `data` (`string`)
-    — When the process was successful, triggered with the compiled
-    file;
-*   `error` (`Error`)
-    — When the process was unsuccessful, triggered with the fatal
-    error;
-*   `warning` ([`VFileMessage`][vfilemessage])
-    — Each message created by the plug-ins in the process is triggered
-    and separately passed.
-
-###### Returns
-
-`boolean` — Whether the write was successful (currently, always true).
-
-### `processor.pipe(stream[, options])`
-
-> **Note**: This does not pass all processed data (e.g., from loose
-> `process()` calls) to the destination stream.  There’s one process
-> created internally especially for streams.  Only data piped into
-> the processor is piped out.
-
-Pipe data streamed into the processor, processed, to the destination
-stream.  Optionally also set the configuration for how the data
-is processed.  Calls [`Stream#pipe`][stream-pipe] with the given
-arguments under the hood.
-
-###### Parameters
-
-*   `stream` ([`WritableStream`][writable-stream]);
-*   `options` (`Object`, optional) — Configuration for process and
-    `stream.pipe`.
-
-###### Returns
-
-[`WritableStream`][writable-stream] — The given stream.
-
 ### `processor.data(key[, value])`
 
 Get or set information in an in-memory key-value store accessible to
@@ -587,13 +498,16 @@ module.exports = unified().use(parse).use(stringify).abstract();
 ```
 
 The below example, `a.js`, shows how that processor can be used to
-create a command line interface which reformats markdown passed on
+create a command line interface which reformats HTML passed on
 **stdin**(4) and outputs it on **stdout**(4).
 
 ```js
 var rehype = require('rehype');
+var concat = require('concat-stream');
 
-process.stdin.pipe(rehype()).pipe(process.stdout);
+process.stdin.pipe(concat(function (buf) {
+  process.stdout.write(rehype().process(buf))
+}));
 ```
 
 The below example, `b.js`, shows a similar looking example which
@@ -603,23 +517,25 @@ an error is thrown.  **This is invalid**:
 
 ```js
 var rehype = require('rehype');
+var concat = require('concat-stream');
 
-process.stdin.pipe(rehype).pipe(process.stdout);
+process.stdin.pipe(concat(function (buf) {
+  process.stdout.write(rehype.process(buf));
+}));
 ```
 
 Yields:
 
 ```txt
-~/index.js:118
+~/index.js:154
       throw new Error(
       ^
 
-Error: Cannot pipe into abstract processor.
+Error: Cannot invoke `process` on abstract processor.
 To make the processor concrete, invoke it: use `processor()` instead of `processor`.
-    at assertConcrete (~/index.js:118:13)
-    at Function.<anonymous> (~/index.js:135:7)
-    ...
-    at Object.<anonymous> (~/b.js:76:15)
+    at assertConcrete (~/index.js:154:13)
+    at Function.process (~/index.js:421:5)
+    at ~/b.js:5:31
     ...
 ```
 
@@ -681,14 +597,6 @@ To make the processor concrete, invoke it: use `processor()` instead of `process
 
 [vfile-utilities]: https://github.com/vfile/vfile#related-tools
 
-[vfilemessage]: https://github.com/vfile/vfile#vfilemessage
-
-[writable-stream]: https://nodejs.org/api/stream.html#stream_class_stream_writable_1
-
-[stream-pipe]: https://nodejs.org/api/stream.html#stream_readable_pipe_destination_options
-
-[buffer]: https://nodejs.org/api/buffer.html#buffer_buffer
-
 [file]: #file
 
 [node]: #node
@@ -720,9 +628,5 @@ To make the processor concrete, invoke it: use `processor()` instead of `process
 [run-done]: #function-doneerr-node-file
 
 [process-done]: #function-doneerr-file
-
-[write]: #processorwritechunk-encoding-callback
-
-[pipe]: #processorpipestream-options
 
 [trough]: https://github.com/wooorm/trough#function-fninput-next

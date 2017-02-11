@@ -42,10 +42,5 @@ test('unified()', function (t) {
     'ancestral processor when invoked (#2)'
   );
 
-  t.equal(unified.writable, true, 'should be `writable`');
-  t.equal(unified.readable, true, 'should be `readable`');
-  t.equal(typeof unified.on, 'function', 'should have `on`');
-  t.equal(typeof unified.emit, 'function', 'should have `emit`');
-
   t.end();
 });
