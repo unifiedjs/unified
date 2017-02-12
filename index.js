@@ -129,7 +129,9 @@ function unified() {
    * *   a matrix: list containing any of the above and
    *     matrices.
    * *   a processor: another processor to use all its
-   *     plugins (except parser if there’s already one). */
+   *     plugins (except parser if there’s already one).
+   * *   a preset: an object with `plugins` (any of the
+   *     above, optional), and `settings` (object, optional). */
   function use(value) {
     var args = slice.call(arguments, 0);
     var params = args.slice(1);
@@ -141,25 +143,33 @@ function unified() {
 
     assertConcrete('use', concrete);
 
-    /* Multiple attachers. */
-    if ('length' in value && !func(value)) {
-      index = -1;
-      length = value.length;
+    if (!func(value)) {
+      /* Multiple attachers. */
+      if ('length' in value) {
+        index = -1;
+        length = value.length;
 
-      if (!func(value[0])) {
-        /* Matrix of things. */
-        while (++index < length) {
-          use(value[index]);
+        if (!func(value[0])) {
+          /* Matrix of things. */
+          while (++index < length) {
+            use(value[index]);
+          }
+        } else if (func(value[1])) {
+          /* List of things. */
+          while (++index < length) {
+            use.apply(null, [value[index]].concat(params));
+          }
+        } else {
+          /* Arguments. */
+          use.apply(null, value);
         }
-      } else if (func(value[1])) {
-        /* List of things. */
-        while (++index < length) {
-          use.apply(null, [value[index]].concat(params));
-        }
-      } else {
-        /* Arguments. */
-        use.apply(null, value);
+
+        return processor;
       }
+
+      /* Preset. */
+      use(value.plugins || []);
+      namespace.settings = extend(namespace.settings || {}, value.settings || {});
 
       return processor;
     }

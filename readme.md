@@ -30,7 +30,7 @@ unified()
   .use(document)
   .use(format)
   .use(html)
-  .process(`# Hello world!`, function (err, file) {
+  .process('# Hello world!', function (err, file) {
     console.error(report(err || file));
     console.log(String(file));
   });
@@ -244,6 +244,7 @@ that plug-in with optional options.
 *   `processor.use(plugins[, options])`;
 *   `processor.use(list)`;
 *   `processor.use(matrix)`;
+*   `processor.use(preset)`;
 *   `processor.use(processor)`.
 
 ###### Parameters
@@ -253,6 +254,9 @@ that plug-in with optional options.
 *   `plugins` (`Array.<Function>`) — List of plugins;
 *   `list` (`Array`) — `plugin` and `options` in an array;
 *   `matrix` (`Array`) — Array where each entry is a `list`;
+*   `preset` (`Object`) — Object with an optional `plugins`
+    (set to `plugins`, `list`, or `matrix`), and/or an optional
+    `settings` object;
 *   `processor` ([`Processor`][processor]) — Other processor whose
     plugins to use (except for a parser).
 
