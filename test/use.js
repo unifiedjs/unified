@@ -55,7 +55,7 @@ test('use(plugin[, options])', function (t) {
 
   t.throws(
     function () {
-      p.run(n);
+      p.runSync(n);
     },
     /Error: Alpha bravo charlie/,
     'should attach a transformer (#3)'
@@ -246,7 +246,7 @@ test('use(processor)', function (t) {
 
   t.throws(
     function () {
-      p.run(n);
+      p.runSync(n);
     },
     /Error: Alpha bravo charlie/,
     'should attach a transformer (#3)'

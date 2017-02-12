@@ -56,7 +56,9 @@ function unified() {
   processor.parse = parse;
   processor.stringify = stringify;
   processor.run = run;
+  processor.runSync = runSync;
   processor.process = process;
+  processor.processSync = processSync;
 
   /* Expose. */
   return processor;
@@ -220,31 +222,57 @@ function unified() {
   }
 
   /* Run transforms on a Unist node representation of a file
-   * (in string or VFile representation). */
-  function run(node, file, done) {
-    var complete = false;
-    var result;
-
+   * (in string or VFile representation), async. */
+  function run(node, file, cb) {
     assertConcrete('run', concrete);
     assertNode(node);
 
-    result = node;
-
-    if (!done && func(file)) {
-      done = file;
+    if (!cb && func(file)) {
+      cb = file;
       file = null;
     }
 
-    transformers.run(node, vfile(file), function (err, tree, file) {
-      complete = true;
-      result = tree || node;
+    if (!cb) {
+      return new Promise(executor);
+    }
 
-      (done || bail)(err, tree, file);
-    });
+    executor(null, cb);
 
-    assertDone('run', complete, done);
+    function executor(resolve, reject) {
+      transformers.run(node, vfile(file), done);
+
+      function done(err, tree, file) {
+        tree = tree || node;
+        if (err) {
+          reject(err);
+        } else if (resolve) {
+          resolve(tree);
+        } else {
+          cb(null, tree, file);
+        }
+      }
+    }
+  }
+
+  /* Run transforms on a Unist node representation of a file
+   * (in string or VFile representation), sync. */
+  function runSync(node, file) {
+    var complete = false;
+    var result;
+
+    assertConcrete('runSync', concrete);
+
+    run(node, file, done);
+
+    assertDone('runSync', 'run', complete);
 
     return result;
+
+    function done(err, tree) {
+      complete = true;
+      bail(err);
+      result = tree;
+    }
   }
 
   /* Stringify a Unist node representation of a file
@@ -270,29 +298,55 @@ function unified() {
    * then run transforms on that node, and compile the
    * resulting node using the `Compiler` on the processor,
    * and store that result on the VFile. */
-  function process(doc, done) {
-    var complete = false;
-    var file;
-
+  function process(doc, cb) {
     assertConcrete('process', concrete);
     assertParser('process', processor.Parser);
     assertCompiler('process', processor.Compiler);
 
+    if (!cb) {
+      return new Promise(executor);
+    }
+
+    executor(null, cb);
+
+    function executor(resolve, reject) {
+      var file = vfile(doc);
+
+      pipeline.run(processor, {file: file}, done);
+
+      function done(err) {
+        if (err) {
+          reject(err);
+        } else if (resolve) {
+          resolve(file);
+        } else {
+          cb(null, file);
+        }
+      }
+    }
+  }
+
+  /* Process the given document (in string or VFile
+   * representation), sync. */
+  function processSync(doc) {
+    var complete = false;
+    var file;
+
+    assertConcrete('processSync', concrete);
+    assertParser('processSync', processor.Parser);
+    assertCompiler('processSync', processor.Compiler);
     file = vfile(doc);
 
-    pipeline.run(processor, {file: file}, function (err) {
-      complete = true;
+    process(file, done);
 
-      if (done) {
-        done(err, file);
-      } else {
-        bail(err);
-      }
-    });
-
-    assertDone('process', complete, done);
+    assertDone('processSync', 'process', complete);
 
     return file;
+
+    function done(err) {
+      complete = true;
+      bail(err);
+    }
   }
 }
 
@@ -349,11 +403,8 @@ function assertNode(node) {
 
 /* Assert, if no `done` is given, that `complete` is
  * `true`. */
-function assertDone(name, complete, done) {
-  if (!complete && !done) {
-    throw new Error(
-      'Expected `done` to be given to `' + name + '` ' +
-      'as async plug-ins are used'
-    );
+function assertDone(name, asyncName, complete) {
+  if (!complete) {
+    throw new Error('`' + name + '` finished async. Use `' + asyncName + '` instead');
   }
 }

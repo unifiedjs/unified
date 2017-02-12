@@ -7,10 +7,12 @@ Compiler.prototype.compile = compile;
 Parser.prototype.parse = parse;
 
 /* Simple Compiler. */
-function Compiler() {}
+function Compiler(node) {
+  this.node = node;
+}
 
-function compile(node) {
-  return node.value;
+function compile() {
+  return this.node.value;
 }
 
 /* Simple Parser. */

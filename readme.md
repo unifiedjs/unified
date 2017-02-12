@@ -61,7 +61,9 @@ no issues found
     *   [processor.parse(file|value)](#processorparsefilevalue)
     *   [processor.stringify(node\[, file\])](#processorstringifynode-file)
     *   [processor.run(node\[, file\]\[, done\])](#processorrunnode-file-done)
+    *   [processor.runSync(node\[, file\])](#processorrunsyncnode-file)
     *   [processor.process(file|value\[, done\])](#processorprocessfilevalue-done)
+    *   [processor.processSync(file|value)](#processorprocesssyncfilevalue)
     *   [processor.data(key\[, value\])](#processordatakey-value)
     *   [processor.abstract()](#processorabstract)
 *   [License](#license)
@@ -229,7 +231,7 @@ var remark = require('remark');
 var concat = require('concat-stream');
 
 process.stdin.pipe(concat(function (buf) {
-  process.stdout.write(remark().process(buf))
+  process.stdout.write(remark().processSync(buf))
 }));
 ```
 
@@ -393,9 +395,6 @@ representation of the given syntax tree.
 
 Transform a syntax tree by applying [**plug-in**][plugin]s to it.
 
-If asynchronous [**plug-in**][plugin]s are configured, an error
-is thrown if [`done`][run-done] is not supplied.
-
 ###### Parameters
 
 *   `node` ([**Node**][node]);
@@ -405,7 +404,8 @@ is thrown if [`done`][run-done] is not supplied.
 
 ###### Returns
 
-[**Node**][node] — The given syntax tree.
+[**Promise**][promise], if `done` is not given.  Rejected with an error,
+or resolved with the resulting syntax tree.
 
 ##### `function done(err[, node, file])`
 
@@ -418,14 +418,27 @@ error, or a syntax tree and a file.
 *   `node` ([**Node**][node]);
 *   `file` ([**VFile**][file]).
 
+### `processor.runSync(node[, file])`
+
+Transform a syntax tree by applying [**plug-in**][plugin]s to it.
+
+If asynchronous [**plug-in**][plugin]s are configured, an error is thrown.
+
+###### Parameters
+
+*   `node` ([**Node**][node]);
+*   `file` ([**VFile**][file], optional);
+    — Or anything which can be given to `vfile()`.
+
+###### Returns
+
+[**Node**][node] — The given syntax tree.
+
 ### `processor.process(file|value[, done])`
 
 Process the given representation of a file as configured on the
 processor.  The process invokes `parse`, `run`, and `stringify`
 internally.
-
-If asynchronous [**plug-in**][plugin]s are configured, an error
-is thrown if [`done`][process-done] is not supplied.
 
 ###### Parameters
 
@@ -435,7 +448,8 @@ is thrown if [`done`][process-done] is not supplied.
 
 ###### Returns
 
-[**VFile**][file] — Virtual file with modified [`contents`][vfile-contents].
+[**Promise**][promise], if `done` is not given.  Rejected with an error,
+or resolved with the resulting file.
 
 #### `function done(err, file)`
 
@@ -446,6 +460,99 @@ any, and the [**VFile**][file].
 
 *   `err` (`Error`, optional) — Fatal error;
 *   `file` ([**VFile**][file]).
+
+###### Example
+
+```js
+var unified = require('unified');
+var markdown = require('remark-parse');
+var remark2rehype = require('remark-rehype');
+var document = require('rehype-document');
+var format = require('rehype-format');
+var html = require('rehype-stringify');
+var report = require('vfile-reporter');
+
+unified()
+  .use(markdown)
+  .use(remark2rehype)
+  .use(document)
+  .use(format)
+  .use(html)
+  .process('# Hello world!')
+  .then(function (file) {
+    console.log(String(file));
+  }, function (err) {
+    console.error(String(err));
+  })
+```
+
+Yields:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <h1>Hello world!</h1>
+  </body>
+</html>
+```
+
+### `processor.processSync(file|value)`
+
+Process the given representation of a file as configured on the
+processor.  The process invokes `parse`, `run`, and `stringify`
+internally.
+
+If asynchronous [**plug-in**][plugin]s are configured, an error is thrown.
+
+###### Parameters
+
+*   `file` ([**VFile**][file]);
+*   `value` (`string`) — String representation of a file;
+
+###### Returns
+
+[**VFile**][file] — Virtual file with modified [`contents`][vfile-contents].
+
+###### Example
+
+```js
+var unified = require('unified');
+var markdown = require('remark-parse');
+var remark2rehype = require('remark-rehype');
+var document = require('rehype-document');
+var format = require('rehype-format');
+var html = require('rehype-stringify');
+var report = require('vfile-reporter');
+
+var processor = unified()
+  .use(markdown)
+  .use(remark2rehype)
+  .use(document)
+  .use(format)
+  .use(html);
+
+console.log(processor.processSync('# Hello world!').toString());
+```
+
+Yields:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <h1>Hello world!</h1>
+  </body>
+</html>
+```
 
 ### `processor.data(key[, value])`
 
@@ -516,7 +623,7 @@ var rehype = require('rehype');
 var concat = require('concat-stream');
 
 process.stdin.pipe(concat(function (buf) {
-  process.stdout.write(rehype().process(buf))
+  process.stdout.write(rehype().processSync(buf))
 }));
 ```
 
@@ -530,7 +637,7 @@ var rehype = require('rehype');
 var concat = require('concat-stream');
 
 process.stdin.pipe(concat(function (buf) {
-  process.stdout.write(rehype.process(buf));
+  process.stdout.write(rehype.processSync(buf));
 }));
 ```
 
@@ -640,3 +747,5 @@ To make the processor concrete, invoke it: use `processor()` instead of `process
 [process-done]: #function-doneerr-file
 
 [trough]: https://github.com/wooorm/trough#function-fninput-next
+
+[promise]: https://developer.mozilla.org/Web/JavaScript/Reference/Global_Objects/Promise

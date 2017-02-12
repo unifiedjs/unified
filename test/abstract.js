@@ -48,6 +48,14 @@ test('abstract()', function (t) {
 
   t.throws(
     function () {
+      abstract.runSync();
+    },
+    /Cannot invoke `runSync` on abstract processor/,
+    '`runSync` cannot be invoked on abstract interfaces'
+  );
+
+  t.throws(
+    function () {
       abstract.run();
     },
     /Cannot invoke `run` on abstract processor/,
@@ -56,10 +64,18 @@ test('abstract()', function (t) {
 
   t.throws(
     function () {
+      abstract.processSync();
+    },
+    /Cannot invoke `processSync` on abstract processor/,
+    '`processSync` cannot be invoked on abstract interfaces'
+  );
+
+  t.throws(
+    function () {
       abstract.process();
     },
     /Cannot invoke `process` on abstract processor/,
-    '`run` cannot be invoked on abstract interfaces'
+    '`process` cannot be invoked on abstract interfaces'
   );
 
   t.end();
