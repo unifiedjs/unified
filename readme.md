@@ -22,7 +22,7 @@ var remark2rehype = require('remark-rehype');
 var document = require('rehype-document');
 var format = require('rehype-format');
 var html = require('rehype-stringify');
-var report = require('vfile-reporter');
+var reporter = require('vfile-reporter');
 
 unified()
   .use(markdown)
@@ -31,7 +31,7 @@ unified()
   .use(format)
   .use(html)
   .process('# Hello world!', function (err, file) {
-    console.error(report(err || file));
+    console.error(reporter(err || file));
     console.log(String(file));
   });
 ```
@@ -66,6 +66,10 @@ no issues found
     *   [processor.processSync(file|value)](#processorprocesssyncfilevalue)
     *   [processor.data(key\[, value\])](#processordatakey-value)
     *   [processor.abstract()](#processorabstract)
+*   [Plugin](#plugin)
+    *   [function attacher(\[options\])](#function-attacheroptions)
+    *   [function transformer(node, file\[, next\])](#function-transformernode-file-next)
+*   [Preset](#preset)
 *   [License](#license)
 
 ## Description
@@ -161,7 +165,7 @@ var english = require('retext-english');
 var equality = require('retext-equality');
 var remark2rehype = require('remark-rehype');
 var html = require('rehype-stringify');
-var report = require('vfile-reporter');
+var reporter = require('vfile-reporter');
 
 unified()
   .use(markdown)
@@ -170,7 +174,7 @@ unified()
   .use(remark2rehype)
   .use(html)
   .process('## Hey guys', function (err, file) {
-    console.err(report(err || file));
+    console.err(reporter(err || file));
     console.log(file.toString());
   });
 ```
@@ -266,124 +270,37 @@ that plug-in with optional options.
 
 `processor` — The processor on which `use` is invoked.
 
-#### `Plugin`
-
-A **unified** plugin changes the way the applied-on processor works,
-in the following ways:
-
-*   It modifies the [**processor**][processor]: such as changing the
-    parser, the compiler, or linking the processor to other processors;
-*   It transforms the [**syntax tree**][node] representation of a file;
-*   It modifies metadata of a file.
-
-Plug-in’s are a concept which materialise as [**attacher**][attacher]s.
-
 ###### Example
 
-`move.js`:
-
-```js
-module.exports = move;
-
-function move(options) {
-  var expected = (options || {}).extname;
-
-  if (!expected) {
-    throw new Error('Missing `extname` in options');
-  }
-
-  return transformer;
-
-  function transformer(tree, file) {
-    if (file.extname && file.extname !== expected) {
-      file.extname = expected;
-    }
-  }
-}
-```
-
-`index.js`:
+There are many ways to pass plugins to `.use()`.  The below example
+gives an overview.
 
 ```js
 var unified = require('unified');
-var parse = require('remark-parse');
-var remark2rehype = require('remark-rehype');
-var stringify = require('rehype-stringify');
-var vfile = require('to-vfile');
-var report = require('vfile-reporter');
-var move = require('./move');
 
-rehype()
-  .use(parse)
-  .use(remark2rehype)
-  .use(move, {extname: '.html'})
-  .use(stringify)
-  .process(file.readSync('index.md'), function (err, file) {
-    console.error(reporter(err || file));
-    if (!err) {
-      vfile.writeSync(file); // written to `index.html`
-    }
-  })
+unified()
+  // Single plugin:
+  .use(plugin)
+  // Plugin with options:
+  .use(plugin, {})
+  // Plugins:
+  .use([plugin, pluginB])
+  // Plugins with the same options:
+  .use([plugin, pluginB], {})
+  // List:
+  .use([plugin, {}])
+  // Matrix of lists:
+  .use([[plugin, {}], [pluginB, {}]])
+  // Preset with plugins:
+  .use({plugins: [plugin, pluginB]})
+  // Preset with matrix and settings:
+  .use({plugins: [[plugin, {}], [pluginB, {}]], settings: {position: false}})
+  // Settings only:
+  .use({settings: {position: false}});
+
+function plugin() {}
+function pluginB() {}
 ```
-
-#### `function attacher([options])`
-
-An attacher is the thing passed to [`use`][use].  It configures the
-processor and in turn can receive options.
-
-Attachers can configure processors, such as by interacting with parsers
-and compilers, linking them to other processors, or by specifying how
-the syntax tree is handled.
-
-###### Context
-
-The context object is set to the invoked on [`processor`][processor].
-
-###### Parameters
-
-*   `options` (`*`, optional) — Configuration.
-
-###### Returns
-
-[`transformer`][transformer] — Optional.
-
-#### `function transformer(node, file[, next])`
-
-Transformers modify the syntax tree or metadata of a file.
-A transformer is a function which is invoked each time a file is
-passed through the transform phase.  If an error occurs (either
-because it’s thrown, returned, rejected, or passed to [`next`][next]),
-the process stops.
-
-The transformation process in **unified** is handled by [`trough`][trough],
-see it’s documentation for the exact semantics of transformers.
-
-###### Parameters
-
-*   `node` ([**Node**][node]);
-*   `file` ([**VFile**][file]);
-*   `next` ([`Function`][next], optional).
-
-###### Returns
-
-*   `Error` — Can be returned to stop the process;
-*   [**Node**][node] — Can be returned and results in further
-    transformations and `stringify`s to be performed on the new
-    tree;
-*   `Promise` — If a promise is returned, the function is asynchronous,
-    and **must** be resolved (optionally with a [**Node**][node]) or
-    rejected (optionally with an `Error`).
-
-##### `function next(err[, tree[, file]])`
-
-If the signature of a transformer includes `next` (third argument),
-the function **may** finish asynchronous, and **must** invoke `next()`.
-
-###### Parameters
-
-*   `err` (`Error`, optional) — Stop the process;
-*   `node` ([**Node**][node], optional) — New syntax tree;
-*   `file` ([**VFile**][file], optional) — New virtual file.
 
 ### `processor.parse(file|value)`
 
@@ -518,7 +435,7 @@ var remark2rehype = require('remark-rehype');
 var document = require('rehype-document');
 var format = require('rehype-format');
 var html = require('rehype-stringify');
-var report = require('vfile-reporter');
+var reporter = require('vfile-reporter');
 
 unified()
   .use(markdown)
@@ -575,7 +492,7 @@ var remark2rehype = require('remark-rehype');
 var document = require('rehype-document');
 var format = require('rehype-format');
 var html = require('rehype-stringify');
-var report = require('vfile-reporter');
+var reporter = require('vfile-reporter');
 
 var processor = unified()
   .use(markdown)
@@ -702,6 +619,169 @@ To make the processor concrete, invoke it: use `processor()` instead of `process
     at Function.process (~/index.js:421:5)
     at ~/b.js:5:31
     ...
+```
+
+## `Plugin`
+
+A **unified** plugin changes the way the applied-on processor works,
+in the following ways:
+
+*   It modifies the [**processor**][processor]: such as changing the
+    parser, the compiler, or linking the processor to other processors;
+*   It transforms the [**syntax tree**][node] representation of a file;
+*   It modifies metadata of a file.
+
+Plug-in’s are a concept which materialise as [**attacher**][attacher]s.
+
+###### Example
+
+`move.js`:
+
+```js
+module.exports = move;
+
+function move(options) {
+  var expected = (options || {}).extname;
+
+  if (!expected) {
+    throw new Error('Missing `extname` in options');
+  }
+
+  return transformer;
+
+  function transformer(tree, file) {
+    if (file.extname && file.extname !== expected) {
+      file.extname = expected;
+    }
+  }
+}
+```
+
+`index.js`:
+
+```js
+var unified = require('unified');
+var parse = require('remark-parse');
+var remark2rehype = require('remark-rehype');
+var stringify = require('rehype-stringify');
+var vfile = require('to-vfile');
+var reporter = require('vfile-reporter');
+var move = require('./move');
+
+rehype()
+  .use(parse)
+  .use(remark2rehype)
+  .use(move, {extname: '.html'})
+  .use(stringify)
+  .process(vfile.readSync('index.md'), function (err, file) {
+    console.error(reporter(err || file));
+    if (file) {
+      vfile.writeSync(file); // written to `index.html`
+    }
+  })
+```
+
+### `function attacher([options])`
+
+An attacher is the thing passed to [`use`][use].  It configures the
+processor and in turn can receive options.
+
+Attachers can configure processors, such as by interacting with parsers
+and compilers, linking them to other processors, or by specifying how
+the syntax tree is handled.
+
+###### Context
+
+The context object is set to the invoked on [`processor`][processor].
+
+###### Parameters
+
+*   `options` (`*`, optional) — Configuration.
+
+###### Returns
+
+[`transformer`][transformer] — Optional.
+
+### `function transformer(node, file[, next])`
+
+Transformers modify the syntax tree or metadata of a file.
+A transformer is a function which is invoked each time a file is
+passed through the transform phase.  If an error occurs (either
+because it’s thrown, returned, rejected, or passed to [`next`][next]),
+the process stops.
+
+The transformation process in **unified** is handled by [`trough`][trough],
+see it’s documentation for the exact semantics of transformers.
+
+###### Parameters
+
+*   `node` ([**Node**][node]);
+*   `file` ([**VFile**][file]);
+*   `next` ([`Function`][next], optional).
+
+###### Returns
+
+*   `Error` — Can be returned to stop the process;
+*   [**Node**][node] — Can be returned and results in further
+    transformations and `stringify`s to be performed on the new
+    tree;
+*   `Promise` — If a promise is returned, the function is asynchronous,
+    and **must** be resolved (optionally with a [**Node**][node]) or
+    rejected (optionally with an `Error`).
+
+#### `function next(err[, tree[, file]])`
+
+If the signature of a transformer includes `next` (third argument),
+the function **may** finish asynchronous, and **must** invoke `next()`.
+
+###### Parameters
+
+*   `err` (`Error`, optional) — Stop the process;
+*   `node` ([**Node**][node], optional) — New syntax tree;
+*   `file` ([**VFile**][file], optional) — New virtual file.
+
+## `Preset`
+
+A **unified** preset provides a potentially sharable way to configure
+processors.  They can contain multiple plugins and optionally settings as
+well.
+
+###### Example
+
+`preset.js`:
+
+```js
+exports.settings = {bullet: '*', fences: true}
+
+exports.plugins = [
+  [require('remark-preset-lint-recommended')]
+  [require('remark-comment-config')],
+  [require('remark-validate-links')],
+  [require('remark-lint'), {
+    blockquoteIndentation: 2,
+    checkboxCharacterStyle: {checked: 'x', unchecked: ' '},
+    // ...
+  }],
+  [require('remark-toc'), {maxDepth: 3, tight: true}]
+  [require('remark-github')]
+]
+```
+
+`index.js`:
+
+```js
+var remark = require('remark');
+var vfile = require('to-vfile');
+var reporter = require('vfile-reporter');
+var preset = require('./preset');
+
+remark().use(preset).process(vfile.readSync('index.md'), function (err, file) {
+  console.error(reporter(err || file));
+
+  if (file) {
+    vfile.writeSync(file);
+  }
+})
 ```
 
 ## License
