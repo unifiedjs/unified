@@ -278,6 +278,54 @@ in the following ways:
 
 Plug-in’s are a concept which materialise as [**attacher**][attacher]s.
 
+###### Example
+
+`move.js`:
+
+```js
+module.exports = move;
+
+function move(options) {
+  var expected = (options || {}).extname;
+
+  if (!expected) {
+    throw new Error('Missing `extname` in options');
+  }
+
+  return transformer;
+
+  function transformer(tree, file) {
+    if (file.extname && file.extname !== expected) {
+      file.extname = expected;
+    }
+  }
+}
+```
+
+`index.js`:
+
+```js
+var unified = require('unified');
+var parse = require('remark-parse');
+var remark2rehype = require('remark-rehype');
+var stringify = require('rehype-stringify');
+var vfile = require('to-vfile');
+var report = require('vfile-reporter');
+var move = require('./move');
+
+rehype()
+  .use(parse)
+  .use(remark2rehype)
+  .use(move, {extname: '.html'})
+  .use(stringify)
+  .process(file.readSync('index.md'), function (err, file) {
+    console.error(reporter(err || file));
+    if (!err) {
+      vfile.writeSync(file); // written to `index.html`
+    }
+  })
+```
+
 #### `function attacher([options])`
 
 An attacher is the thing passed to [`use`][use].  It configures the
