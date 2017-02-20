@@ -256,11 +256,17 @@ that plug-in with optional options.
 *   `options` (`*`, optional) — Configuration for `plugin`.
 *   `preset` (`Object`) — Object with an optional `plugins` (set to `list`),
     and/or an optional `settings` object;
-*   `list` (`Array`) — plugins, presets, and arguments, in an array.
+*   `list` (`Array`) — plugins, presets, and arguments (a plugin and options
+    in an array), in an array.
 
 ###### Returns
 
 `processor` — The processor on which `use` is invoked.
+
+###### Note
+
+`use` cannot be called on [frozen][freeze] processors.  Invoke the processor
+first to create a new unfrozen processor.
 
 ###### Example
 
@@ -299,6 +305,10 @@ Parse text to a syntax tree.
 
 [**Node**][node] — Syntax tree representation of input.
 
+###### Note
+
+`parse` [freezes][freeze] the processor, if not already frozen.
+
 #### `processor.Parser`
 
 Function handling the parsing of text to a syntax tree.  Used in the
@@ -325,6 +335,10 @@ Compile a syntax tree to text.
 ###### Returns
 
 `string` — String representation of the syntax tree file.
+
+###### Note
+
+`stringify` [freezes][freeze] the processor, if not already frozen.
 
 #### `processor.Compiler`
 
@@ -356,6 +370,10 @@ Transform a syntax tree by applying [**plug-in**][plugin]s to it.
 [**Promise**][promise], if `done` is not given.  Rejected with an error,
 or resolved with the resulting syntax tree.
 
+###### Note
+
+`run` [freezes][freeze] the processor, if not already frozen.
+
 ##### `function done(err[, node, file])`
 
 Invoked when transformation is complete.  Either invoked with an
@@ -383,6 +401,10 @@ If asynchronous [**plug-in**][plugin]s are configured, an error is thrown.
 
 [**Node**][node] — The given syntax tree.
 
+###### Note
+
+`runSync` [freezes][freeze] the processor, if not already frozen.
+
 ### `processor.process(file|value[, done])`
 
 Process the given representation of a file as configured on the
@@ -399,6 +421,10 @@ internally.
 
 [**Promise**][promise], if `done` is not given.  Rejected with an error,
 or resolved with the resulting file.
+
+###### Note
+
+`process` [freezes][freeze] the processor, if not already frozen.
 
 #### `function done(err, file)`
 
@@ -467,6 +493,10 @@ If asynchronous [**plug-in**][plugin]s are configured, an error is thrown.
 
 [**VFile**][file] — Virtual file with modified [`contents`][vfile-contents].
 
+###### Note
+
+`processSync` [freezes][freeze] the processor, if not already frozen.
+
 ###### Example
 
 ```js
@@ -520,6 +550,11 @@ needed when parsing, transforming, and compiling HTML.
 *   `processor` — If setting, the processor on which `data` is invoked;
 *   `*` — If getting, the value at `key`.
 
+###### Note
+
+Setting information with `data` cannot occur on [frozen][freeze] processors.
+Invoke the processor first to create a new unfrozen processor.
+
 ###### Example
 
 The following example show how to get and set information:
@@ -543,6 +578,10 @@ be configured or processed directly.
 
 Once a processor is frozen, it cannot be unfrozen.  But, a new processor
 functioning just like it can be created by invoking the processor.
+
+It’s possible to freeze processors explicitly, by calling `.freeze()`, but
+[`.parse()`][parse], [`.run()`][run], [`.stringify()`][stringify], and
+[`.process()`][process] call `.freeze()` to freeze a processor too.
 
 ###### Returns
 
@@ -683,6 +722,13 @@ The context object is set to the invoked on [`processor`][processor].
 ###### Returns
 
 [`transformer`][transformer] — Optional.
+
+###### Note
+
+Attachers are invoked when the processor is [frozen][freeze]: either when
+`.freeze()` is called explicitly, or when [`.parse()`][parse], [`.run()`][run],
+[`.stringify()`][stringify], or [`.process()`][process] is called for the first
+time.
 
 ### `function transformer(node, file[, next])`
 
@@ -837,6 +883,8 @@ remark().use(preset).process(vfile.readSync('index.md'), function (err, file) {
 [parser]: #processorparser
 
 [stringify]: #processorstringifynode-file
+
+[run]: #processorrunnode-file-done
 
 [compiler]: #processorcompiler
 
