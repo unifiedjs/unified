@@ -65,7 +65,7 @@ no issues found
     *   [processor.process(file|value\[, done\])](#processorprocessfilevalue-done)
     *   [processor.processSync(file|value)](#processorprocesssyncfilevalue)
     *   [processor.data(key\[, value\])](#processordatakey-value)
-    *   [processor.abstract()](#processorabstract)
+    *   [processor.freeze()](#processorfreeze)
 *   [Plugin](#plugin)
     *   [function attacher(\[options\])](#function-attacheroptions)
     *   [function transformer(node, file\[, next\])](#function-transformernode-file-next)
@@ -102,9 +102,9 @@ the descendant processor is configured in the future, that
 configuration does not change the ancestral processor.
 
 Often, when processors are exposed from a library (for example,
-unified itself), they should not be modified directly, as that
+unified itself), they should not be configured directly, as that
 would change their behaviour for all users.  Those processors are
-[**abstract**][abstract], and they should be made concrete before
+[**frozen**][freeze], and new processors should be made from them before
 they are used, by invoking them.
 
 ###### Node
@@ -220,7 +220,7 @@ Object describing how to process text.
 
 ###### Returns
 
-`Function` — A new [**concrete**][abstract] processor which is
+`Function` — A new [**unfrozen**][freeze] processor which is
 configured to function the same as its ancestor.  But, when the
 descendant processor is configured in the future, that configuration
 does not change the ancestral processor.
@@ -247,24 +247,16 @@ that plug-in with optional options.
 ###### Signatures
 
 *   `processor.use(plugin[, options])`;
-*   `processor.use(plugins[, options])`;
-*   `processor.use(list)`;
-*   `processor.use(matrix)`;
 *   `processor.use(preset)`;
-*   `processor.use(processor)`.
+*   `processor.use(list)`;
 
 ###### Parameters
 
 *   `plugin` ([`Plugin`][plugin]);
 *   `options` (`*`, optional) — Configuration for `plugin`.
-*   `plugins` (`Array.<Function>`) — List of plugins;
-*   `list` (`Array`) — `plugin` and `options` in an array;
-*   `matrix` (`Array`) — Array where each entry is a `list`;
-*   `preset` (`Object`) — Object with an optional `plugins`
-    (set to `plugins`, `list`, or `matrix`), and/or an optional
-    `settings` object;
-*   `processor` ([`Processor`][processor]) — Other processor whose
-    plugins to use (except for a parser).
+*   `preset` (`Object`) — Object with an optional `plugins` (set to `list`),
+    and/or an optional `settings` object;
+*   `list` (`Array`) — plugins, presets, and arguments, in an array.
 
 ###### Returns
 
@@ -279,22 +271,14 @@ gives an overview.
 var unified = require('unified');
 
 unified()
-  // Single plugin:
-  .use(plugin)
   // Plugin with options:
   .use(plugin, {})
   // Plugins:
   .use([plugin, pluginB])
-  // Plugins with the same options:
-  .use([plugin, pluginB], {})
-  // List:
-  .use([plugin, {}])
-  // Matrix of lists:
-  .use([[plugin, {}], [pluginB, {}]])
-  // Preset with plugins:
-  .use({plugins: [plugin, pluginB]})
-  // Preset with matrix and settings:
-  .use({plugins: [[plugin, {}], [pluginB, {}]], settings: {position: false}})
+  // Two plugins, the second with options:
+  .use([plugin, [pluginB, {}]])
+  // Preset with plugins and settings:
+  .use({plugins: [plugin, [pluginB, {}]], settings: {position: false}})
   // Settings only:
   .use({settings: {position: false}});
 
@@ -552,19 +536,17 @@ Yields:
 bravo
 ```
 
-### `processor.abstract()`
+### `processor.freeze()`
 
-Turn a processor into an abstract processor.  Abstract processors
-are meant to be extended, and not to be configured or processed
-directly (as concrete processors are).
+Freeze a processor.  Frozen processors are meant to be extended, and not to
+be configured or processed directly.
 
-Once a processor is abstract, it cannot be made concrete again.
-But, a new concrete processor functioning just like it can be
-created by invoking the processor.
+Once a processor is frozen, it cannot be unfrozen.  But, a new processor
+functioning just like it can be created by invoking the processor.
 
 ###### Returns
 
-`Processor` — The processor on which `abstract` is invoked.
+`Processor` — The processor on which `freeze` is invoked.
 
 ###### Example
 
@@ -576,49 +558,49 @@ var unified = require('unified');
 var parse = require('rehype-parse');
 var stringify = require('rehype-stringify');
 
-module.exports = unified().use(parse).use(stringify).abstract();
+module.exports = unified().use(parse).use(stringify).freeze();
 ```
 
-The below example, `a.js`, shows how that processor can be used to
-create a command line interface which reformats HTML passed on
-**stdin**(4) and outputs it on **stdout**(4).
+The below example, `a.js`, shows how that processor can be used and
+configured.
 
 ```js
 var rehype = require('rehype');
-var concat = require('concat-stream');
+var format = require('rehype-format');
+// ...
 
-process.stdin.pipe(concat(function (buf) {
-  process.stdout.write(rehype().processSync(buf))
-}));
+rehype()
+  .use(format)
+  // ...
 ```
 
 The below example, `b.js`, shows a similar looking example which
-operates on the abstract [**rehype**][rehype] interface.  If this
+operates on the frozen [**rehype**][rehype] interface.  If this
 behaviour was allowed it would result in unexpected behaviour, so
 an error is thrown.  **This is invalid**:
 
 ```js
 var rehype = require('rehype');
-var concat = require('concat-stream');
+var format = require('rehype-format');
+// ...
 
-process.stdin.pipe(concat(function (buf) {
-  process.stdout.write(rehype.processSync(buf));
-}));
+rehype
+  .use(format)
+  // ...
 ```
 
 Yields:
 
 ```txt
-~/index.js:154
-      throw new Error(
-      ^
+~/node_modules/unified/index.js:436
+    throw new Error(
+    ^
 
-Error: Cannot invoke `process` on abstract processor.
-To make the processor concrete, invoke it: use `processor()` instead of `processor`.
-    at assertConcrete (~/index.js:154:13)
-    at Function.process (~/index.js:421:5)
-    at ~/b.js:5:31
-    ...
+Error: Cannot invoke `use` on a frozen processor.
+Create a new processor first, by invoking it: use `processor()` instead of `processor`.
+    at assertUnfrozen (~/node_modules/unified/index.js:436:11)
+    at Function.use (~/node_modules/unified/index.js:170:5)
+    at Object.<anonymous> (~/b.js:6:4)
 ```
 
 ## `Plugin`
@@ -866,7 +848,7 @@ remark().use(preset).process(vfile.readSync('index.md'), function (err, file) {
 
 [next]: #function-nexterr-tree-file
 
-[abstract]: #processorabstract
+[freeze]: #processorfreeze
 
 [plugin]: #plugin
 

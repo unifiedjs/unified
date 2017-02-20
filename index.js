@@ -8,11 +8,11 @@ var vfile = require('vfile');
 var trough = require('trough');
 var string = require('x-is-string');
 var func = require('x-is-function');
+var array = require('isarray');
 
-/* Expose an abstract processor. */
-module.exports = unified().abstract();
+/* Expose a frozen processor. */
+module.exports = unified().freeze();
 
-/* Methods. */
 var slice = [].slice;
 
 /* Process pipeline. */
@@ -40,13 +40,13 @@ function unified() {
   var attachers = [];
   var transformers = trough();
   var namespace = {};
-  var concrete = true;
+  var frozen = false;
 
   /* Data management. */
   processor.data = data;
 
   /* Lock. */
-  processor.abstract = abstract;
+  processor.freeze = freeze;
 
   /* Plug-ins. */
   processor.attachers = attachers;
@@ -79,17 +79,49 @@ function unified() {
     return destination;
   }
 
-  /* Abstract: used to signal an abstract processor which
-   * should made concrete before using.
+  /* Freeze: used to signal a processor that has finished
+   * configuration.
    *
-   * For example, take unified itself.  It’s abstract.
+   * For example, take unified itself.  It’s frozen.
    * Plug-ins should not be added to it.  Rather, it should
-   * be made concrete (by invoking it) before modifying it.
+   * be extended, by invoking it, before modifying it.
    *
    * In essence, always invoke this when exporting a
    * processor. */
-  function abstract() {
-    concrete = false;
+  function freeze() {
+    var length = attachers.length;
+    var index = -1;
+    var values;
+    var plugin;
+    var options;
+    var transformer;
+
+    if (frozen) {
+      return processor;
+    }
+
+    while (++index < length) {
+      values = attachers[index];
+      plugin = values[0];
+      options = values[1];
+      transformer = null;
+
+      if (options === false) {
+        return;
+      }
+
+      if (options === true) {
+        values[1] = undefined;
+      }
+
+      transformer = plugin.apply(processor, values.slice(1));
+
+      if (func(transformer)) {
+        transformers.use(transformer);
+      }
+    }
+
+    frozen = true;
 
     return processor;
   }
@@ -97,11 +129,11 @@ function unified() {
   /* Data management.
    * Getter / setter for processor-specific informtion. */
   function data(key, value) {
-    assertConcrete('data', concrete);
-
     if (string(key)) {
       /* Set `key`. */
       if (arguments.length === 2) {
+        assertUnfrozen('data', frozen);
+
         namespace[key] = value;
 
         return processor;
@@ -111,15 +143,15 @@ function unified() {
       return (has(namespace, key) && namespace[key]) || null;
     }
 
-    /* Get space. */
-    if (!key) {
-      return namespace;
+    /* Set space. */
+    if (key) {
+      assertUnfrozen('data', frozen);
+      namespace = key;
+      return processor;
     }
 
-    /* Set space. */
-    namespace = key;
-
-    return processor;
+    /* Get space. */
+    return namespace;
   }
 
   /* Plug-in management.
@@ -130,78 +162,100 @@ function unified() {
    * *   a tuple of one attacher and options.
    * *   a matrix: list containing any of the above and
    *     matrices.
-   * *   a processor: another processor to use all its
-   *     plugins (except parser if there’s already one).
    * *   a preset: an object with `plugins` (any of the
    *     above, optional), and `settings` (object, optional). */
   function use(value) {
-    var args = slice.call(arguments, 0);
-    var params = args.slice(1);
-    var parser;
-    var index;
-    var length;
-    var transformer;
-    var result;
+    var settings;
 
-    assertConcrete('use', concrete);
+    assertUnfrozen('use', frozen);
 
-    if (!func(value)) {
-      /* Multiple attachers. */
+    if (value === null || value === undefined) {
+      /* empty */
+    } else if (func(value)) {
+      addPlugin.apply(null, arguments);
+    } else if (typeof value === 'object') {
       if ('length' in value) {
-        index = -1;
-        length = value.length;
-
-        if (!func(value[0])) {
-          /* Matrix of things. */
-          while (++index < length) {
-            use(value[index]);
-          }
-        } else if (func(value[1])) {
-          /* List of things. */
-          while (++index < length) {
-            use.apply(null, [value[index]].concat(params));
-          }
-        } else {
-          /* Arguments. */
-          use.apply(null, value);
-        }
-
-        return processor;
+        addList(value);
+      } else {
+        addPreset(value);
       }
-
-      /* Preset. */
-      use(value.plugins || []);
-      namespace.settings = extend(namespace.settings || {}, value.settings || {});
-
-      return processor;
+    } else {
+      throw new Error('Expected usable value, not `' + value + '`');
     }
 
-    /* Store attacher. */
-    attachers.push(args);
-
-    /* Use a processor (except its parser if there’s already one.
-     * Note that the processor is stored on `attachers`, making
-     * it possibly mutating in the future, but also ensuring
-     * the parser isn’t overwritten in the future either. */
-    if (proc(value)) {
-      parser = processor.Parser;
-      result = use(value.attachers);
-
-      if (parser) {
-        processor.Parser = parser;
-      }
-
-      return result;
-    }
-
-    /* Single attacher. */
-    transformer = value.apply(processor, params);
-
-    if (func(transformer)) {
-      transformers.use(transformer);
+    if (settings) {
+      namespace.settings = extend(namespace.settings || {}, settings);
     }
 
     return processor;
+
+    function addPreset(result) {
+      addList(result.plugins);
+
+      if (result.settings) {
+        settings = extend(settings || {}, result.settings);
+      }
+    }
+
+    function add(value) {
+      if (func(value)) {
+        addPlugin(value);
+      } else if (typeof value === 'object') {
+        if ('length' in value) {
+          addPlugin.apply(null, value);
+        } else {
+          addPreset(value);
+        }
+      } else {
+        throw new Error('Expected usable value, not `' + value + '`');
+      }
+    }
+
+    function addList(plugins) {
+      var length;
+      var index;
+
+      if (plugins === null || plugins === undefined) {
+        /* empty */
+      } else if (array(plugins)) {
+        length = plugins.length;
+        index = -1;
+
+        while (++index < length) {
+          add(plugins[index]);
+        }
+      } else {
+        throw new Error('Expected a list of plugins, not `' + plugins + '`');
+      }
+    }
+
+    function addPlugin(plugin, value) {
+      var entry = find(plugin);
+
+      if (entry) {
+        if (value !== false && entry[1] !== false && !array(value)) {
+          value = extend(entry[1], value);
+        }
+
+        entry[1] = value;
+      } else {
+        attachers.push(slice.call(arguments));
+      }
+    }
+  }
+
+  function find(plugin) {
+    var length = attachers.length;
+    var index = -1;
+    var entry;
+
+    while (++index < length) {
+      entry = attachers[index];
+
+      if (entry[0] === plugin) {
+        return entry;
+      }
+    }
   }
 
   /* Parse a file (in string or VFile representation)
@@ -211,7 +265,7 @@ function unified() {
     var Parser = processor.Parser;
     var file = vfile(doc);
 
-    assertConcrete('parse', concrete);
+    freeze();
     assertParser('parse', Parser);
 
     if (newable(Parser)) {
@@ -224,8 +278,8 @@ function unified() {
   /* Run transforms on a Unist node representation of a file
    * (in string or VFile representation), async. */
   function run(node, file, cb) {
-    assertConcrete('run', concrete);
     assertNode(node);
+    freeze();
 
     if (!cb && func(file)) {
       cb = file;
@@ -260,8 +314,6 @@ function unified() {
     var complete = false;
     var result;
 
-    assertConcrete('runSync', concrete);
-
     run(node, file, done);
 
     assertDone('runSync', 'run', complete);
@@ -282,7 +334,7 @@ function unified() {
     var Compiler = processor.Compiler;
     var file = vfile(doc);
 
-    assertConcrete('stringify', concrete);
+    freeze();
     assertCompiler('stringify', Compiler);
     assertNode(node);
 
@@ -299,7 +351,7 @@ function unified() {
    * resulting node using the `Compiler` on the processor,
    * and store that result on the VFile. */
   function process(doc, cb) {
-    assertConcrete('process', concrete);
+    freeze();
     assertParser('process', processor.Parser);
     assertCompiler('process', processor.Compiler);
 
@@ -332,7 +384,7 @@ function unified() {
     var complete = false;
     var file;
 
-    assertConcrete('processSync', concrete);
+    freeze();
     assertParser('processSync', processor.Parser);
     assertCompiler('processSync', processor.Compiler);
     file = vfile(doc);
@@ -348,11 +400,6 @@ function unified() {
       bail(err);
     }
   }
-}
-
-/* Check if `processor` is a unified processor. */
-function proc(processor) {
-  return func(processor) && func(processor.use) && func(processor.process);
 }
 
 /* Check if `func` is a constructor. */
@@ -383,12 +430,12 @@ function assertCompiler(name, Compiler) {
   }
 }
 
-/* Assert the processor is concrete. */
-function assertConcrete(name, concrete) {
-  if (!concrete) {
+/* Assert the processor is not frozen. */
+function assertUnfrozen(name, frozen) {
+  if (frozen) {
     throw new Error(
-      'Cannot invoke `' + name + '` on abstract processor.\n' +
-      'To make the processor concrete, invoke it: ' +
+      'Cannot invoke `' + name + '` on a frozen processor.\n' +
+      'Create a new processor first, by invoking it: ' +
       'use `processor()` instead of `processor`.'
     );
   }

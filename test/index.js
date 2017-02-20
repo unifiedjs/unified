@@ -1,7 +1,7 @@
 'use strict';
 
 require('./core');
-require('./abstract');
+require('./freeze');
 require('./data');
 require('./use');
 require('./parse');

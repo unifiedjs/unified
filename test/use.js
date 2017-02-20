@@ -5,99 +5,273 @@ var unified = require('..');
 
 /* Plugins. */
 test('use(plugin[, options])', function (t) {
-  var p = unified();
-  var o = {};
-  var n;
-
-  t.plan(11);
-
-  p.use(function (options) {
-    t.equal(this, p, 'should invoke a plugin with `processor` as the context');
-    t.equal(options, o, 'should invoke a plugin with `options`');
-  }, o);
-
-  p.use([
-    function () {
-      t.equal(this, p, 'should support a list of plugins (#1)');
-    },
-    function () {
-      t.equal(this, p, 'should support a list of plugins (#2)');
-    }
-  ]);
-
-  p.use([function () {
-    t.equal(this, p, 'should support a list of one plugin');
-  }]);
-
-  p.use([function (options) {
-    t.equal(options, o, 'should support a plugin--options tuple');
-  }, o]);
-
-  p.use([
-    [function (options) {
-      t.equal(options, o, 'should support a matrix (#1)');
-    }, o],
-    [function () {
-      t.equal(this, p, 'should support a matrix (#2)');
-    }]
-  ]);
-
-  n = {type: 'test'};
-
-  p.use(function () {
-    return function (node, file) {
-      t.equal(node, n, 'should attach a transformer (#1)');
-      t.ok('message' in file, 'should attach a transformer (#2)');
-
-      throw new Error('Alpha bravo charlie');
-    };
+  t.test('should ignore missing values', function (st) {
+    var p = unified();
+    st.equal(p.use(), p, 'missing');
+    st.equal(p.use(null), p, '`null`');
+    st.equal(p.use(undefined), p, '`undefined`');
+    st.end();
   });
 
-  t.throws(
-    function () {
-      p.runSync(n);
-    },
-    /Error: Alpha bravo charlie/,
-    'should attach a transformer (#3)'
-  );
+  t.test('should throw when given invalid values', function (st) {
+    st.throws(
+      function () {
+        unified().use(false);
+      },
+      /^Error: Expected usable value, not `false`$/,
+      '`false`'
+    );
+
+    st.throws(
+      function () {
+        unified().use(true);
+      },
+      /^Error: Expected usable value, not `true`$/,
+      '`true`'
+    );
+
+    st.throws(
+      function () {
+        unified().use('alfred');
+      },
+      /^Error: Expected usable value, not `alfred`$/,
+      '`string`'
+    );
+
+    st.end();
+  });
+
+  t.test('should support plugin and options', function (st) {
+    var p = unified();
+    var o = {};
+
+    st.plan(2);
+
+    p
+      .use(function (options) {
+        st.equal(this, p, 'should invoke a plugin with `processor` as the context');
+        st.equal(options, o, 'should invoke a plugin with `options`');
+      }, o)
+      .freeze();
+  });
+
+  t.test('should support a list of plugins', function (st) {
+    var p = unified();
+
+    st.plan(2);
+
+    p
+      .use([
+        function () {
+          st.equal(this, p, 'should support a list of plugins (#1)');
+        },
+        function () {
+          st.equal(this, p, 'should support a list of plugins (#2)');
+        }
+      ])
+      .freeze();
+  });
+
+  t.test('should support a list of one plugin', function (st) {
+    var p = unified();
+
+    st.plan(1);
+
+    p
+      .use([
+        function () {
+          st.equal(this, p, 'should support a list of plugins (#2)');
+        }
+      ])
+      .freeze();
+  });
+
+  t.test('should support a list of plugins and arguments', function (st) {
+    var p = unified();
+    var o = {};
+
+    st.plan(2);
+
+    p
+      .use([
+        [function (options) {
+          st.equal(options, o, 'should support arguments with options');
+        }, o],
+        [function () {
+          st.equal(this, p, 'should support a arguments without options');
+        }]
+      ])
+      .freeze();
+  });
+
+  t.test('should throw when given invalid values in lists', function (st) {
+    st.throws(
+      function () {
+        unified().use([false]);
+      },
+      /^Error: Expected usable value, not `false`$/,
+      '`false`'
+    );
+
+    st.throws(
+      function () {
+        unified().use([true]);
+      },
+      /^Error: Expected usable value, not `true`$/,
+      '`true`'
+    );
+
+    st.throws(
+      function () {
+        unified().use(['alfred']);
+      },
+      /^Error: Expected usable value, not `alfred`$/,
+      '`string`'
+    );
+
+    st.end();
+  });
+
+  t.test('should reconfigure', function (st) {
+    var p = unified();
+
+    st.plan(1);
+
+    p
+      .use([
+        [plugin, {foo: true, bar: true}],
+        [plugin, {foo: false, qux: true}]
+      ])
+      .freeze();
+
+    function plugin(options) {
+      st.deepEqual(options, {foo: false, bar: true, qux: true}, 'should reconfigure');
+    }
+  });
+
+  t.test('should reconfigure to turn off', function (st) {
+    var p = unified();
+
+    st.doesNotThrow(function () {
+      p
+        .use([
+          [plugin],
+          [plugin, false]
+        ])
+        .freeze();
+
+      function plugin() {
+        throw new Error('Error');
+      }
+    });
+
+    st.end();
+  });
+
+  t.test('should reconfigure to turn on (boolean)', function (st) {
+    var p = unified();
+
+    st.plan(1);
+
+    p
+      .use([
+        [plugin, false],
+        [plugin, true]
+      ])
+      .freeze();
+
+    function plugin() {
+      st.pass('should reconfigure');
+    }
+  });
+
+  t.test('should reconfigure to turn on (options)', function (st) {
+    var p = unified();
+
+    st.plan(1);
+
+    p
+      .use([
+        [plugin, false],
+        [plugin, {foo: true}]
+      ])
+      .freeze();
+
+    function plugin(options) {
+      st.deepEqual(options, {foo: true}, 'should reconfigure');
+    }
+  });
+
+  t.test('should attach transformers', function (st) {
+    var p = unified();
+    var n = {type: 'test'};
+
+    st.plan(3);
+
+    p
+      .use(function () {
+        return function (node, file) {
+          st.equal(node, n, 'should attach a transformer (#1)');
+          st.ok('message' in file, 'should attach a transformer (#2)');
+
+          throw new Error('Alpha bravo charlie');
+        };
+      })
+      .freeze();
+
+    st.throws(
+      function () {
+        p.runSync(n);
+      },
+      /Error: Alpha bravo charlie/,
+      'should attach a transformer (#3)'
+    );
+  });
 
   t.end();
 });
 
 test('use(preset)', function (t) {
-  t.test('should support empty presets', function (st) {
-    var p = unified();
+  t.throws(
+    function () {
+      unified().use({plugins: false});
+    },
+    /^Error: Expected a list of plugins, not `false`$/,
+    'should throw on invalid `plugins` (1)'
+  );
 
-    st.equal(p.use({}), p, 'should support empty presets (1)');
-    st.equal(p.attachers.length, 0, 'should support empty presets (2)');
+  t.throws(
+    function () {
+      unified().use({plugins: {foo: true}});
+    },
+    /^Error: Expected a list of plugins, not `\[object Object]`$/,
+    'should throw on invalid `plugins` (2)'
+  );
+
+  t.test('should support empty presets', function (st) {
+    var p = unified().use({}).freeze();
+    st.equal(p.attachers.length, 0);
     st.end();
   });
 
   t.test('should support presets with empty plugins', function (st) {
-    var p = unified();
-    var preset = {plugins: []};
-
-    st.equal(p.use(preset), p, 'should support presets with empty plugins (1)');
-    st.equal(p.attachers.length, 0, 'should support presets with empty plugins (2)');
+    var p = unified().use({plugins: []}).freeze();
+    st.equal(p.attachers.length, 0);
     st.end();
   });
 
   t.test('should support presets with empty settings', function (st) {
-    var p = unified();
-    var preset = {settings: {}};
-
-    st.equal(p.use(preset), p, 'should support presets with empty settings (1)');
-    st.deepEqual(p.data(), {settings: {}}, 'should support presets with empty settings (2)');
+    var p = unified().use({settings: {}}).freeze();
+    st.deepEqual(p.data(), {settings: {}});
     st.end();
   });
 
   t.test('should support presets with a plugin', function (st) {
-    var p = unified();
-    var preset = {plugins: [plugin]};
+    st.plan(2);
 
-    st.plan(3);
-    st.equal(p.use(preset), p, 'should support presets with a plugin (1)');
-    st.equal(p.attachers.length, 1, 'should support presets with a plugin (2)');
+    var p = unified().use({plugins: [plugin]}).freeze();
+
+    st.equal(p.attachers.length, 1);
 
     function plugin() {
       st.pass();
@@ -105,12 +279,10 @@ test('use(preset)', function (t) {
   });
 
   t.test('should support presets with plugins', function (st) {
-    var p = unified();
-    var preset = {plugins: [a, b]};
+    var p = unified().use({plugins: [a, b]}).freeze();
 
-    st.plan(4);
-    st.equal(p.use(preset), p, 'should support presets with plugins (1)');
-    st.equal(p.attachers.length, 2, 'should support presets with plugins (2)');
+    st.plan(3);
+    st.equal(p.attachers.length, 2);
 
     function a() {
       st.pass();
@@ -122,11 +294,8 @@ test('use(preset)', function (t) {
   });
 
   t.test('should support presets with settings', function (st) {
-    var p = unified();
-    var preset = {settings: {foo: true}};
-
-    st.equal(p.use(preset), p, 'should support presets with settings (1)');
-    st.deepEqual(p.data('settings'), {foo: true}, 'should support presets with settings (2)');
+    var p = unified().use({settings: {foo: true}}).freeze();
+    st.deepEqual(p.data('settings'), {foo: true});
     st.end();
   });
 
@@ -136,139 +305,67 @@ test('use(preset)', function (t) {
       .use({settings: {qux: true, foo: false}})
       .data();
 
-    st.deepEqual(
-      data.settings,
-      {foo: false, bar: true, qux: true},
-      'should merge multiple presets with settings'
-    );
-
+    st.deepEqual(data.settings, {foo: false, bar: true, qux: true});
     st.end();
   });
 
   t.test('should support extending presets', function (st) {
-    var p = unified().use({settings: {alpha: true}, plugins: [a, b]});
-    var q = p();
+    var p = unified().use({settings: {alpha: true}, plugins: [a, b]}).freeze();
+    var q = p().freeze();
 
     st.plan(7);
-    st.equal(p.attachers.length, 2, 'should support extending presets (1)');
-    st.equal(q.attachers.length, 2, 'should support extending presets (2)');
-    st.deepEqual(q.data('settings'), {alpha: true}, 'should support extending presets (3)');
+    st.equal(p.attachers.length, 2, '1');
+    st.equal(q.attachers.length, 2, '2');
+    st.deepEqual(q.data('settings'), {alpha: true}, '3');
 
     function a() {
-      st.pass();
+      st.pass('a');
     }
 
     function b() {
-      st.pass();
-    }
-  });
-
-  t.test('should support presets with plugins as a tuple', function (st) {
-    var opts = {};
-    var p = unified().use({plugins: [plugin, opts]});
-    var q = p();
-
-    st.plan(4);
-    st.equal(p.attachers.length, 1, 'should support tuples (1)');
-    st.equal(q.attachers.length, 1, 'should support tuples (2)');
-
-    function plugin(options) {
-      st.equal(options, opts, 'should pass options to plugin');
+      st.pass('b');
     }
   });
 
   t.test('should support presets with plugins as a matrix', function (st) {
     var one = {};
     var two = {};
-    var p = unified().use({plugins: [[a, one], [b, two]]});
-    var q = p();
+    var p = unified().use({plugins: [[a, one], [b, two]]}).freeze();
+    var q = p().freeze();
 
     st.plan(6);
-    st.equal(p.attachers.length, 2, 'should support matrices (1)');
-    st.equal(q.attachers.length, 2, 'should support matrices (2)');
+    st.equal(p.attachers.length, 2, '1');
+    st.equal(q.attachers.length, 2, '2');
 
     function a(options) {
-      st.equal(options, one, 'should pass options to plugin (1)');
+      st.equal(options, one, 'a');
     }
 
     function b(options) {
-      st.equal(options, two, 'should pass options to plugin (2)');
+      st.equal(options, two, 'b');
     }
   });
 
-  t.end();
-});
+  t.test('should support nested presets', function (st) {
+    var one = {};
+    var two = {};
+    var p1 = {plugins: [[a, one]]};
+    var p2 = {plugins: [[b, two]]};
+    var p = unified().use({plugins: [p1, p2]}).freeze();
+    var q = p().freeze();
 
-/* Processors. */
-test('use(processor)', function (t) {
-  var p = unified();
-  var q = unified();
-  var o = {};
-  var n;
-  var res;
-  var fixture;
+    st.plan(6);
+    st.equal(p.attachers.length, 2, '1');
+    st.equal(q.attachers.length, 2, '2');
 
-  t.plan(12);
+    function a(options) {
+      st.equal(options, one, 'a');
+    }
 
-  res = p.use(q);
-
-  t.equal(res, p, 'should return the origin processor');
-  t.equal(p.attachers[0][0], q, 'should store attachers');
-
-  p = unified();
-  q = unified();
-
-  fixture = q;
-
-  q.use(function (options) {
-    t.equal(this, fixture, 'should invoke a plugin with `processor` as the context');
-    t.equal(options, o, 'should invoke a plugin with `options`');
-  }, o);
-
-  fixture = p;
-
-  p.use(q);
-
-  q = unified();
-  p = unified().use(q);
-  n = {type: 'test'};
-
-  q.use(function () {
-    return function (node, file) {
-      t.equal(node, n, 'should attach a transformer (#1)');
-      t.ok('message' in file, 'should attach a transformer (#2)');
-
-      throw new Error('Alpha bravo charlie');
-    };
+    function b(options) {
+      st.equal(options, two, 'b');
+    }
   });
-
-  p.use(q);
-
-  t.throws(
-    function () {
-      p.runSync(n);
-    },
-    /Error: Alpha bravo charlie/,
-    'should attach a transformer (#3)'
-  );
-
-  p = unified().use(function () {
-    this.Parser = ParserA;
-  });
-
-  q = unified().use(function () {
-    this.Parser = ParserB;
-  });
-
-  t.equal(p.Parser, ParserA);
-  t.equal(q.Parser, ParserB);
-
-  p.use(q);
-
-  t.equal(p.Parser, ParserA);
-
-  function ParserA() {}
-  function ParserB() {}
 
   t.end();
 });

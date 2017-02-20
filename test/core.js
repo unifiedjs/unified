@@ -12,8 +12,8 @@ test('unified()', function (t) {
     function () {
       unified.use(Function.prototype);
     },
-    /Cannot invoke `use` on abstract processor/,
-    'should be abstract'
+    /Cannot invoke `use` on a frozen processor/,
+    'should be frozen'
   );
 
   p = unified();
@@ -26,7 +26,7 @@ test('unified()', function (t) {
   });
 
   count = 0;
-  q = p();
+  q = p().freeze();
 
   t.equal(
     count,
