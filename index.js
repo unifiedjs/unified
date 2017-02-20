@@ -16,24 +16,29 @@ module.exports = unified().freeze();
 var slice = [].slice;
 
 /* Process pipeline. */
-var pipeline = trough()
-  .use(function (p, ctx) {
-    ctx.tree = p.parse(ctx.file);
-  })
-  .use(function (p, ctx, next) {
-    p.run(ctx.tree, ctx.file, function (err, tree, file) {
-      if (err) {
-        next(err);
-      } else {
-        ctx.tree = tree;
-        ctx.file = file;
-        next();
-      }
-    });
-  })
-  .use(function (p, ctx) {
-    ctx.file.contents = p.stringify(ctx.tree, ctx.file);
-  });
+var pipeline = trough().use(pipelineParse).use(pipelineRun).use(pipelineStringify);
+
+function pipelineParse(p, ctx) {
+  ctx.tree = p.parse(ctx.file);
+}
+
+function pipelineRun(p, ctx, next) {
+  p.run(ctx.tree, ctx.file, done);
+
+  function done(err, tree, file) {
+    if (err) {
+      next(err);
+    } else {
+      ctx.tree = tree;
+      ctx.file = file;
+      next();
+    }
+  }
+}
+
+function pipelineStringify(p, ctx) {
+  ctx.file.contents = p.stringify(ctx.tree, ctx.file);
+}
 
 /* Function to create the first processor. */
 function unified() {
@@ -158,12 +163,9 @@ function unified() {
    *
    * Pass it:
    * *   an attacher and options,
-   * *   a list of attachers and options for all of them;
-   * *   a tuple of one attacher and options.
-   * *   a matrix: list containing any of the above and
-   *     matrices.
-   * *   a preset: an object with `plugins` (any of the
-   *     above, optional), and `settings` (object, optional). */
+   * *   a preset,
+   * *   a list of presets, attachers, and arguments (list
+   *     of attachers and options). */
   function use(value) {
     var settings;
 
@@ -407,7 +409,7 @@ function newable(value) {
   return func(value) && keys(value.prototype);
 }
 
-/* Check if `func` is a constructor. */
+/* Check if `value` is an object with keys. */
 function keys(value) {
   var key;
   for (key in value) {
@@ -443,13 +445,12 @@ function assertUnfrozen(name, frozen) {
 
 /* Assert `node` is a Unist node. */
 function assertNode(node) {
-  if (!node || !node.type || !string(node.type)) {
+  if (!node || !string(node.type)) {
     throw new Error('Expected node, got `' + node + '`');
   }
 }
 
-/* Assert, if no `done` is given, that `complete` is
- * `true`. */
+/* Assert that `complete` is `true`. */
 function assertDone(name, asyncName, complete) {
   if (!complete) {
     throw new Error('`' + name + '` finished async. Use `' + asyncName + '` instead');
