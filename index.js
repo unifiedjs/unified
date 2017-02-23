@@ -264,10 +264,11 @@ function unified() {
    * into a Unist node using the `Parser` on the
    * processor. */
   function parse(doc) {
-    var Parser = processor.Parser;
     var file = vfile(doc);
+    var Parser;
 
     freeze();
+    Parser = processor.Parser;
     assertParser('parse', Parser);
 
     if (newable(Parser)) {
@@ -333,10 +334,11 @@ function unified() {
    * (in string or VFile representation) into a string
    * using the `Compiler` on the processor. */
   function stringify(node, doc) {
-    var Compiler = processor.Compiler;
     var file = vfile(doc);
+    var Compiler;
 
     freeze();
+    Compiler = processor.Compiler;
     assertCompiler('stringify', Compiler);
     assertNode(node);
 
