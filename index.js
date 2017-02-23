@@ -94,7 +94,6 @@ function unified() {
    * In essence, always invoke this when exporting a
    * processor. */
   function freeze() {
-    var length = attachers.length;
     var index = -1;
     var values;
     var plugin;
@@ -105,7 +104,7 @@ function unified() {
       return processor;
     }
 
-    while (++index < length) {
+    while (++index < attachers.length) {
       values = attachers[index];
       plugin = values[0];
       options = values[1];
