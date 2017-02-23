@@ -818,13 +818,13 @@ remark().use(preset).process(vfile.readSync('index.md'), function (err, file) {
 
 <!-- Definitions -->
 
-[travis-badge]: https://img.shields.io/travis/wooorm/unified.svg
+[travis-badge]: https://img.shields.io/travis/unifiedjs/unified.svg
 
-[travis]: https://travis-ci.org/wooorm/unified
+[travis]: https://travis-ci.org/unifiedjs/unified
 
-[codecov-badge]: https://img.shields.io/codecov/c/github/wooorm/unified.svg
+[codecov-badge]: https://img.shields.io/codecov/c/github/unifiedjs/unified.svg
 
-[codecov]: https://codecov.io/github/wooorm/unified
+[codecov]: https://codecov.io/github/unifiedjs/unified
 
 [npm]: https://docs.npmjs.com/cli/install
 
@@ -846,13 +846,13 @@ remark().use(preset).process(vfile.readSync('index.md'), function (err, file) {
 
 [unist]: https://github.com/syntax-tree/unist
 
-[engine]: https://github.com/wooorm/unified-engine
+[engine]: https://github.com/unifiedjs/unified-engine
 
-[args]: https://github.com/wooorm/unified-args
+[args]: https://github.com/unifiedjs/unified-args
 
-[gulp]: https://github.com/wooorm/unified-engine-gulp
+[gulp]: https://github.com/unifiedjs/unified-engine-gulp
 
-[atom]: https://github.com/wooorm/unified-engine-atom
+[atom]: https://github.com/unifiedjs/unified-engine-atom
 
 [remark-rehype]: https://github.com/wooorm/remark-rehype
 

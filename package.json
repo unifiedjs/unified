@@ -13,8 +13,8 @@
     "retext",
     "remark"
   ],
-  "repository": "https://github.com/wooorm/unified",
-  "bugs": "https://github.com/wooorm/unified/issues",
+  "repository": "https://github.com/unifiedjs/unified",
+  "bugs": "https://github.com/unifiedjs/unified/issues",
   "author": "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)",
   "contributors": [
     "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)"
