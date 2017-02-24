@@ -132,20 +132,49 @@ test('use(plugin[, options])', function (t) {
     st.end();
   });
 
-  t.test('should reconfigure', function (st) {
-    var p = unified();
+  t.test('should reconfigure objects', function (st) {
+    var a = {foo: true, bar: true};
+    var b = {foo: false, qux: true};
 
-    st.plan(1);
+    st.plan(4);
 
-    p
-      .use([
-        [plugin, {foo: true, bar: true}],
-        [plugin, {foo: false, qux: true}]
-      ])
-      .freeze();
+    unified().use(change, 'this').use(change, b).freeze();
+    unified().use(change).use(change, b).freeze();
+    unified().use(change, [1, 2, 3]).use(change, b).freeze();
+    unified().use(merge, a).use(merge, b).freeze();
+
+    function change(options) {
+      st.deepEqual(options, {foo: false, qux: true}, 'should reconfigure (set)');
+    }
+
+    function merge(options) {
+      st.deepEqual(options, {foo: false, bar: true, qux: true}, 'should reconfigure (merge)');
+    }
+  });
+
+  t.test('should reconfigure strings', function (st) {
+    st.plan(4);
+
+    unified().use(plugin, 'this').use(plugin, 'that').freeze();
+    unified().use(plugin).use(plugin, 'that').freeze();
+    unified().use(plugin, [1, 2, 3]).use(plugin, 'that').freeze();
+    unified().use(plugin, {foo: 'bar'}).use(plugin, 'that').freeze();
 
     function plugin(options) {
-      st.deepEqual(options, {foo: false, bar: true, qux: true}, 'should reconfigure');
+      st.equal(options, 'that', 'should reconfigure');
+    }
+  });
+
+  t.test('should reconfigure arrays', function (st) {
+    st.plan(4);
+
+    unified().use(plugin, [1, 2, 3]).use(plugin, [4, 5, 6]).freeze();
+    unified().use(plugin).use(plugin, [4, 5, 6]).freeze();
+    unified().use(plugin, {foo: 'true'}).use(plugin, [4, 5, 6]).freeze();
+    unified().use(plugin, 'foo').use(plugin, [4, 5, 6]).freeze();
+
+    function plugin(options) {
+      st.deepEqual(options, [4, 5, 6], 'should reconfigure');
     }
   });
 

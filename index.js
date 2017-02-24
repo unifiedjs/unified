@@ -9,6 +9,7 @@ var trough = require('trough');
 var string = require('x-is-string');
 var func = require('x-is-function');
 var array = require('isarray');
+var plain = require('is-plain-obj');
 
 /* Expose a frozen processor. */
 module.exports = unified().freeze();
@@ -234,7 +235,7 @@ function unified() {
       var entry = find(plugin);
 
       if (entry) {
-        if (value !== false && entry[1] !== false && !array(value)) {
+        if (plain(entry[1]) && plain(value)) {
           value = extend(entry[1], value);
         }
 
