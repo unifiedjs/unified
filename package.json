@@ -38,13 +38,13 @@
     "browserify": "^14.0.0",
     "esmangle": "^1.0.0",
     "nyc": "^10.0.0",
-    "remark-cli": "^2.0.0",
-    "remark-preset-wooorm": "^1.0.0",
+    "remark-cli": "^3.0.0",
+    "remark-preset-wooorm": "^2.0.0",
     "tape": "^4.4.0",
     "xo": "^0.17.0"
   },
   "scripts": {
-    "build-md": "remark . --quiet --frail",
+    "build-md": "remark . -qfo",
     "build-bundle": "browserify index.js -s unified > unified.js",
     "build-mangle": "esmangle unified.js > unified.min.js",
     "build": "npm run build-md && npm run build-bundle && npm run build-mangle",
@@ -71,7 +71,6 @@
     ]
   },
   "remarkConfig": {
-    "output": true,
-    "presets": "wooorm"
+    "plugins": ["preset-wooorm"]
   }
 }
