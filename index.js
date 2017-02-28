@@ -47,6 +47,7 @@ function unified() {
   var transformers = trough();
   var namespace = {};
   var frozen = false;
+  var freezeIndex = -1;
 
   /* Data management. */
   processor.data = data;
@@ -95,7 +96,6 @@ function unified() {
    * In essence, always invoke this when exporting a
    * processor. */
   function freeze() {
-    var index = -1;
     var values;
     var plugin;
     var options;
@@ -105,8 +105,8 @@ function unified() {
       return processor;
     }
 
-    while (++index < attachers.length) {
-      values = attachers[index];
+    while (++freezeIndex < attachers.length) {
+      values = attachers[freezeIndex];
       plugin = values[0];
       options = values[1];
       transformer = null;
@@ -127,6 +127,7 @@ function unified() {
     }
 
     frozen = true;
+    freezeIndex = Infinity;
 
     return processor;
   }
