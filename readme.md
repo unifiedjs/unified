@@ -1,4 +1,7 @@
-# unified [![Build Status][travis-badge]][travis] [![Coverage Status][codecov-badge]][codecov]
+# ![unified][logo]
+
+[![Build Status][travis-badge]][travis]
+[![Coverage Status][codecov-badge]][codecov]
 
 **unified** is an interface for processing text using syntax trees.
 It’s what powers [**remark**][remark], [**retext**][retext], and
@@ -817,6 +820,8 @@ remark().use(preset).process(vfile.readSync('index.md'), function (err, file) {
 [MIT][license] © [Titus Wormer][author]
 
 <!-- Definitions -->
+
+[logo]: https://cdn.rawgit.com/wooorm/unified/6056962/logo.svg
 
 [travis-badge]: https://img.shields.io/travis/unifiedjs/unified.svg
 
