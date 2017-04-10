@@ -173,7 +173,7 @@ function unified() {
     assertUnfrozen('use', frozen);
 
     if (value === null || value === undefined) {
-      /* empty */
+      /* Empty */
     } else if (func(value)) {
       addPlugin.apply(null, arguments);
     } else if (typeof value === 'object') {
@@ -219,7 +219,7 @@ function unified() {
       var index;
 
       if (plugins === null || plugins === undefined) {
-        /* empty */
+        /* Empty */
       } else if (array(plugins)) {
         length = plugins.length;
         index = -1;

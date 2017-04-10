@@ -1,6 +1,7 @@
 'use strict';
 
-module.exports = exports = noop;
+exports = noop;
+module.exports = exports;
 exports.Parser = Parser;
 exports.Compiler = Compiler;
 
