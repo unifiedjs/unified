@@ -112,7 +112,7 @@ function unified() {
       transformer = null;
 
       if (options === false) {
-        return;
+        continue;
       }
 
       if (options === true) {
