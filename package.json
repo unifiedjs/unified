@@ -28,7 +28,6 @@
     "extend": "^3.0.0",
     "has": "^1.0.1",
     "is-plain-obj": "^1.1.0",
-    "isarray": "^2.0.1",
     "trough": "^1.0.0",
     "vfile": "^2.0.0",
     "x-is-function": "^1.0.4",
