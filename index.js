@@ -8,7 +8,6 @@ var vfile = require('vfile');
 var trough = require('trough');
 var string = require('x-is-string');
 var func = require('x-is-function');
-var array = require('isarray');
 var plain = require('is-plain-obj');
 
 /* Expose a frozen processor. */
@@ -220,7 +219,7 @@ function unified() {
 
       if (plugins === null || plugins === undefined) {
         /* Empty */
-      } else if (array(plugins)) {
+      } else if (typeof plugins === 'object' && 'length' in plugins) {
         length = plugins.length;
         index = -1;
 
