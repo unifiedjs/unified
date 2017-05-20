@@ -821,7 +821,7 @@ remark().use(preset).process(vfile.readSync('index.md'), function (err, file) {
 
 <!-- Definitions -->
 
-[logo]: https://cdn.rawgit.com/wooorm/unified/6056962/logo.svg
+[logo]: https://cdn.rawgit.com/unifiedjs/unified/84f55c8/logo.svg
 
 [travis-badge]: https://img.shields.io/travis/unifiedjs/unified.svg
 
