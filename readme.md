@@ -127,9 +127,9 @@ trees back to text.  These processors can be used as-is, or their
 parsers and compilers can be mixed and matched with other plug-ins
 to process between different syntaxes.
 
-*   [**rehype**][rehype] ([**HAST**][hast]) — HTML;
-*   [**remark**][remark] ([**MDAST**][mdast]) — Markdown;
-*   [**retext**][retext] ([**NLCST**][nlcst]) — Natural language.
+*   [**rehype**][rehype] ([**HAST**][hast]) — HTML
+*   [**remark**][remark] ([**MDAST**][mdast]) — Markdown
+*   [**retext**][retext] ([**NLCST**][nlcst]) — Natural language
 
 ###### File
 
@@ -249,18 +249,18 @@ that plug-in with optional options.
 
 ###### Signatures
 
-*   `processor.use(plugin[, options])`;
-*   `processor.use(preset)`;
-*   `processor.use(list)`;
+*   `processor.use(plugin[, options])`
+*   `processor.use(preset)`
+*   `processor.use(list)`
 
 ###### Parameters
 
-*   `plugin` ([`Plugin`][plugin]);
-*   `options` (`*`, optional) — Configuration for `plugin`.
+*   `plugin` ([`Plugin`][plugin])
+*   `options` (`*`, optional) — Configuration for `plugin`
 *   `preset` (`Object`) — Object with an optional `plugins` (set to `list`),
-    and/or an optional `settings` object;
+    and/or an optional `settings` object
 *   `list` (`Array`) — plugins, presets, and arguments (a plugin and options
-    in an array), in an array.
+    in an array), in an array
 
 ###### Returns
 
@@ -302,7 +302,7 @@ Parse text to a syntax tree.
 ###### Parameters
 
 *   `file` ([**VFile**][file])
-    — Or anything which can be given to `vfile()`.
+    — Or anything which can be given to `vfile()`
 
 ###### Returns
 
@@ -331,9 +331,9 @@ Compile a syntax tree to text.
 
 ###### Parameters
 
-*   `node` ([**Node**][node]);
+*   `node` ([**Node**][node])
 *   `file` ([**VFile**][file], optional);
-    — Or anything which can be given to `vfile()`.
+    — Or anything which can be given to `vfile()`
 
 ###### Returns
 
@@ -363,10 +363,10 @@ Transform a syntax tree by applying [**plug-in**][plugin]s to it.
 
 ###### Parameters
 
-*   `node` ([**Node**][node]);
-*   `file` ([**VFile**][file], optional);
-    — Or anything which can be given to `vfile()`.
-*   `done` ([`Function`][run-done], optional).
+*   `node` ([**Node**][node])
+*   `file` ([**VFile**][file], optional)
+    — Or anything which can be given to `vfile()`
+*   `done` ([`Function`][run-done], optional)
 
 ###### Returns
 
@@ -384,9 +384,9 @@ error, or a syntax tree and a file.
 
 ###### Parameters
 
-*   `err` (`Error`) — Fatal error;
-*   `node` ([**Node**][node]);
-*   `file` ([**VFile**][file]).
+*   `err` (`Error`) — Fatal error
+*   `node` ([**Node**][node])
+*   `file` ([**VFile**][file])
 
 ### `processor.runSync(node[, file])`
 
@@ -396,9 +396,9 @@ If asynchronous [**plug-in**][plugin]s are configured, an error is thrown.
 
 ###### Parameters
 
-*   `node` ([**Node**][node]);
-*   `file` ([**VFile**][file], optional);
-    — Or anything which can be given to `vfile()`.
+*   `node` ([**Node**][node])
+*   `file` ([**VFile**][file], optional)
+    — Or anything which can be given to `vfile()`
 
 ###### Returns
 
@@ -416,9 +416,9 @@ internally.
 
 ###### Parameters
 
-*   `file` ([**VFile**][file]);
-*   `value` (`string`) — String representation of a file;
-*   `done` ([`Function`][process-done], optional).
+*   `file` ([**VFile**][file])
+*   `value` (`string`) — String representation of a file
+*   `done` ([`Function`][process-done], optional)
 
 ###### Returns
 
@@ -436,8 +436,8 @@ any, and the [**VFile**][file].
 
 ###### Parameters
 
-*   `err` (`Error`, optional) — Fatal error;
-*   `file` ([**VFile**][file]).
+*   `err` (`Error`, optional) — Fatal error
+*   `file` ([**VFile**][file])
 
 ###### Example
 
@@ -489,8 +489,8 @@ If asynchronous [**plug-in**][plugin]s are configured, an error is thrown.
 
 ###### Parameters
 
-*   `file` ([**VFile**][file]);
-*   `value` (`string`) — String representation of a file;
+*   `file` ([**VFile**][file])
+*   `value` (`string`) — String representation of a file
 
 ###### Returns
 
@@ -545,13 +545,13 @@ needed when parsing, transforming, and compiling HTML.
 
 ###### Parameters
 
-*   `key` (`string`) — Identifier;
-*   `value` (`*`, optional) — Value to set.  Omit if getting `key`.
+*   `key` (`string`) — Identifier
+*   `value` (`*`, optional) — Value to set.  Omit if getting `key`
 
 ###### Returns
 
-*   `processor` — If setting, the processor on which `data` is invoked;
-*   `*` — If getting, the value at `key`.
+*   `processor` — If setting, the processor on which `data` is invoked
+*   `*` — If getting, the value at `key`
 
 ###### Note
 
@@ -651,9 +651,9 @@ A **unified** plugin changes the way the applied-on processor works,
 in the following ways:
 
 *   It modifies the [**processor**][processor]: such as changing the
-    parser, the compiler, or linking the processor to other processors;
-*   It transforms the [**syntax tree**][node] representation of a file;
-*   It modifies metadata of a file.
+    parser, the compiler, or linking the processor to other processors
+*   It transforms the [**syntax tree**][node] representation of a file
+*   It modifies metadata of a file
 
 Plug-in’s are a concept which materialise as [**attacher**][attacher]s.
 
@@ -720,7 +720,7 @@ The context object is set to the invoked on [`processor`][processor].
 
 ###### Parameters
 
-*   `options` (`*`, optional) — Configuration.
+*   `options` (`*`, optional) — Configuration
 
 ###### Returns
 
@@ -746,19 +746,19 @@ see it’s documentation for the exact semantics of transformers.
 
 ###### Parameters
 
-*   `node` ([**Node**][node]);
-*   `file` ([**VFile**][file]);
-*   `next` ([`Function`][next], optional).
+*   `node` ([**Node**][node])
+*   `file` ([**VFile**][file])
+*   `next` ([`Function`][next], optional)
 
 ###### Returns
 
-*   `Error` — Can be returned to stop the process;
+*   `Error` — Can be returned to stop the process
 *   [**Node**][node] — Can be returned and results in further
     transformations and `stringify`s to be performed on the new
-    tree;
+    tree
 *   `Promise` — If a promise is returned, the function is asynchronous,
     and **must** be resolved (optionally with a [**Node**][node]) or
-    rejected (optionally with an `Error`).
+    rejected (optionally with an `Error`)
 
 #### `function next(err[, tree[, file]])`
 
@@ -767,9 +767,9 @@ the function **may** finish asynchronous, and **must** invoke `next()`.
 
 ###### Parameters
 
-*   `err` (`Error`, optional) — Stop the process;
-*   `node` ([**Node**][node], optional) — New syntax tree;
-*   `file` ([**VFile**][file], optional) — New virtual file.
+*   `err` (`Error`, optional) — Stop the process
+*   `node` ([**Node**][node], optional) — New syntax tree
+*   `file` ([**VFile**][file], optional) — New virtual file
 
 ## `Preset`
 
