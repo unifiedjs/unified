@@ -22,7 +22,7 @@ npm install unified
 var unified = require('unified');
 var markdown = require('remark-parse');
 var remark2rehype = require('remark-rehype');
-var document = require('rehype-document');
+var doc = require('rehype-document');
 var format = require('rehype-format');
 var html = require('rehype-stringify');
 var reporter = require('vfile-reporter');
@@ -30,7 +30,7 @@ var reporter = require('vfile-reporter');
 unified()
   .use(markdown)
   .use(remark2rehype)
-  .use(document)
+  .use(doc)
   .use(format)
   .use(html)
   .process('# Hello world!', function (err, file) {
@@ -162,7 +162,7 @@ supports multiple passed through files:
 ```js
 var unified = require('unified');
 var markdown = require('remark-parse');
-var lint = require('remark-lint');
+var styleGuide = require('remark-preset-lint-markdown-style-guide');
 var remark2retext = require('remark-retext');
 var english = require('retext-english');
 var equality = require('retext-equality');
@@ -172,24 +172,24 @@ var reporter = require('vfile-reporter');
 
 unified()
   .use(markdown)
-  .use(lint)
+  .use(styleGuide)
   .use(remark2retext, unified().use(english).use(equality))
   .use(remark2rehype)
   .use(html)
-  .process('## Hey guys', function (err, file) {
-    console.err(reporter(err || file));
-    console.log(file.toString());
+  .process('*Emphasis* and _importance_, you guys!', function (err, file) {
+    console.error(reporter(err || file));
+    console.log(String(file));
   });
 ```
 
 Which yields:
 
 ```txt
-   1:1-1:12  warning  First heading level should be `1`                                    first-heading-level
-   1:8-1:12  warning  `guys` may be insensitive, use `people`, `persons`, `folks` instead  gals-men
+  1:16-1:28  warning  Emphasis should use `*` as a marker                                  emphasis-marker  remark-lint
+  1:34-1:38  warning  `guys` may be insensitive, use `people`, `persons`, `folks` instead  gals-men         retext-equality
 
-⚠ 3 warnings
-<h2>Hey guys</h2>
+⚠ 2 warnings
+<p><em>Emphasis</em> and <em>importance</em>, you guys!</p>
 ```
 
 ###### Processing between syntaxes
@@ -238,7 +238,7 @@ var remark = require('remark');
 var concat = require('concat-stream');
 
 process.stdin.pipe(concat(function (buf) {
-  process.stdout.write(remark().processSync(buf))
+  process.stdout.write(remark().processSync(buf).toString());
 }));
 ```
 
@@ -445,7 +445,7 @@ any, and the [**VFile**][file].
 var unified = require('unified');
 var markdown = require('remark-parse');
 var remark2rehype = require('remark-rehype');
-var document = require('rehype-document');
+var doc = require('rehype-document');
 var format = require('rehype-format');
 var html = require('rehype-stringify');
 var reporter = require('vfile-reporter');
@@ -453,7 +453,7 @@ var reporter = require('vfile-reporter');
 unified()
   .use(markdown)
   .use(remark2rehype)
-  .use(document)
+  .use(doc)
   .use(format)
   .use(html)
   .process('# Hello world!')
@@ -461,7 +461,7 @@ unified()
     console.log(String(file));
   }, function (err) {
     console.error(String(err));
-  })
+  });
 ```
 
 Yields:
@@ -506,7 +506,7 @@ If asynchronous [**plug-in**][plugin]s are configured, an error is thrown.
 var unified = require('unified');
 var markdown = require('remark-parse');
 var remark2rehype = require('remark-rehype');
-var document = require('rehype-document');
+var doc = require('rehype-document');
 var format = require('rehype-format');
 var html = require('rehype-stringify');
 var reporter = require('vfile-reporter');
@@ -514,7 +514,7 @@ var reporter = require('vfile-reporter');
 var processor = unified()
   .use(markdown)
   .use(remark2rehype)
-  .use(document)
+  .use(doc)
   .use(format)
   .use(html);
 
@@ -634,14 +634,14 @@ rehype
 Yields:
 
 ```txt
-~/node_modules/unified/index.js:436
+~/node_modules/unified/index.js:440
     throw new Error(
     ^
 
 Error: Cannot invoke `use` on a frozen processor.
 Create a new processor first, by invoking it: use `processor()` instead of `processor`.
-    at assertUnfrozen (~/node_modules/unified/index.js:436:11)
-    at Function.use (~/node_modules/unified/index.js:170:5)
+    at assertUnfrozen (~/node_modules/unified/index.js:440:11)
+    at Function.use (~/node_modules/unified/index.js:172:5)
     at Object.<anonymous> (~/b.js:6:4)
 ```
 
@@ -692,7 +692,7 @@ var vfile = require('to-vfile');
 var reporter = require('vfile-reporter');
 var move = require('./move');
 
-rehype()
+unified()
   .use(parse)
   .use(remark2rehype)
   .use(move, {extname: '.html'})
@@ -700,9 +700,9 @@ rehype()
   .process(vfile.readSync('index.md'), function (err, file) {
     console.error(reporter(err || file));
     if (file) {
-      vfile.writeSync(file); // written to `index.html`
+      vfile.writeSync(file); // Written to `index.html`.
     }
-  })
+  });
 ```
 
 ### `function attacher([options])`
@@ -782,20 +782,15 @@ well.
 `preset.js`:
 
 ```js
-exports.settings = {bullet: '*', fences: true}
+exports.settings = {bullet: '*', fences: true};
 
 exports.plugins = [
-  [require('remark-preset-lint-recommended')]
-  [require('remark-comment-config')],
-  [require('remark-validate-links')],
-  [require('remark-lint'), {
-    blockquoteIndentation: 2,
-    checkboxCharacterStyle: {checked: 'x', unchecked: ' '},
-    // ...
-  }],
-  [require('remark-toc'), {maxDepth: 3, tight: true}]
-  [require('remark-github')]
-]
+  require('remark-preset-lint-recommended'),
+  require('remark-comment-config'),
+  require('remark-preset-lint-markdown-style-guide'),
+  [require('remark-toc'), {maxDepth: 3, tight: true}],
+  require('remark-github')
+];
 ```
 
 `index.js`:
@@ -806,13 +801,15 @@ var vfile = require('to-vfile');
 var reporter = require('vfile-reporter');
 var preset = require('./preset');
 
-remark().use(preset).process(vfile.readSync('index.md'), function (err, file) {
-  console.error(reporter(err || file));
+remark()
+  .use(preset)
+  .process(vfile.readSync('index.md'), function (err, file) {
+    console.error(reporter(err || file));
 
-  if (file) {
-    vfile.writeSync(file);
-  }
-})
+    if (file) {
+      vfile.writeSync(file);
+    }
+  });
 ```
 
 ## License
