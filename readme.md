@@ -8,6 +8,10 @@ It’s what powers [**remark**][remark], [**retext**][retext], and
 [**rehype**][rehype], but it also allows for processing between
 multiple syntaxes.
 
+[`unifiedjs.github.io`][site], the website for **unified** provides a less
+technical, more practical, introduction to unified.  Make sure to visit it
+and try its introductionary [Guides][].
+
 ## Installation
 
 [npm][]:
@@ -833,6 +837,10 @@ remark()
 [license]: LICENSE
 
 [author]: http://wooorm.com
+
+[site]: https://unifiedjs.github.io
+
+[guides]: https://unifiedjs.github.io/#guides
 
 [rehype]: https://github.com/wooorm/rehype
 
