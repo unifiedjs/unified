@@ -40,7 +40,7 @@
     "remark-cli": "^3.0.0",
     "remark-preset-wooorm": "^3.0.0",
     "tape": "^4.4.0",
-    "xo": "^0.18.1"
+    "xo": "^0.19.0"
   },
   "scripts": {
     "build-md": "remark . -qfo",
