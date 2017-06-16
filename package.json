@@ -36,7 +36,7 @@
   "devDependencies": {
     "browserify": "^14.0.0",
     "esmangle": "^1.0.0",
-    "nyc": "^10.0.0",
+    "nyc": "^11.0.0",
     "remark-cli": "^3.0.0",
     "remark-preset-wooorm": "^3.0.0",
     "tape": "^4.4.0",
