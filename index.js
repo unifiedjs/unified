@@ -1,7 +1,6 @@
 'use strict';
 
 /* Dependencies. */
-var has = require('has');
 var extend = require('extend');
 var bail = require('bail');
 var vfile = require('vfile');
@@ -14,6 +13,7 @@ var plain = require('is-plain-obj');
 module.exports = unified().freeze();
 
 var slice = [].slice;
+var own = {}.hasOwnProperty;
 
 /* Process pipeline. */
 var pipeline = trough().use(pipelineParse).use(pipelineRun).use(pipelineStringify);
@@ -145,7 +145,7 @@ function unified() {
       }
 
       /* Get `key`. */
-      return (has(namespace, key) && namespace[key]) || null;
+      return (own.call(namespace, key) && namespace[key]) || null;
     }
 
     /* Set space. */
