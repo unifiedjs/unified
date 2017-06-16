@@ -1,7 +1,7 @@
 language: node_js
 node_js:
 - '4.0'
-- '7.0'
+- '8.0'
 after_script: bash <(curl -s https://codecov.io/bash)
 deploy:
   - provider: npm
@@ -19,4 +19,4 @@ deploy:
       - "unified.min.js"
     on:
       tags: true
-      node: '7.0'
+      node: '8.0'
