@@ -172,6 +172,8 @@ with [**unified-args**][args], Gulp plug-ins with
 [**unified-engine-gulp**][gulp], and Atom Linters with
 [**unified-engine-atom**][atom].
 
+A streaming interface is provided through [`unified-stream`][stream].
+
 ###### Programming interface
 
 The API gives access to processing metadata (such as lint messages), and
@@ -937,3 +939,5 @@ remark()
 [rehype-plugins]: https://github.com/wooorm/rehype/blob/master/doc/plugins.md#list-of-plugins
 
 [retext-plugins]: https://github.com/wooorm/retext/blob/master/doc/plugins.md#list-of-plugins
+
+[stream]: https://github.com/unifiedjs/unified-stream
