@@ -90,14 +90,17 @@ back to text, there’s a [**compiler**][compiler].  This is the
 [**process**][process] of a **processor**.
 
 ```ascii
-                     ┌──────────────┐
-                  ┌─ │ Transformers │ ─┐
-                  ▲  └──────────────┘  ▼
-                  └────────┐  ┌────────┘
-                           │  │
-            ┌────────┐     │  │     ┌──────────┐
-  Input ──▶ │ Parser │ ──▶ Tree ──▶ │ Compiler │ ──▶ Output
-            └────────┘              └──────────┘
+| ....................... process() ......................... |
+| ......... parse() ..... | run() | ..... stringify() ....... |
+
+          +--------+                     +----------+
+Input ->- | Parser | ->- Syntax Tree ->- | Compiler | ->- Output
+          +--------+          |          +----------+
+                              X
+                              |
+                       +--------------+
+                       | Transformers |
+                       +--------------+
 ```
 
 ###### Processors
