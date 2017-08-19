@@ -138,6 +138,17 @@ to process between different syntaxes.
 *   [**remark**][remark] ([**MDAST**][mdast]) — Markdown
 *   [**retext**][retext] ([**NLCST**][nlcst]) — Natural language
 
+###### List of Plugins
+
+The below plugins work with **unified**, unrelated to which syntax tree is
+processed:
+
+*   [`unified-diff`](https://github.com/unifiedjs/unified-diff)
+    — Ignore messages for unchanged lines in Travis
+
+See [**remark**][remark-plugins], [**rehype**][rehype-plugins], and
+[**retext**][retext-plugins] for lists of their plugins.
+
 ###### File
 
 When processing documents, metadata is often gathered about that
@@ -920,3 +931,9 @@ remark()
 [trough]: https://github.com/wooorm/trough#function-fninput-next
 
 [promise]: https://developer.mozilla.org/Web/JavaScript/Reference/Global_Objects/Promise
+
+[remark-plugins]: https://github.com/wooorm/remark/blob/master/doc/plugins.md#list-of-plugins
+
+[rehype-plugins]: https://github.com/wooorm/rehype/blob/master/doc/plugins.md#list-of-plugins
+
+[retext-plugins]: https://github.com/wooorm/retext/blob/master/doc/plugins.md#list-of-plugins
