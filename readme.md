@@ -2,6 +2,7 @@
 
 [![Build Status][travis-badge]][travis]
 [![Coverage Status][codecov-badge]][codecov]
+[![Chat][chat-badge]][chat]
 
 **unified** is an interface for processing text using syntax trees.  It’s what
 powers [**remark**][remark], [**retext**][retext], and [**rehype**][rehype],
@@ -828,6 +829,10 @@ remark()
 [codecov-badge]: https://img.shields.io/codecov/c/github/unifiedjs/unified.svg
 
 [codecov]: https://codecov.io/github/unifiedjs/unified
+
+[chat-badge]: https://img.shields.io/gitter/room/unifiedjs/Lobby.svg
+
+[chat]: https://gitter.im/unifiedjs/Lobby
 
 [npm]: https://docs.npmjs.com/cli/install
 
