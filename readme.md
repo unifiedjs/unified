@@ -757,7 +757,7 @@ it’s documentation for the exact semantics of transformers.
 ###### Returns
 
 *   `Error` — Can be returned to stop the process
-*   [**Node`][node] — Can be returned and results in further transformations
+*   [`Node`][node] — Can be returned and results in further transformations
     and `stringify`s to be performed on the new tree
 *   `Promise` — If a promise is returned, the function is asynchronous, and
     **must** be resolved (optionally with a [`Node`][node]) or rejected
