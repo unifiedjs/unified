@@ -820,7 +820,7 @@ remark()
 
 <!-- Definitions -->
 
-[logo]: https://cdn.rawgit.com/unifiedjs/unified/84f55c8/logo.svg
+[logo]: https://cdn.rawgit.com/unifiedjs/unified/0cd3a41/logo.svg
 
 [travis-badge]: https://img.shields.io/travis/unifiedjs/unified.svg
 
