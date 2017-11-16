@@ -10,7 +10,7 @@ but it also allows for processing between multiple syntaxes.
 
 The website for **unified**, [`unifiedjs.github.io`][site], provides a less
 technical and more practical introduction to unified.  Make sure to visit it
-and try its introductionary [Guides][].
+and try its introductory [Guides][].
 
 ## Installation
 
