@@ -77,6 +77,7 @@ no issues found
     *   [function attacher(\[options\])](#function-attacheroptions)
     *   [function transformer(node, file\[, next\])](#function-transformernode-file-next)
 *   [Preset](#preset)
+*   [Contribute](#contribute)
 *   [License](#license)
 
 ## Description
@@ -814,6 +815,20 @@ remark()
   });
 ```
 
+## Contribute
+
+**unified** is built by people just like you!  Check out
+[`contribute.md`][contribute] for ways to get started.
+
+This project has a [Code of Conduct][coc].  By interacting with this repository,
+organisation, or community you agree to abide by its terms.
+
+Want to chat with the community and contributors?  Join us in [Gitter][chat]!
+
+Have an idea for a cool new utility or tool?  That’s great!  If you want
+feedback, help, or just to share it with the world you can do so by creating
+an issue in the [`unifiedjs/ideas`][ideas] repository!
+
 ## License
 
 [MIT][license] © [Titus Wormer][author]
@@ -927,3 +942,9 @@ remark()
 [retext-plugins]: https://github.com/wooorm/retext/blob/master/doc/plugins.md#list-of-plugins
 
 [stream]: https://github.com/unifiedjs/unified-stream
+
+[contribute]: contributing.md
+
+[coc]: code-of-conduct.md
+
+[ideas]: https://github.com/unifiedjs/ideas
