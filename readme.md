@@ -78,6 +78,7 @@ no issues found
     *   [function transformer(node, file\[, next\])](#function-transformernode-file-next)
 *   [Preset](#preset)
 *   [Contribute](#contribute)
+*   [Acknowledgments](#acknowledgments)
 *   [License](#license)
 
 ## Description
@@ -829,6 +830,19 @@ Have an idea for a cool new utility or tool?  That’s great!  If you want
 feedback, help, or just to share it with the world you can do so by creating
 an issue in the [`unifiedjs/ideas`][ideas] repository!
 
+## Acknowledgments
+
+Preliminary work for unified was done [in 2014][preliminary] for
+[**retext**][retext] and inspired by [`ware`][ware].  Further incubation
+happened in [**remark**][retext].  The project was finally [externalised][]
+in 2015 and [published][] as `unified`.  The project was authored by
+[**@wooorm**](https://github.com/wooorm).
+
+Although `unified` since moved it’s plugin architecture to [`trough`][trough],
+thanks to [**@calvinfo**](https://github.com/calvinfo),
+[**@ianstormtaylor**](https://github.com/ianstormtaylor), and others for their
+work on [`ware`][ware], which was a huge initial inspiration.
+
 ## License
 
 [MIT][license] © [Titus Wormer][author]
@@ -948,3 +962,11 @@ an issue in the [`unifiedjs/ideas`][ideas] repository!
 [coc]: code-of-conduct.md
 
 [ideas]: https://github.com/unifiedjs/ideas
+
+[preliminary]: https://github.com/wooorm/retext/commit/8fcb1f#diff-168726dbe96b3ce427e7fedce31bb0bc
+
+[externalised]: https://github.com/wooorm/remark/commit/9892ec#diff-168726dbe96b3ce427e7fedce31bb0bc
+
+[published]: https://github.com/unifiedjs/unified/commit/2ba1cf
+
+[ware]: https://github.com/segmentio/ware
