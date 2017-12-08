@@ -43,13 +43,13 @@ and help others.
     — Topics relating to [**vfile**][vfile]: virtual files
 *   [**syntax-tree**](https://gitter.im/syntax-tree/Lobby)
     — Topics relating to [**syntax-tree**][syntax-tree] and [**unist**][unist]
-*   [**remark**](https://gitter.im/wooorm/remark)
+*   [**remark**](https://gitter.im/remarkjs/Lobby)
     — Topics relating to [**remark**][remark]s ecosystem, markdown,
     and [**mdast**][mdast]
-*   [**rehype**](https://gitter.im/wooorm/rehype)
+*   [**rehype**](https://gitter.im/rehypejs/Lobby)
     — Topics relating to [**rehype**][rehype]s ecosystem, HTML,
     and [**hast**][hast]
-*   [**retext**](https://gitter.im/wooorm/retext)
+*   [**retext**](https://gitter.im/retextjs/Lobby)
     — Topics relating to [**retext**][retext]s ecosystem, natural language,
     and [**nlcst**][nlcst]
 
@@ -125,14 +125,14 @@ prevent you from doing unnecessary work.
 
 [unified]: https://github.com/unifiedjs/unified
 
-[remark]: https://github.com/wooorm/remark
+[remark]: https://github.com/remarkjs/remark
 
-[retext]: https://github.com/wooorm/retext
+[retext]: https://github.com/retextjs/retext
 
-[rehype]: https://github.com/wooorm/rehype
+[rehype]: https://github.com/rehypejs/rehype
 
 [mdast-util-to-hast]: https://github.com/syntax-tree/mdast-util-to-hast
 
-[remark-rehype]: https://github.com/wooorm/remark-rehype
+[remark-rehype]: https://github.com/remarkjs/remark-rehype
 
 [unit-test]: https://twitter.com/sindresorhus/status/579306280495357953

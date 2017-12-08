@@ -873,11 +873,11 @@ work on [`ware`][ware], which was a huge initial inspiration.
 
 [guides]: https://unifiedjs.github.io/#guides
 
-[rehype]: https://github.com/wooorm/rehype
+[rehype]: https://github.com/rehypejs/rehype
 
-[remark]: https://github.com/wooorm/remark
+[remark]: https://github.com/remarkjs/remark
 
-[retext]: https://github.com/wooorm/retext
+[retext]: https://github.com/retextjs/retext
 
 [hast]: https://github.com/syntax-tree/hast
 
@@ -895,13 +895,13 @@ work on [`ware`][ware], which was a huge initial inspiration.
 
 [atom]: https://github.com/unifiedjs/unified-engine-atom
 
-[remark-rehype]: https://github.com/wooorm/remark-rehype
+[remark-rehype]: https://github.com/remarkjs/remark-rehype
 
-[remark-retext]: https://github.com/wooorm/remark-retext
+[remark-retext]: https://github.com/remarkjs/remark-retext
 
-[rehype-retext]: https://github.com/wooorm/rehype-retext
+[rehype-retext]: https://github.com/rehypejs/rehype-retext
 
-[rehype-remark]: https://github.com/wooorm/rehype-remark
+[rehype-remark]: https://github.com/rehypejs/rehype-remark
 
 [unist-utilities]: https://github.com/syntax-tree/unist#list-of-utilities
 
@@ -949,11 +949,11 @@ work on [`ware`][ware], which was a huge initial inspiration.
 
 [promise]: https://developer.mozilla.org/Web/JavaScript/Reference/Global_Objects/Promise
 
-[remark-plugins]: https://github.com/wooorm/remark/blob/master/doc/plugins.md#list-of-plugins
+[remark-plugins]: https://github.com/remarkjs/remark/blob/master/doc/plugins.md#list-of-plugins
 
-[rehype-plugins]: https://github.com/wooorm/rehype/blob/master/doc/plugins.md#list-of-plugins
+[rehype-plugins]: https://github.com/rehypejs/rehype/blob/master/doc/plugins.md#list-of-plugins
 
-[retext-plugins]: https://github.com/wooorm/retext/blob/master/doc/plugins.md#list-of-plugins
+[retext-plugins]: https://github.com/retextjs/retext/blob/master/doc/plugins.md#list-of-plugins
 
 [stream]: https://github.com/unifiedjs/unified-stream
 
@@ -963,9 +963,9 @@ work on [`ware`][ware], which was a huge initial inspiration.
 
 [ideas]: https://github.com/unifiedjs/ideas
 
-[preliminary]: https://github.com/wooorm/retext/commit/8fcb1f#diff-168726dbe96b3ce427e7fedce31bb0bc
+[preliminary]: https://github.com/retextjs/retext/commit/8fcb1f#diff-168726dbe96b3ce427e7fedce31bb0bc
 
-[externalised]: https://github.com/wooorm/remark/commit/9892ec#diff-168726dbe96b3ce427e7fedce31bb0bc
+[externalised]: https://github.com/remarkjs/remark/commit/9892ec#diff-168726dbe96b3ce427e7fedce31bb0bc
 
 [published]: https://github.com/unifiedjs/unified/commit/2ba1cf
 
