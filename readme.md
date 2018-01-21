@@ -834,7 +834,7 @@ an issue in the [`unifiedjs/ideas`][ideas] repository!
 
 Preliminary work for unified was done [in 2014][preliminary] for
 [**retext**][retext] and inspired by [`ware`][ware].  Further incubation
-happened in [**remark**][retext].  The project was finally [externalised][]
+happened in [**remark**][remark].  The project was finally [externalised][]
 in 2015 and [published][] as `unified`.  The project was authored by
 [**@wooorm**](https://github.com/wooorm).
 
