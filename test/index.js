@@ -1,5 +1,7 @@
 'use strict';
 
+/* eslint-disable import/no-unassigned-import */
+
 require('./core');
 require('./freeze');
 require('./data');
