@@ -23,13 +23,13 @@ npm install unified
 ## Usage
 
 ```js
-var unified = require('unified');
-var markdown = require('remark-parse');
-var remark2rehype = require('remark-rehype');
-var doc = require('rehype-document');
-var format = require('rehype-format');
-var html = require('rehype-stringify');
-var report = require('vfile-reporter');
+var unified = require('unified')
+var markdown = require('remark-parse')
+var remark2rehype = require('remark-rehype')
+var doc = require('rehype-document')
+var format = require('rehype-format')
+var html = require('rehype-stringify')
+var report = require('vfile-reporter')
 
 unified()
   .use(markdown)
@@ -37,10 +37,10 @@ unified()
   .use(doc)
   .use(format)
   .use(html)
-  .process('# Hello world!', function (err, file) {
-    console.error(report(err || file));
-    console.log(String(file));
-  });
+  .process('# Hello world!', function(err, file) {
+    console.error(report(err || file))
+    console.log(String(file))
+  })
 ```
 
 Yields:
@@ -175,26 +175,31 @@ The API gives access to processing metadata (such as lint messages) and
 supports multiple passed through files:
 
 ```js
-var unified = require('unified');
-var markdown = require('remark-parse');
-var styleGuide = require('remark-preset-lint-markdown-style-guide');
-var remark2retext = require('remark-retext');
-var english = require('retext-english');
-var equality = require('retext-equality');
-var remark2rehype = require('remark-rehype');
-var html = require('rehype-stringify');
-var report = require('vfile-reporter');
+var unified = require('unified')
+var markdown = require('remark-parse')
+var styleGuide = require('remark-preset-lint-markdown-style-guide')
+var remark2retext = require('remark-retext')
+var english = require('retext-english')
+var equality = require('retext-equality')
+var remark2rehype = require('remark-rehype')
+var html = require('rehype-stringify')
+var report = require('vfile-reporter')
 
 unified()
   .use(markdown)
   .use(styleGuide)
-  .use(remark2retext, unified().use(english).use(equality))
+  .use(
+    remark2retext,
+    unified()
+      .use(english)
+      .use(equality)
+  )
   .use(remark2rehype)
   .use(html)
-  .process('*Emphasis* and _importance_, you guys!', function (err, file) {
-    console.error(report(err || file));
-    console.log(String(file));
-  });
+  .process('*Emphasis* and _importance_, you guys!', function(err, file) {
+    console.error(report(err || file))
+    console.log(String(file))
+  })
 ```
 
 Yields:
@@ -247,12 +252,18 @@ The following example shows how a new processor can be created (from the remark
 processor) and linked to **stdin**(4) and **stdout**(4).
 
 ```js
-var remark = require('remark');
-var concat = require('concat-stream');
+var remark = require('remark')
+var concat = require('concat-stream')
 
-process.stdin.pipe(concat(function (buf) {
-  process.stdout.write(remark().processSync(buf).toString());
-}));
+process.stdin.pipe(concat(onconcat))
+
+function onconcat(buf) {
+  var doc = remark()
+    .processSync(buf)
+    .toString()
+
+  process.stdout.write(doc)
+}
 ```
 
 ### `processor.use(plugin[, options])`
@@ -290,7 +301,7 @@ There are many ways to pass plugins to `.use()`.  The below example gives an
 overview.
 
 ```js
-var unified = require('unified');
+var unified = require('unified')
 
 unified()
   // Plugin with options:
@@ -302,7 +313,7 @@ unified()
   // Preset with plugins and settings:
   .use({plugins: [plugin, [pluginB, {}]], settings: {position: false}})
   // Settings only:
-  .use({settings: {position: false}});
+  .use({settings: {position: false}})
 
 function plugin() {}
 function pluginB() {}
@@ -454,12 +465,12 @@ the [`VFile`][file].
 ###### Example
 
 ```js
-var unified = require('unified');
-var markdown = require('remark-parse');
-var remark2rehype = require('remark-rehype');
-var doc = require('rehype-document');
-var format = require('rehype-format');
-var html = require('rehype-stringify');
+var unified = require('unified')
+var markdown = require('remark-parse')
+var remark2rehype = require('remark-rehype')
+var doc = require('rehype-document')
+var format = require('rehype-format')
+var html = require('rehype-stringify')
 
 unified()
   .use(markdown)
@@ -468,11 +479,14 @@ unified()
   .use(format)
   .use(html)
   .process('# Hello world!')
-  .then(function (file) {
-    console.log(String(file));
-  }, function (err) {
-    console.error(String(err));
-  });
+  .then(
+    function(file) {
+      console.log(String(file))
+    },
+    function(err) {
+      console.error(String(err))
+    }
+  )
 ```
 
 Yields:
@@ -513,21 +527,21 @@ If asynchronous [**plugin**][plugin]s are configured an error is thrown.
 ###### Example
 
 ```js
-var unified = require('unified');
-var markdown = require('remark-parse');
-var remark2rehype = require('remark-rehype');
-var doc = require('rehype-document');
-var format = require('rehype-format');
-var html = require('rehype-stringify');
+var unified = require('unified')
+var markdown = require('remark-parse')
+var remark2rehype = require('remark-rehype')
+var doc = require('rehype-document')
+var format = require('rehype-format')
+var html = require('rehype-stringify')
 
 var processor = unified()
   .use(markdown)
   .use(remark2rehype)
   .use(doc)
   .use(format)
-  .use(html);
+  .use(html)
 
-console.log(processor.processSync('# Hello world!').toString());
+console.log(processor.processSync('# Hello world!').toString())
 ```
 
 Yields:
@@ -571,9 +585,13 @@ Invoke the processor first to create a new unfrozen processor.
 The following example show how to get and set information:
 
 ```js
-var unified = require('unified');
+var unified = require('unified')
 
-console.log(unified().data('alpha', 'bravo').data('alpha'))
+console.log(
+  unified()
+    .data('alpha', 'bravo')
+    .data('alpha')
+)
 ```
 
 Yields:
@@ -604,18 +622,21 @@ The following example, `index.js`, shows how [**rehype**][rehype] prevents
 extensions to itself:
 
 ```js
-var unified = require('unified');
-var parse = require('rehype-parse');
-var stringify = require('rehype-stringify');
+var unified = require('unified')
+var parse = require('rehype-parse')
+var stringify = require('rehype-stringify')
 
-module.exports = unified().use(parse).use(stringify).freeze();
+module.exports = unified()
+  .use(parse)
+  .use(stringify)
+  .freeze()
 ```
 
 The below example, `a.js`, shows how that processor can be used and configured.
 
 ```js
-var rehype = require('rehype');
-var format = require('rehype-format');
+var rehype = require('rehype')
+var format = require('rehype-format')
 // ...
 
 rehype()
@@ -629,8 +650,8 @@ would result in unexpected behaviour so an error is thrown.  **This is
 invalid**:
 
 ```js
-var rehype = require('rehype');
-var format = require('rehype-format');
+var rehype = require('rehype')
+var format = require('rehype-format')
 // ...
 
 rehype
@@ -669,20 +690,20 @@ Plugins are a concept.  They materialise as [`attacher`][attacher]s.
 `move.js`:
 
 ```js
-module.exports = move;
+module.exports = move
 
 function move(options) {
-  var expected = (options || {}).extname;
+  var expected = (options || {}).extname
 
   if (!expected) {
-    throw new Error('Missing `extname` in options');
+    throw new Error('Missing `extname` in options')
   }
 
-  return transformer;
+  return transformer
 
   function transformer(tree, file) {
     if (file.extname && file.extname !== expected) {
-      file.extname = expected;
+      file.extname = expected
     }
   }
 }
@@ -691,25 +712,25 @@ function move(options) {
 `index.js`:
 
 ```js
-var unified = require('unified');
-var parse = require('remark-parse');
-var remark2rehype = require('remark-rehype');
-var stringify = require('rehype-stringify');
-var vfile = require('to-vfile');
-var report = require('vfile-reporter');
-var move = require('./move');
+var unified = require('unified')
+var parse = require('remark-parse')
+var remark2rehype = require('remark-rehype')
+var stringify = require('rehype-stringify')
+var vfile = require('to-vfile')
+var report = require('vfile-reporter')
+var move = require('./move')
 
 unified()
   .use(parse)
   .use(remark2rehype)
   .use(move, {extname: '.html'})
   .use(stringify)
-  .process(vfile.readSync('index.md'), function (err, file) {
-    console.error(report(err || file));
+  .process(vfile.readSync('index.md'), function(err, file) {
+    console.error(report(err || file))
     if (file) {
-      vfile.writeSync(file); // Written to `index.html`.
+      vfile.writeSync(file) // Written to `index.html`.
     }
-  });
+  })
 ```
 
 ### `function attacher([options])`
@@ -786,7 +807,7 @@ contain multiple plugins and optionally settings as well.
 `preset.js`:
 
 ```js
-exports.settings = {bullet: '*', fences: true};
+exports.settings = {bullet: '*', fences: true}
 
 exports.plugins = [
   require('remark-preset-lint-recommended'),
@@ -794,26 +815,26 @@ exports.plugins = [
   require('remark-preset-lint-markdown-style-guide'),
   [require('remark-toc'), {maxDepth: 3, tight: true}],
   require('remark-github')
-];
+]
 ```
 
 `index.js`:
 
 ```js
-var remark = require('remark');
-var vfile = require('to-vfile');
-var report = require('vfile-reporter');
-var preset = require('./preset');
+var remark = require('remark')
+var vfile = require('to-vfile')
+var report = require('vfile-reporter')
+var preset = require('./preset')
 
 remark()
   .use(preset)
-  .process(vfile.readSync('index.md'), function (err, file) {
-    console.error(report(err || file));
+  .process(vfile.readSync('index.md'), function(err, file) {
+    console.error(report(err || file))
 
     if (file) {
-      vfile.writeSync(file);
+      vfile.writeSync(file)
     }
-  });
+  })
 ```
 
 ## Contribute
