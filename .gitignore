@@ -5,3 +5,4 @@ coverage/
 node_modules/
 unified.js
 unified.min.js
+yarn.lock
