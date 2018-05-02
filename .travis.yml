@@ -1,7 +1,7 @@
 language: node_js
 node_js:
-- '4.0'
-- '9.0'
+- lts/boron
+- node
 after_script: bash <(curl -s https://codecov.io/bash)
 deploy:
   provider: releases
@@ -13,4 +13,3 @@ deploy:
     - "unified.min.js"
   on:
     tags: true
-    node: '9.0'
