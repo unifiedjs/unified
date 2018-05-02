@@ -6,7 +6,6 @@ var bail = require('bail')
 var vfile = require('vfile')
 var trough = require('trough')
 var string = require('x-is-string')
-var func = require('x-is-function')
 var plain = require('is-plain-obj')
 
 /* Expose a frozen processor. */
@@ -123,7 +122,7 @@ function unified() {
 
       transformer = plugin.apply(processor, values.slice(1))
 
-      if (func(transformer)) {
+      if (typeof transformer === 'function') {
         transformers.use(transformer)
       }
     }
@@ -176,7 +175,7 @@ function unified() {
 
     if (value === null || value === undefined) {
       /* Empty */
-    } else if (func(value)) {
+    } else if (typeof value === 'function') {
       addPlugin.apply(null, arguments)
     } else if (typeof value === 'object') {
       if ('length' in value) {
@@ -203,7 +202,7 @@ function unified() {
     }
 
     function add(value) {
-      if (func(value)) {
+      if (typeof value === 'function') {
         addPlugin(value)
       } else if (typeof value === 'object') {
         if ('length' in value) {
@@ -287,7 +286,7 @@ function unified() {
     assertNode(node)
     freeze()
 
-    if (!cb && func(file)) {
+    if (!cb && typeof file === 'function') {
       cb = file
       file = null
     }
@@ -411,7 +410,7 @@ function unified() {
 
 /* Check if `func` is a constructor. */
 function newable(value) {
-  return func(value) && keys(value.prototype)
+  return typeof value === 'function' && keys(value.prototype)
 }
 
 /* Check if `value` is an object with keys. */
@@ -425,14 +424,14 @@ function keys(value) {
 
 /* Assert a parser is available. */
 function assertParser(name, Parser) {
-  if (!func(Parser)) {
+  if (typeof Parser !== 'function') {
     throw new Error('Cannot `' + name + '` without `Parser`')
   }
 }
 
 /* Assert a compiler is available. */
 function assertCompiler(name, Compiler) {
-  if (!func(Compiler)) {
+  if (typeof Compiler !== 'function') {
     throw new Error('Cannot `' + name + '` without `Compiler`')
   }
 }
