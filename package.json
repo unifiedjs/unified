@@ -39,7 +39,7 @@
     "remark-cli": "^5.0.0",
     "remark-preset-wooorm": "^4.0.0",
     "tape": "^4.4.0",
-    "xo": "^0.20.0"
+    "xo": "^0.21.0"
   },
   "scripts": {
     "format": "remark . -qfo && prettier --write '**/*.js' && xo --fix",
