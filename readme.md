@@ -336,6 +336,39 @@ Parse text to a syntax tree.
 
 `parse` [freezes][freeze] the processor if not already frozen.
 
+`parse` does not apply [transformers from the run phase][description] to the
+[syntax tree][node].
+
+###### Example
+
+The below example shows how the `parse` function can be used to create a
+[syntax tree][node] from a [file][].
+
+```js
+var unified = require('unified')
+var markdown = require('remark-parse')
+
+var tree = unified()
+  .use(markdown)
+  .parse('# Hello world!')
+
+console.log(tree)
+```
+
+Yields:
+
+```js
+{ type: 'root',
+  children:
+   [ { type: 'heading',
+       depth: 1,
+       children: [Array],
+       position: [Position] } ],
+  position:
+   { start: { line: 1, column: 1, offset: 0 },
+     end: { line: 1, column: 15, offset: 14 } } }
+```
+
 #### `processor.Parser`
 
 Function handling the parsing of text to a syntax tree.  Used in the
@@ -367,6 +400,34 @@ Compile a syntax tree to text.
 ###### Note
 
 `stringify` [freezes][freeze] the processor if not already frozen.
+
+`stringify` does not apply [transformers from the run phase][description]
+to the [syntax tree][node].
+
+###### Example
+
+The below example shows how the `stringify` function can be used to generate a
+[file][] from a [syntax tree][node].
+
+```js
+var unified = require('unified')
+var html = require('rehype-stringify')
+var h = require('hastscript')
+
+var tree = h('h1', 'Hello world!')
+
+var doc = unified()
+  .use(html)
+  .stringify(tree)
+
+console.log(doc)
+```
+
+Yields:
+
+```html
+<h1>Hello world!</h1>
+```
 
 #### `processor.Compiler`
 
@@ -412,6 +473,42 @@ syntax tree and a file.
 *   `node` ([`Node`][node])
 *   `file` ([`VFile`][file])
 
+###### Example
+
+The below example shows how the `stringify` function can be used to transform a
+[syntax tree][node].
+
+```js
+var unified = require('unified')
+var references = require('remark-reference-links')
+var u = require('unist-builder')
+
+var tree = u('root', [
+  u('paragraph', [
+    u('link', {href: 'https://example.com'}, [u('text', 'Example Domain')])
+  ])
+])
+
+unified()
+  .use(references)
+  .run(tree, function(err, tree) {
+    if (err) throw err
+    console.log(tree)
+  })
+```
+
+Yields:
+
+```js
+{ type: 'root',
+  children:
+   [ { type: 'paragraph', children: [Array] },
+     { type: 'definition',
+       identifier: '1',
+       title: undefined,
+       url: undefined } ] }
+```
+
 ### `processor.runSync(node[, file])`
 
 Transform a syntax tree by applying [**plugin**][plugin]s to it.
@@ -452,17 +549,10 @@ resolved with the resulting file.
 
 `process` [freezes][freeze] the processor if not already frozen.
 
-#### `function done(err, file)`
-
-Invoked when the process is complete.  Invoked with a fatal error, if any, and
-the [`VFile`][file].
-
-###### Parameters
-
-*   `err` (`Error`, optional) — Fatal error
-*   `file` ([`VFile`][file])
-
 ###### Example
+
+The below example shows how the `process` function can be used to process a
+[file][] whether plugins are asynchronous or not with Promises.
 
 ```js
 var unified = require('unified')
@@ -504,6 +594,45 @@ Yields:
 </html>
 ```
 
+#### `function done(err, file)`
+
+Invoked when the process is complete.  Invoked with a fatal error, if any, and
+the [`VFile`][file].
+
+###### Parameters
+
+*   `err` (`Error`, optional) — Fatal error
+*   `file` ([`VFile`][file])
+
+###### Example
+
+The below example shows how the `process` function can be used to process a
+[file][] whether plugins are asynchronous or not with a callback.
+
+```js
+var unified = require('unified')
+var parse = require('remark-parse')
+var stringify = require('remark-stringify')
+var github = require('remark-github')
+var report = require('vfile-reporter')
+
+unified()
+  .use(parse)
+  .use(github)
+  .use(stringify)
+  .process('@mention', function(err, file) {
+    console.error(report(err || file))
+    console.log(String(file))
+  })
+```
+
+Yields:
+
+```markdown
+no issues found
+[**@mention**](https://github.com/blog/821)
+```
+
 ### `processor.processSync(file|value)`
 
 Process the given representation of a file as configured on the processor.  The
@@ -525,6 +654,9 @@ If asynchronous [**plugin**][plugin]s are configured an error is thrown.
 `processSync` [freezes][freeze] the processor if not already frozen.
 
 ###### Example
+
+The below example shows how the `processSync` function can be used to process a
+[file][] if all plugins are known to be synchronous.
 
 ```js
 var unified = require('unified')
@@ -587,17 +719,9 @@ The following example show how to get and set information:
 ```js
 var unified = require('unified')
 
-console.log(
-  unified()
-    .data('alpha', 'bravo')
-    .data('alpha')
-)
-```
-
-Yields:
-
-```txt
-bravo
+unified()
+  .data('alpha', 'bravo')
+  .data('alpha') // => 'bravo'
 ```
 
 ### `processor.freeze()`
@@ -931,6 +1055,8 @@ work on [`ware`][ware], which was a huge initial inspiration.
 [vfile-contents]: https://github.com/vfile/vfile#vfilecontents
 
 [vfile-utilities]: https://github.com/vfile/vfile#related-tools
+
+[description]: #description
 
 [file]: #file
 
