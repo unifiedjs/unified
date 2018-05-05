@@ -462,7 +462,7 @@ resolved with the resulting syntax tree.
 
 `run` [freezes][freeze] the processor if not already frozen.
 
-##### `function done(err[, node, file])`
+#### `function done(err[, node, file])`
 
 Invoked when transformation is complete.  Either invoked with an error or a
 syntax tree and a file.
