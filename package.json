@@ -28,7 +28,7 @@
     "extend": "^3.0.0",
     "is-plain-obj": "^1.1.0",
     "trough": "^1.0.0",
-    "vfile": "^2.0.0",
+    "vfile": "^3.0.0",
     "x-is-string": "^0.1.0"
   },
   "devDependencies": {
