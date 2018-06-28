@@ -475,7 +475,7 @@ syntax tree and a file.
 
 ###### Example
 
-The below example shows how the `stringify` function can be used to transform a
+The below example shows how the `run` function can be used to transform a
 [syntax tree][node].
 
 ```js
