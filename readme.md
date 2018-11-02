@@ -994,7 +994,7 @@ work on [`ware`][ware], which was a huge initial inspiration.
 
 <!-- Definitions -->
 
-[logo]: https://cdn.rawgit.com/unifiedjs/unified/0cd3a41/logo.svg
+[logo]: https://raw.githubusercontent.com/unifiedjs/unified/39917ea/logo.svg?sanitize=true
 
 [travis-badge]: https://img.shields.io/travis/unifiedjs/unified.svg
 
