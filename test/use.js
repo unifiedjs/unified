@@ -3,7 +3,6 @@
 var test = require('tape')
 var unified = require('..')
 
-/* Plugins. */
 test('use(plugin[, options])', function(t) {
   t.test('should ignore missing values', function(st) {
     var p = unified()

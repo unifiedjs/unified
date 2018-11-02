@@ -12,10 +12,7 @@ function Parser() {}
 Parser.prototype.parse = noop
 Compiler.prototype.compile = noop
 
-/* Coverage: */
-
-/* eslint-disable no-new */
+// Coverage:
 noop()
-new Parser()
-new Compiler()
-/* eslint-enable no-new */
+new Parser() // eslint-disable-line no-new
+new Compiler() // eslint-disable-line no-new

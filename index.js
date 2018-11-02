@@ -1,6 +1,5 @@
 'use strict'
 
-/* Dependencies. */
 var extend = require('extend')
 var bail = require('bail')
 var vfile = require('vfile')
@@ -8,13 +7,13 @@ var trough = require('trough')
 var string = require('x-is-string')
 var plain = require('is-plain-obj')
 
-/* Expose a frozen processor. */
+// Expose a frozen processor.
 module.exports = unified().freeze()
 
 var slice = [].slice
 var own = {}.hasOwnProperty
 
-/* Process pipeline. */
+// Process pipeline.
 var pipeline = trough()
   .use(pipelineParse)
   .use(pipelineRun)
@@ -42,7 +41,7 @@ function pipelineStringify(p, ctx) {
   ctx.file.contents = p.stringify(ctx.tree, ctx.file)
 }
 
-/* Function to create the first processor. */
+// Function to create the first processor.
 function unified() {
   var attachers = []
   var transformers = trough()
@@ -50,17 +49,17 @@ function unified() {
   var frozen = false
   var freezeIndex = -1
 
-  /* Data management. */
+  // Data management.
   processor.data = data
 
-  /* Lock. */
+  // Lock.
   processor.freeze = freeze
 
-  /* Plug-ins. */
+  // Plugins.
   processor.attachers = attachers
   processor.use = use
 
-  /* API. */
+  // API.
   processor.parse = parse
   processor.stringify = stringify
   processor.run = run
@@ -68,11 +67,10 @@ function unified() {
   processor.process = process
   processor.processSync = processSync
 
-  /* Expose. */
+  // Expose.
   return processor
 
-  /* Create a new processor based on the processor
-   * in the current scope. */
+  // Create a new processor based on the processor in the current scope.
   function processor() {
     var destination = unified()
     var length = attachers.length
@@ -87,15 +85,13 @@ function unified() {
     return destination
   }
 
-  /* Freeze: used to signal a processor that has finished
-   * configuration.
-   *
-   * For example, take unified itself.  It’s frozen.
-   * Plug-ins should not be added to it.  Rather, it should
-   * be extended, by invoking it, before modifying it.
-   *
-   * In essence, always invoke this when exporting a
-   * processor. */
+  // Freeze: used to signal a processor that has finished configuration.
+  //
+  // For example, take unified itself.  It’s frozen.  Plugins should not be
+  // added to it.  Rather, it should be extended, by invoking it, before
+  // modifying it.
+  //
+  // In essence, always invoke this when exporting a processor.
   function freeze() {
     var values
     var plugin
@@ -133,11 +129,10 @@ function unified() {
     return processor
   }
 
-  /* Data management.
-   * Getter / setter for processor-specific informtion. */
+  // Data management.  Getter / setter for processor-specific informtion.
   function data(key, value) {
     if (string(key)) {
-      /* Set `key`. */
+      // Set `key`.
       if (arguments.length === 2) {
         assertUnfrozen('data', frozen)
 
@@ -146,35 +141,35 @@ function unified() {
         return processor
       }
 
-      /* Get `key`. */
+      // Get `key`.
       return (own.call(namespace, key) && namespace[key]) || null
     }
 
-    /* Set space. */
+    // Set space.
     if (key) {
       assertUnfrozen('data', frozen)
       namespace = key
       return processor
     }
 
-    /* Get space. */
+    // Get space.
     return namespace
   }
 
-  /* Plug-in management.
-   *
-   * Pass it:
-   * *   an attacher and options,
-   * *   a preset,
-   * *   a list of presets, attachers, and arguments (list
-   *     of attachers and options). */
+  // Plugin management.
+  //
+  // Pass it:
+  // *   an attacher and options,
+  // *   a preset,
+  // *   a list of presets, attachers, and arguments (list of attachers and
+  //     options).
   function use(value) {
     var settings
 
     assertUnfrozen('use', frozen)
 
     if (value === null || value === undefined) {
-      /* Empty */
+      // Empty.
     } else if (typeof value === 'function') {
       addPlugin.apply(null, arguments)
     } else if (typeof value === 'object') {
@@ -220,7 +215,7 @@ function unified() {
       var index
 
       if (plugins === null || plugins === undefined) {
-        /* Empty */
+        // Empty.
       } else if (typeof plugins === 'object' && 'length' in plugins) {
         length = plugins.length
         index = -1
@@ -262,9 +257,8 @@ function unified() {
     }
   }
 
-  /* Parse a file (in string or VFile representation)
-   * into a Unist node using the `Parser` on the
-   * processor. */
+  // Parse a file (in string or vfile representation) into a unist node using
+  // the `Parser` on the processor.
   function parse(doc) {
     var file = vfile(doc)
     var Parser
@@ -280,8 +274,8 @@ function unified() {
     return Parser(String(file), file) // eslint-disable-line new-cap
   }
 
-  /* Run transforms on a Unist node representation of a file
-   * (in string or VFile representation), async. */
+  // Run transforms on a unist node representation of a file (in string or
+  // vfile representation), async.
   function run(node, file, cb) {
     assertNode(node)
     freeze()
@@ -313,8 +307,8 @@ function unified() {
     }
   }
 
-  /* Run transforms on a Unist node representation of a file
-   * (in string or VFile representation), sync. */
+  // Run transforms on a unist node representation of a file (in string or
+  // vfile representation), sync.
   function runSync(node, file) {
     var complete = false
     var result
@@ -332,9 +326,8 @@ function unified() {
     }
   }
 
-  /* Stringify a Unist node representation of a file
-   * (in string or VFile representation) into a string
-   * using the `Compiler` on the processor. */
+  // Stringify a unist node representation of a file (in string or vfile
+  // representation) into a string using the `Compiler` on the processor.
   function stringify(node, doc) {
     var file = vfile(doc)
     var Compiler
@@ -351,11 +344,10 @@ function unified() {
     return Compiler(node, file) // eslint-disable-line new-cap
   }
 
-  /* Parse a file (in string or VFile representation)
-   * into a Unist node using the `Parser` on the processor,
-   * then run transforms on that node, and compile the
-   * resulting node using the `Compiler` on the processor,
-   * and store that result on the VFile. */
+  // Parse a file (in string or vfile representation) into a unist node using
+  // the `Parser` on the processor, then run transforms on that node, and
+  // compile the resulting node using the `Compiler` on the processor, and
+  // store that result on the vfile.
   function process(doc, cb) {
     freeze()
     assertParser('process', processor.Parser)
@@ -384,8 +376,7 @@ function unified() {
     }
   }
 
-  /* Process the given document (in string or VFile
-   * representation), sync. */
+  // Process the given document (in string or vfile representation), sync.
   function processSync(doc) {
     var complete = false
     var file
@@ -408,12 +399,12 @@ function unified() {
   }
 }
 
-/* Check if `func` is a constructor. */
+// Check if `func` is a constructor.
 function newable(value) {
   return typeof value === 'function' && keys(value.prototype)
 }
 
-/* Check if `value` is an object with keys. */
+// Check if `value` is an object with keys.
 function keys(value) {
   var key
   for (key in value) {
@@ -422,41 +413,39 @@ function keys(value) {
   return false
 }
 
-/* Assert a parser is available. */
+// Assert a parser is available.
 function assertParser(name, Parser) {
   if (typeof Parser !== 'function') {
     throw new Error('Cannot `' + name + '` without `Parser`')
   }
 }
 
-/* Assert a compiler is available. */
+// Assert a compiler is available.
 function assertCompiler(name, Compiler) {
   if (typeof Compiler !== 'function') {
     throw new Error('Cannot `' + name + '` without `Compiler`')
   }
 }
 
-/* Assert the processor is not frozen. */
+// Assert the processor is not frozen.
 function assertUnfrozen(name, frozen) {
   if (frozen) {
     throw new Error(
-      [
-        'Cannot invoke `' + name + '` on a frozen processor.\nCreate a new ',
-        'processor first, by invoking it: use `processor()` instead of ',
-        '`processor`.'
-      ].join('')
+      'Cannot invoke `' +
+        name +
+        '` on a frozen processor.\nCreate a new processor first, by invoking it: use `processor()` instead of `processor`.'
     )
   }
 }
 
-/* Assert `node` is a Unist node. */
+// Assert `node` is a unist node.
 function assertNode(node) {
   if (!node || !string(node.type)) {
     throw new Error('Expected node, got `' + node + '`')
   }
 }
 
-/* Assert that `complete` is `true`. */
+// Assert that `complete` is `true`.
 function assertDone(name, asyncName, complete) {
   if (!complete) {
     throw new Error(
