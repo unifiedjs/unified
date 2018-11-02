@@ -1010,7 +1010,7 @@ work on [`ware`][ware], which was a huge initial inspiration.
 
 [npm]: https://docs.npmjs.com/cli/install
 
-[license]: LICENSE
+[license]: license
 
 [author]: http://wooorm.com
 
