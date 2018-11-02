@@ -10,7 +10,7 @@
 powers [**remark**][remark], [**retext**][retext], and [**rehype**][rehype],
 but it also allows for processing between multiple syntaxes.
 
-The website for **unified**, [`unifiedjs.github.io`][site], provides a less
+The website for **unified**, [`unified.js.org`][site], provides a less
 technical and more practical introduction to unified.  Make sure to visit it
 and try its introductory [Guides][].
 
@@ -1024,9 +1024,9 @@ work on [`ware`][ware], which was a huge initial inspiration.
 
 [author]: https://wooorm.com
 
-[site]: https://unifiedjs.github.io
+[site]: https://unified.js.org
 
-[guides]: https://unifiedjs.github.io/#guides
+[guides]: https://unified.js.org/#guides
 
 [rehype]: https://github.com/rehypejs/rehype
 
