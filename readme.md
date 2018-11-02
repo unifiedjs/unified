@@ -1,7 +1,9 @@
 # ![unified][logo]
 
-[![Build Status][travis-badge]][travis]
-[![Coverage Status][codecov-badge]][codecov]
+[![Travis][build-badge]][build]
+[![Coverage][coverage-badge]][coverage]
+[![Downloads][downloads-badge]][downloads]
+[![Size][size-badge]][size]
 [![Chat][chat-badge]][chat]
 
 **unified** is an interface for processing text using syntax trees.  It’s what
@@ -996,13 +998,21 @@ work on [`ware`][ware], which was a huge initial inspiration.
 
 [logo]: https://raw.githubusercontent.com/unifiedjs/unified/39917ea/logo.svg?sanitize=true
 
-[travis-badge]: https://img.shields.io/travis/unifiedjs/unified.svg
+[build-badge]: https://img.shields.io/travis/unifiedjs/unified/master.svg
 
-[travis]: https://travis-ci.org/unifiedjs/unified
+[build]: https://travis-ci.org/unifiedjs/unified
 
-[codecov-badge]: https://img.shields.io/codecov/c/github/unifiedjs/unified.svg
+[coverage-badge]: https://img.shields.io/codecov/c/github/unifiedjs/unified.svg
 
-[codecov]: https://codecov.io/github/unifiedjs/unified
+[coverage]: https://codecov.io/github/unifiedjs/unified
+
+[downloads-badge]: https://img.shields.io/npm/dm/unified.svg
+
+[downloads]: https://www.npmjs.com/package/unified
+
+[size-badge]: https://img.shields.io/bundlephobia/minzip/unified.svg
+
+[size]: https://bundlephobia.com/result?p=unified
 
 [chat-badge]: https://img.shields.io/gitter/room/unifiedjs/Lobby.svg
 
