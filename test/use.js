@@ -47,16 +47,14 @@ test('use(plugin[, options])', function(t) {
 
     st.plan(2)
 
-    p
-      .use(function(options) {
-        st.equal(
-          this,
-          p,
-          'should invoke a plugin with `processor` as the context'
-        )
-        st.equal(options, o, 'should invoke a plugin with `options`')
-      }, o)
-      .freeze()
+    p.use(function(options) {
+      st.equal(
+        this,
+        p,
+        'should invoke a plugin with `processor` as the context'
+      )
+      st.equal(options, o, 'should invoke a plugin with `options`')
+    }, o).freeze()
   })
 
   t.test('should support a list of plugins', function(st) {
@@ -64,16 +62,14 @@ test('use(plugin[, options])', function(t) {
 
     st.plan(2)
 
-    p
-      .use([
-        function() {
-          st.equal(this, p, 'should support a list of plugins (#1)')
-        },
-        function() {
-          st.equal(this, p, 'should support a list of plugins (#2)')
-        }
-      ])
-      .freeze()
+    p.use([
+      function() {
+        st.equal(this, p, 'should support a list of plugins (#1)')
+      },
+      function() {
+        st.equal(this, p, 'should support a list of plugins (#2)')
+      }
+    ]).freeze()
   })
 
   t.test('should support a list of one plugin', function(st) {
@@ -81,13 +77,11 @@ test('use(plugin[, options])', function(t) {
 
     st.plan(1)
 
-    p
-      .use([
-        function() {
-          st.equal(this, p, 'should support a list of plugins (#2)')
-        }
-      ])
-      .freeze()
+    p.use([
+      function() {
+        st.equal(this, p, 'should support a list of plugins (#2)')
+      }
+    ]).freeze()
   })
 
   t.test('should support a list of plugins and arguments', function(st) {
@@ -96,21 +90,19 @@ test('use(plugin[, options])', function(t) {
 
     st.plan(2)
 
-    p
-      .use([
-        [
-          function(options) {
-            st.equal(options, o, 'should support arguments with options')
-          },
-          o
-        ],
-        [
-          function() {
-            st.equal(this, p, 'should support a arguments without options')
-          }
-        ]
-      ])
-      .freeze()
+    p.use([
+      [
+        function(options) {
+          st.equal(options, o, 'should support arguments with options')
+        },
+        o
+      ],
+      [
+        function() {
+          st.equal(this, p, 'should support a arguments without options')
+        }
+      ]
+    ]).freeze()
   })
 
   t.test('should throw when given invalid values in lists', function(st) {
@@ -271,16 +263,14 @@ test('use(plugin[, options])', function(t) {
 
     st.plan(3)
 
-    p
-      .use(function() {
-        return function(node, file) {
-          st.equal(node, n, 'should attach a transformer (#1)')
-          st.ok('message' in file, 'should attach a transformer (#2)')
+    p.use(function() {
+      return function(node, file) {
+        st.equal(node, n, 'should attach a transformer (#1)')
+        st.ok('message' in file, 'should attach a transformer (#2)')
 
-          throw new Error('Alpha bravo charlie')
-        }
-      })
-      .freeze()
+        throw new Error('Alpha bravo charlie')
+      }
+    }).freeze()
 
     st.throws(
       function() {
