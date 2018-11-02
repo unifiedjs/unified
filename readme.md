@@ -1012,7 +1012,7 @@ work on [`ware`][ware], which was a huge initial inspiration.
 
 [license]: license
 
-[author]: http://wooorm.com
+[author]: https://wooorm.com
 
 [site]: https://unifiedjs.github.io
 
