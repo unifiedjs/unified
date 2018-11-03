@@ -28,7 +28,39 @@ and [opensource.guide][] ([GitHub][]).
 *   For a less technical and more practical introduction to unified, visit
     [`unified.js.org`][site] and try its introductory [Guides][]
 *   To help us out, see [`contributing.md`][contributing], or become a backer
-    or sponsor on [Open Collective][]
+    or sponsor on [Open Collective][collective]
+
+## Sponsors
+
+<!--lint ignore no-html maximum-line-length-->
+
+<table>
+  <tr valign="top">
+    <td width="20%" align="center">
+      <a href="https://zeit.co"><img src="https://avatars1.githubusercontent.com/u/14985020?s=400&v=4"></a>
+      <br><br>🥇
+      <a href="https://zeit.co">ZEIT</a>
+    </td>
+    <td width="20%" align="center">
+      <a href="https://www.gatsbyjs.org"><img src="https://avatars1.githubusercontent.com/u/12551863?s=400&v=4"></a>
+      <br><br>🥇
+      <a href="https://www.gatsbyjs.org">Gatsby</a></td>
+    <td width="20%" align="center">
+      <a href="https://compositor.io"><img src="https://avatars1.githubusercontent.com/u/19245838?s=400&v=4"></a>
+      <br><br>🥉
+      <a href="https://compositor.io">Compositor</a>
+    </td>
+    <td width="20%" align="center">
+      <a href="https://www.holloway.com"><img src="https://avatars1.githubusercontent.com/u/35904294?s=400&v=4"></a>
+      <br><br>
+      <a href="https://www.holloway.com">Holloway</a>
+    </td>
+    <td width="20%" align="center">
+      <br><br><br><br>
+      <a href="https://opencollective.com/unified"><strong>You?</strong>
+    </td>
+  </tr>
+</table>
 
 ## Installation
 
@@ -1049,7 +1081,7 @@ work on [`ware`][ware], which was a huge initial inspiration.
 
 [twitter]: https://twitter.com/unifiedjs
 
-[open collective]: https://opencollective.com/unified
+[collective]: https://opencollective.com/unified
 
 [guides]: https://unified.js.org/#guides
 

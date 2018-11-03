@@ -83,5 +83,9 @@
     "plugins": [
       "preset-wooorm"
     ]
+  },
+  "collective": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/unified"
   }
 }
