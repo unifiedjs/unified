@@ -73,6 +73,8 @@ no issues found
     *   [processor.runSync(node\[, file\])](#processorrunsyncnode-file)
     *   [processor.process(file|value\[, done\])](#processorprocessfilevalue-done)
     *   [processor.processSync(file|value)](#processorprocesssyncfilevalue)
+    *   [processor.templateTag(strings\[, ...keys\])](#processortemplatetagstrings-keys)
+    *   [processor.templateTagSync(strings\[, ...keys\])](#processortemplatetagsyncstrings-keys)
     *   [processor.data(key\[, value\])](#processordatakey-value)
     *   [processor.freeze()](#processorfreeze)
 *   [Plugin](#plugin)
@@ -676,6 +678,107 @@ var processor = unified()
   .use(html)
 
 console.log(processor.processSync('# Hello world!').toString())
+```
+
+Yields:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <h1>Hello world!</h1>
+  </body>
+</html>
+```
+
+### `processor.templateTag(strings[, ...keys])`
+
+Process the given template string as configured on the processor.  The process
+invokes `process` internally.
+
+###### Parameters
+
+<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_templates>
+
+###### Returns
+
+[`Promise`][promise].  Rejected with an error or resolved with the resulting
+file.
+
+###### Example
+
+The below example shows how the `process` function can be used to process a
+[file][] whether plugins are asynchronous or not with a callback.
+
+```js
+var unified = require('unified')
+var parse = require('remark-parse')
+var stringify = require('remark-stringify')
+var github = require('remark-github')
+var report = require('vfile-reporter')
+
+var md = unified()
+  .use(parse)
+  .use(github)
+  .use(stringify)
+  .templateTag
+
+md`@mention`
+  .then(function(file) {
+    console.error(file)
+    console.log(String(file))
+  })
+  .catch(function (err) {
+    console.error(report(err))
+  })
+```
+
+Yields:
+
+```markdown
+no issues found
+[**@mention**](https://github.com/blog/821)
+```
+
+### `processor.templateTagSync(strings[, ...keys])`
+
+Process the given template string as configured on the processor.  The process
+invokes `processSync` internally.
+
+###### Parameters
+
+<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_templates>
+
+###### Returns
+
+[`VFile`][file] — Virtual file with modified [`contents`][vfile-contents].
+
+###### Example
+
+The below example shows how the `templateTagSync` function can be used to
+process a [file][] if all plugins are known to be synchronous.
+
+```js
+var unified = require('unified')
+var markdown = require('remark-parse')
+var remark2rehype = require('remark-rehype')
+var doc = require('rehype-document')
+var format = require('rehype-format')
+var html = require('rehype-stringify')
+
+var html = unified()
+  .use(markdown)
+  .use(remark2rehype)
+  .use(doc)
+  .use(format)
+  .use(html)
+  .templateTagSync
+
+console.log(html`# Hello world!`.toString())
 ```
 
 Yields:

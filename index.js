@@ -66,6 +66,8 @@ function unified() {
   processor.runSync = runSync
   processor.process = process
   processor.processSync = processSync
+  processor.templateTag = templateTag
+  processor.templateTagSync = templateTagSync
 
   // Expose.
   return processor
@@ -396,6 +398,16 @@ function unified() {
       complete = true
       bail(err)
     }
+  }
+
+  // Fold template expression into a string that can be passed to `process`
+  function templateTag() {
+    return process(String.raw.apply(null, arguments))
+  }
+
+  // Fold template expression into a string that can be passed to `processSync`
+  function templateTagSync() {
+    return processSync(String.raw.apply(null, arguments))
   }
 }
 

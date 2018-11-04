@@ -10,6 +10,7 @@ require('./parse')
 require('./run')
 require('./stringify')
 require('./process')
+require('./template-tag')
 
 var asyncfunctions = false
 
