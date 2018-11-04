@@ -768,14 +768,14 @@ var markdown = require('remark-parse')
 var remark2rehype = require('remark-rehype')
 var doc = require('rehype-document')
 var format = require('rehype-format')
-var html = require('rehype-stringify')
+var stringify = require('rehype-stringify')
 
 var html = unified()
   .use(markdown)
   .use(remark2rehype)
   .use(doc)
   .use(format)
-  .use(html)
+  .use(stringify)
   .templateTagSync
 
 console.log(html`# Hello world!`.toString())
