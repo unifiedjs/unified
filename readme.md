@@ -54,7 +54,7 @@ Yields:
 
 ```html
 no issues found
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -589,7 +589,7 @@ unified()
 Yields:
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -686,7 +686,7 @@ console.log(processor.processSync('# Hello world!').toString())
 Yields:
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
