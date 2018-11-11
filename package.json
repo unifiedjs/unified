@@ -13,7 +13,7 @@
     "retext",
     "remark"
   ],
-  "homepage": "http://unified.js.org",
+  "homepage": "https://unified.js.org",
   "repository": "unifiedjs/unified",
   "bugs": "https://github.com/unifiedjs/unified/issues",
   "author": "Titus Wormer <tituswormer@gmail.com> (https://wooorm.com)",
