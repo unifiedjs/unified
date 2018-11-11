@@ -10,6 +10,11 @@
 powers [**remark**][remark], [**retext**][retext], and [**rehype**][rehype],
 but it also allows for processing between multiple syntaxes.
 
+**unified** enabled new exciting projects like [Gatsby][] to pull in markdown,
+[MDX][] to embed [JSX][], and [Prettier][] to format it.
+It’s used to check code for [Storybook][], [debugger.html][] ([Mozilla][]),
+and [opensource.guide][] ([GitHub][]).
+
 The website for **unified**, [`unified.js.org`][site], provides a less
 technical and more practical introduction to unified.  Make sure to visit it
 and try its introductory [Guides][].
@@ -1127,3 +1132,21 @@ work on [`ware`][ware], which was a huge initial inspiration.
 [published]: https://github.com/unifiedjs/unified/commit/2ba1cf
 
 [ware]: https://github.com/segmentio/ware
+
+[gatsby]: https://www.gatsbyjs.org
+
+[mdx]: https://mdxjs.com
+
+[jsx]: https://reactjs.org/docs/jsx-in-depth.html
+
+[prettier]: https://prettier.io
+
+[storybook]: https://storybook.js.org
+
+[debugger.html]: https://github.com/devtools-html/debugger.html
+
+[mozilla]: https://www.mozilla.org/en-GB/
+
+[opensource.guide]: https://opensource.guide
+
+[github]: https://github.com
