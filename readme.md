@@ -139,9 +139,9 @@ These processors can be used as-is, or their parsers and compilers can be mixed
 and matched with **unified** and other plugins to process between different
 syntaxes.
 
-*   [**rehype**][rehype] ([**HAST**][hast]) — HTML
-*   [**remark**][remark] ([**MDAST**][mdast]) — Markdown
-*   [**retext**][retext] ([**NLCST**][nlcst]) — Natural language
+*   [**rehype**][rehype] ([**hast**][hast]) — HTML
+*   [**remark**][remark] ([**mdast**][mdast]) — Markdown
+*   [**retext**][retext] ([**nlcst**][nlcst]) — Natural language
 
 ###### List of Plugins
 
