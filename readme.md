@@ -1145,7 +1145,7 @@ work on [`ware`][ware], which was a huge initial inspiration.
 
 [debugger.html]: https://github.com/devtools-html/debugger.html
 
-[mozilla]: https://www.mozilla.org/en-GB/
+[mozilla]: https://www.mozilla.org
 
 [opensource.guide]: https://opensource.guide
 
