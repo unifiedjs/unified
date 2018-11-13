@@ -24,7 +24,7 @@ but it also allows for processing between multiple syntaxes.
 It’s used to check code for [Storybook][], [debugger.html][] ([Mozilla][]),
 and [opensource.guide][] ([GitHub][]).
 
-*   To read what we’re up to, follow us on [Medium][] and [Twitter][]
+*   To read about what we’re up to, follow us on [Medium][] and [Twitter][]
 *   For a less technical and more practical introduction to unified, visit
     [`unified.js.org`][site] and try its introductory [Guides][]
 *   To help us out, see [`contributing.md`][contributing], or become a backer
