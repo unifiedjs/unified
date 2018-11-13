@@ -970,17 +970,20 @@ remark()
 
 ## Contribute
 
-**unified** is built by people just like you!  Check out
-[`contributing.md`][contributing] for ways to get started.
+**unified** is built by people just like you!
+Check out [`contributing.md`][contributing] for ways to get started.
 
-This project has a [Code of Conduct][coc].  By interacting with this repository,
-organisation, or community you agree to abide by its terms.
+This project has a [Code of Conduct][coc].
+By interacting with this repository, organisation, or community you agree to
+abide by its terms.
 
-Want to chat with the community and contributors?  Join us in [Gitter][chat]!
+Want to chat with the community and contributors?
+Join us in [spectrum][chat]!
 
-Have an idea for a cool new utility or tool?  That’s great!  If you want
-feedback, help, or just to share it with the world you can do so by creating
-an issue in the [`unifiedjs/ideas`][ideas] repository!
+Have an idea for a cool new utility or tool?
+That’s great!
+If you want feedback, help, or just to share it with the world you can do so by
+creating an issue in the [`unifiedjs/ideas`][ideas] repository!
 
 ## Acknowledgments
 
@@ -1019,9 +1022,9 @@ work on [`ware`][ware], which was a huge initial inspiration.
 
 [size]: https://bundlephobia.com/result?p=unified
 
-[chat-badge]: https://img.shields.io/gitter/room/unifiedjs/Lobby.svg
+[chat-badge]: https://img.shields.io/badge/join%20the%20community-on%20spectrum-7b16ff.svg
 
-[chat]: https://gitter.im/unifiedjs/Lobby
+[chat]: https://spectrum.chat/unified
 
 [npm]: https://docs.npmjs.com/cli/install
 

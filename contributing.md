@@ -1,14 +1,17 @@
 # Contributing
 
-> This project has a [Code of Conduct][coc].  By interacting with this
-> repository, organisation, or community you agree to abide by its terms.
+> This project has a [Code of Conduct][coc].
+> By interacting with this repository, organisation, or community you agree to
+> abide by its terms.
 
-Hi!  👋 Exciting that you’re interested in contributing!  Before doing so, take
-a moment to read the following guidelines.  And thanks for contributing to
-**unified**!  👏👌✨
+Hi!  👋
+We’re excited that you’re interested in contributing!
+Take a moment to read the following guidelines.
+And thanks for contributing to **unified**!  👏👌✨
 
-Before anything else: people involved with this project often do so for fun,
-next to their day job: you are not entitled to free customer service.
+If you’re raising an issue, please understand that people involved with this
+project often do so for fun, next to their day job; you are not entitled to
+free customer service.
 
 ## Table of Contents
 
@@ -29,27 +32,27 @@ The ecosystem consists of several organisations and separate projects: most of
 them are tiny, and many of them have a utility
 ([`mdast-util-to-hast`][mdast-util-to-hast]), a plugin
 ([`remark-rehype`][remark-rehype]), and relate to an ecosystem
-([`remark`][remark]).  Try and pick the right place to contribute to so we can
-help you faster.
+([`remark`][remark]).
+Try and pick the right place to contribute to so we can help you faster.
 
 ## Questions
 
-Please chat and ask questions on Gitter!  Jump in there and lurk, talk to us,
-and help others.
+Please chat and ask questions on [spectrum][chat]!
+Jump in there and lurk, talk to us, and help others.
 
-*   [**unified**](https://gitter.im/unifiedjs/Lobby)
+*   [**unified**](https://spectrum.chat/unified)
     — Topics relating to [**unified**][unified] in general
-*   [**vfile**](https://gitter.im/vfile/Lobby)
+*   [**vfile**](https://spectrum.chat/unified/vfile)
     — Topics relating to [**vfile**][vfile]: virtual files
-*   [**syntax-tree**](https://gitter.im/syntax-tree/Lobby)
+*   [**syntax-tree**](https://spectrum.chat/unified/syntax-tree)
     — Topics relating to [**syntax-tree**][syntax-tree] and [**unist**][unist]
-*   [**remark**](https://gitter.im/remarkjs/Lobby)
+*   [**remark**](https://spectrum.chat/unified/remark)
     — Topics relating to [**remark**][remark]s ecosystem, markdown,
     and [**mdast**][mdast]
-*   [**rehype**](https://gitter.im/rehypejs/Lobby)
+*   [**rehype**](https://spectrum.chat/unified/rehype)
     — Topics relating to [**rehype**][rehype]s ecosystem, HTML,
     and [**hast**][hast]
-*   [**retext**](https://gitter.im/retextjs/Lobby)
+*   [**retext**](https://spectrum.chat/unified/retext)
     — Topics relating to [**retext**][retext]s ecosystem, natural language,
     and [**nlcst**][nlcst]
 
@@ -136,3 +139,5 @@ prevent you from doing unnecessary work.
 [remark-rehype]: https://github.com/remarkjs/remark-rehype
 
 [unit-test]: https://twitter.com/sindresorhus/status/579306280495357953
+
+[chat]: https://spectrum.chat/unified
