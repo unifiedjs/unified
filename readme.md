@@ -24,9 +24,11 @@ but it also allows for processing between multiple syntaxes.
 It’s used to check code for [Storybook][], [debugger.html][] ([Mozilla][]),
 and [opensource.guide][] ([GitHub][]).
 
-The website for **unified**, [`unified.js.org`][site], provides a less
-technical and more practical introduction to unified.  Make sure to visit it
-and try its introductory [Guides][].
+*   To read what we’re up to, follow us on [Medium][] and [Twitter][]
+*   For a less technical and more practical introduction to unified, visit
+    [`unified.js.org`][site] and try its introductory [Guides][]
+*   To help us out, see [`contributing.md`][contributing], or become a backer
+    or sponsor on [Open Collective][]
 
 ## Installation
 
@@ -1042,6 +1044,12 @@ work on [`ware`][ware], which was a huge initial inspiration.
 [author]: https://wooorm.com
 
 [site]: https://unified.js.org
+
+[medium]: https://medium.com/unifiedjs
+
+[twitter]: https://twitter.com/unifiedjs
+
+[open collective]: https://opencollective.com/unified
 
 [guides]: https://unified.js.org/#guides
 
