@@ -6,15 +6,6 @@
 [![Size][size-badge]][size]
 [![Chat][chat-badge]][chat]
 
-* * *
-
-<!--lint ignore no-html maximum-line-length-->
-
-<p align="center">🎉 <strong>Announcing the unified collective!</strong> 🎉</p>
-<p align="center"><a href="https://medium.com/unifiedjs/collectively-evolving-through-crowdsourcing-22c359ea95cc">Read more about it on Medium »</a></p>
-
-* * *
-
 **unified** is an interface for processing text using syntax trees.  It’s what
 powers [**remark**][remark], [**retext**][retext], and [**rehype**][rehype],
 but it also allows for processing between multiple syntaxes.
@@ -29,6 +20,13 @@ and [opensource.guide][] ([GitHub][]).
     [`unified.js.org`][site] and try its introductory [Guides][]
 *   To help us out, see [`contributing.md`][contributing], or become a backer
     or sponsor on [Open Collective][collective]
+
+* * *
+
+<!--lint ignore no-html-->
+
+**Announcing the unified collective!  🎉
+[Read more about it on Medium »][medium]**
 
 ## Sponsors
 
