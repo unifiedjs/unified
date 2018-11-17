@@ -1,4 +1,4 @@
-# ![unified][logo]
+# [![unified][logo]](https://unified.js.org/)
 
 [![Travis][build-badge]][build]
 [![Coverage][coverage-badge]][coverage]
