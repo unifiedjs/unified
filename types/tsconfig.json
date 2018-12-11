@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "lib": ["es2015", "dom"],
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "baseUrl": ".",
+    "paths": {
+      "unified": ["index.d.ts"]
+    }
+  }
+}
