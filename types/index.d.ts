@@ -217,7 +217,7 @@ declare namespace unified {
 
   type ProcessCallback = (error: Error | null, file: vfile.VFile) => void
 
-  type VFileCompatible = vfile.VFile | vfile.VFileOptions | string | Buffer
+  type VFileCompatible = vfile.VFile | vfile.VFileOptions | vfile.VFileContents
 }
 
 /**
