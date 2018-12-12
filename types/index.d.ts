@@ -120,6 +120,10 @@ declare namespace unified {
      * Get or set information in an in-memory key-value store accessible to all phases of the process.
      * An example is a list of HTML elements which are self-closing, which is needed when parsing, transforming, and compiling HTML.
      *
+     * @returns key-value store object
+     */
+    data(): {[key: string]: unknown}
+    /**
      * @param key Identifier
      * @returns If getting, the value at key
      */

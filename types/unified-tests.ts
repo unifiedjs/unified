@@ -154,9 +154,10 @@ processor.processSync(new Buffer('random buffer'))
  */
 processor.data('random key', {})
 processor.data('random key', {}).data('random key2', {})
-const unknownValue: unknown = processor.data('random key')
+let unknownValue: unknown = processor.data('random key')
 // $ExpectError
 processor.data('random key').data('random key2', {})
+unknownValue = processor.data().randomKey
 
 /**
  * processor.freeze
