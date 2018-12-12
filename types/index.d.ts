@@ -2,8 +2,6 @@
 
 import * as Unist from 'unist'
 import vfile = require('vfile')
-import {parse} from 'url'
-import {stringify} from 'querystring'
 
 declare namespace unified {
   interface Processor {
