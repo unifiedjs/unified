@@ -143,15 +143,18 @@ declare namespace unified {
   }
 
   type Plugin = Attacher
+  type Settings = {
+    [key: string]: unknown
+  }
   /**
    * Presets provide a potentially sharable way to configure processors.
    * They can contain multiple plugins and optionally settings as well.
    */
   interface Preset {
     plugins?: PluggableList
-    settings?: unknown
+    settings?: Settings
   }
-  type PluginTuple = [Plugin, unknown]
+  type PluginTuple = [Plugin, Settings]
   type Pluggable = Plugin | Preset | PluginTuple
   type PluggableList = Pluggable[]
 
