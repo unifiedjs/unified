@@ -119,7 +119,7 @@ no issues found
     *   [processor.runSync(node\[, file\])](#processorrunsyncnode-file)
     *   [processor.process(file|value\[, done\])](#processorprocessfilevalue-done)
     *   [processor.processSync(file|value)](#processorprocesssyncfilevalue)
-    *   [processor.data(key\[, value\])](#processordatakey-value)
+    *   [processor.data(\[key\[, value\]\])](#processordatakey-value)
     *   [processor.freeze()](#processorfreeze)
 *   [Plugin](#plugin)
     *   [function attacher(\[options\])](#function-attacheroptions)
