@@ -39,7 +39,7 @@ declare namespace unified {
      * @param file VFile or anything which can be given to vfile()
      * @returns Syntax tree representation of input.
      */
-    parse(file: vfile.VFile | string | Buffer): Unist.Node
+    parse(file: VFileCompatible): Unist.Node
 
     /**
      * Function handling the parsing of text to a syntax tree.
@@ -58,7 +58,7 @@ declare namespace unified {
      * @param file `VFile` or anything which can be given to `vfile()`
      * @returns String representation of the syntax tree file
      */
-    stringify(node: Unist.Node, file?: vfile.VFile): string
+    stringify(node: Unist.Node, file?: VFileCompatible): string
 
     /**
      * Function handling the compilation of syntax tree to a text.
@@ -81,9 +81,9 @@ declare namespace unified {
      * @returns `Promise` if `done` is not given. Rejected with an error, or resolved with the resulting syntax tree.
      */
     run(node: Unist.Node): Promise<Unist.Node>
-    run(node: Unist.Node, file: vfile.VFile): Promise<Unist.Node>
+    run(node: Unist.Node, file: VFileCompatible): Promise<Unist.Node>
     run(node: Unist.Node, done: RunCallback): void
-    run(node: Unist.Node, file: vfile.VFile, done: RunCallback): void
+    run(node: Unist.Node, file: VFileCompatible, done: RunCallback): void
 
     /**
      * Transform a syntax tree by applying plugins to it.
@@ -94,7 +94,7 @@ declare namespace unified {
      * @param file `VFile` or anything which can be given to `vfile()`
      * @returns The given syntax tree.
      */
-    runSync(node: Unist.Node, file?: vfile.VFile): Unist.Node
+    runSync(node: Unist.Node, file?: VFileCompatible): Unist.Node
 
     /**
      * Process the given representation of a file as configured on the processor. The process invokes `parse`, `run`, and `stringify` internally.
@@ -103,8 +103,8 @@ declare namespace unified {
      * @returns `Promise` if `done` is not given.
      * Rejected with an error or resolved with the resulting file.
      */
-    process(file: vfile.VFile | string | Buffer): Promise<vfile.VFile>
-    process(file: vfile.VFile | string | Buffer, done: ProcessCallback): void
+    process(file: VFileCompatible): Promise<vfile.VFile>
+    process(file: VFileCompatible, done: ProcessCallback): void
 
     /**
      * Process the given representation of a file as configured on the processor. The process invokes `parse`, `run`, and `stringify` internally.
@@ -114,7 +114,7 @@ declare namespace unified {
      * @param file
      * @returns Virtual file with modified contents.
      */
-    processSync(file: vfile.VFile | string | Buffer): vfile.VFile
+    processSync(file: VFileCompatible): vfile.VFile
 
     /**
      * Get or set information in an in-memory key-value store accessible to all phases of the process.
@@ -193,21 +193,21 @@ declare namespace unified {
   interface Transformer {
     (
       node: Unist.Node,
-      file: vfile.VFile,
+      file: VFileCompatible,
       next?: (error: Error | null, tree: Unist.Node, file: vfile.VFile) => {}
     ): Error | Unist.Node | Promise<Unist.Node>
   }
 
   class Parser {
-    parse(file: vfile.VFile | string | Buffer): Unist.Node
+    parse(file: VFileCompatible): Unist.Node
   }
 
-  type ParserFunction = (file: vfile.VFile | string | Buffer) => Unist.Node
+  type ParserFunction = (file: VFileCompatible) => Unist.Node
 
   class Compiler {
-    compile(node: Unist.Node, file: vfile.VFile): string
+    compile(node: Unist.Node, file?: VFileCompatible): string
   }
-  type CompilerFunction = (node: Unist.Node, file?: vfile.VFile) => string
+  type CompilerFunction = (node: Unist.Node, file?: VFileCompatible) => string
 
   type RunCallback = (
     error: Error | null,
@@ -216,6 +216,8 @@ declare namespace unified {
   ) => void
 
   type ProcessCallback = (error: Error | null, file: vfile.VFile) => void
+
+  type VFileCompatible = vfile.VFile | vfile.VFileOptions | string | Buffer
 }
 
 /**
