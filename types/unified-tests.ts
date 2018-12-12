@@ -81,11 +81,11 @@ processor.parse(new Buffer('random buffer'))
 /**
  * processor.Parser
  */
-processor.Parser = (file: vfile.VFile | string | Buffer) => ({
+processor.Parser = (file: unified.VFileCompatible) => ({
   type: 'random node'
 })
 processor.Parser = class CustomParser {
-  parse(file: vfile.VFile | string | Buffer) {
+  parse(file: unified.VFileCompatible) {
     return {
       type: 'random node'
     }
@@ -100,7 +100,7 @@ stringValue = processor.stringify(nodeValue)
 /**
  * processor.Compiler
  */
-processor.Compiler = (node: Unist.Node, file?: vfile.VFile) => {
+processor.Compiler = (node: Unist.Node, file?: unified.VFileCompatible) => {
   return 'random string'
 }
 processor.Compiler = class CustomCompiler {
