@@ -25,7 +25,7 @@ declare namespace unified {
      */
     use(preset: Preset): Processor
     /**
-     * @param pluginTuple paris, plugin and options in an array
+     * @param pluginTuple pairs, plugin and options in an array
      */
     use(pluginTuple: PluginTuple): Processor
     /**
