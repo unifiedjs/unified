@@ -119,7 +119,7 @@ no issues found
     *   [processor.runSync(node\[, file\])](#processorrunsyncnode-file)
     *   [processor.process(file|value\[, done\])](#processorprocessfilevalue-done)
     *   [processor.processSync(file|value)](#processorprocesssyncfilevalue)
-    *   [processor.data(key\[, value\])](#processordatakey-value)
+    *   [processor.data(\[key\[, value\]\])](#processordatakey-value)
     *   [processor.freeze()](#processorfreeze)
 *   [Plugin](#plugin)
     *   [function attacher(\[options\])](#function-attacheroptions)
@@ -739,7 +739,7 @@ Yields:
 </html>
 ```
 
-### `processor.data(key[, value])`
+### `processor.data([key[, value]])`
 
 Get or set information in an in-memory key-value store accessible to all phases
 of the process.  An example is a list of HTML elements which are self-closing,
@@ -747,13 +747,14 @@ which is needed when parsing, transforming, and compiling HTML.
 
 ###### Parameters
 
-*   `key` (`string`) — Identifier
+*   `key` (`string`, optional) — Identifier
 *   `value` (`*`, optional) — Value to set.  Omit if getting `key`
 
 ###### Returns
 
 *   `processor` — If setting, the processor on which `data` is invoked
 *   `*` — If getting, the value at `key`
+*   `object` - Without arguments, the key-value store
 
 ###### Note
 
@@ -767,9 +768,11 @@ The following example show how to get and set information:
 ```js
 var unified = require('unified')
 
-unified()
+var processor = unified()
   .data('alpha', 'bravo')
   .data('alpha') // => 'bravo'
+
+processor.data() // {alpha: 'bravo'}
 ```
 
 ### `processor.freeze()`
