@@ -17,7 +17,7 @@ declare namespace unified {
      * @param options Configuration for plugin]
      * @returns The processor on which use is invoked
      */
-    use(plugin: Plugin, options?: unknown): Processor
+    use(plugin: Plugin, options?: any): Processor
     /**
      * @param preset `Object` with an optional plugins (set to list), and/or an optional settings object
      */
@@ -120,12 +120,12 @@ declare namespace unified {
      *
      * @returns key-value store object
      */
-    data(): {[key: string]: unknown}
+    data(): {[key: string]: any}
     /**
      * @param key Identifier
      * @returns If getting, the value at key
      */
-    data(key: string): unknown
+    data(key: string): any
     /**
      * @param value Value to set. Omit if getting key
      * @returns If setting, the processor on which data is invoked
@@ -146,7 +146,7 @@ declare namespace unified {
 
   type Plugin = Attacher
   type Settings = {
-    [key: string]: unknown
+    [key: string]: any
   }
   /**
    * Presets provide a potentially sharable way to configure processors.
@@ -171,7 +171,7 @@ declare namespace unified {
    * @returns Optional.
    */
   interface Attacher {
-    (this: Processor, options?: unknown): Transformer | void
+    (this: Processor, options?: any): Transformer | void
   }
 
   /**
