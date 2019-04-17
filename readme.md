@@ -16,9 +16,11 @@ It’s used to check code for [Storybook][], [debugger.html][] ([Mozilla][]),
 and [opensource.guide][] ([GitHub][]).
 
 *   To read about what we’re up to, follow us on [Medium][] and [Twitter][]
-*   For a less technical and more practical introduction to unified, visit [`unified.js.org`][site] and try its introductory [Guides][]
+*   For a less technical and more practical introduction to unified, visit
+    [`unified.js.org`][site] and try its introductory [Guides][]
 *   Got questions?  Get help on [our Spectrum community][spectrum]!
-*   To help us out, see [`contributing.md`][contributing], or become a backer or sponsor on [Open Collective][collective]
+*   To help us out, see [`contributing.md`][contributing], or become a backer
+    or sponsor on [Open Collective][collective]
 
 * * *
 
