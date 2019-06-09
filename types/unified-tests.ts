@@ -1,21 +1,27 @@
-import * as Unist from 'unist'
-import unified = require('unified')
-import vfile = require('vfile')
+import {Node} from 'unist'
+import unified, {
+  Processor,
+  Plugin,
+  VFileCompatible,
+  RunCallback,
+  ProcessCallback
+} from 'unified'
+import vfile from 'vfile'
 
 let fileValue: vfile.VFile
-let nodeValue: Unist.Node
+let nodeValue: Node
 let stringValue: string
 
 /**
  * processor()
  */
-let processor: unified.Processor = unified()
-const clonedProcessor: unified.Processor = processor()
+let processor: Processor = unified()
+const clonedProcessor: Processor = processor()
 
 /**
  * processor.use
  */
-const plugin: unified.Plugin = function() {}
+const plugin: Plugin = function() {}
 const settings = {
   random: 'option'
 }
@@ -81,11 +87,11 @@ processor.parse(new Buffer('random buffer'))
 /**
  * processor.Parser
  */
-processor.Parser = (file: unified.VFileCompatible) => ({
+processor.Parser = (file: VFileCompatible) => ({
   type: 'random node'
 })
 processor.Parser = class CustomParser {
-  parse(file: unified.VFileCompatible) {
+  parse(file: VFileCompatible) {
     return {
       type: 'random node'
     }
@@ -100,11 +106,11 @@ stringValue = processor.stringify(nodeValue)
 /**
  * processor.Compiler
  */
-processor.Compiler = (node: Unist.Node, file?: unified.VFileCompatible) => {
+processor.Compiler = (node: Node, file?: VFileCompatible) => {
   return 'random string'
 }
 processor.Compiler = class CustomCompiler {
-  compile(node: Unist.Node, file?: vfile.VFile) {
+  compile(node: Node, file?: vfile.VFile) {
     return 'random string'
   }
 }
@@ -116,7 +122,7 @@ processor.run(nodeValue).then(transFormedNode => {
   nodeValue = transFormedNode
 })
 processor.run(nodeValue, vfile())
-const runCallback: unified.RunCallback = (error, node, file) => {}
+const runCallback: RunCallback = (error, node, file) => {}
 processor.run(nodeValue, runCallback)
 // $ExpectError
 processor.run(nodeValue, runCallback).then(() => {})
@@ -137,7 +143,7 @@ processor.process(vfile()).then(file => {
 })
 processor.process('random string')
 processor.process(new Buffer('random buffer'))
-const processCallback: unified.ProcessCallback = (error, node) => {}
+const processCallback: ProcessCallback = (error, node) => {}
 processor.process(vfile(), processCallback)
 // $ExpectError
 processor.process(vfile(), processCallback).then(() => {})
