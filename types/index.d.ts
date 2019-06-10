@@ -1,7 +1,8 @@
 // TypeScript Version: 3.0
 
 import {Node} from 'unist'
-import vfile, {VFile, VFileOptions, VFileContents} from 'vfile'
+import vfile = require('vfile')
+import {VFile, VFileOptions, VFileContents} from 'vfile'
 
 export interface Processor {
   /**
