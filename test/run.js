@@ -117,6 +117,7 @@ test('run(node[, file], done)', function(t) {
       function transformer() {
         return {then: executor}
       }
+
       function executor(resolve, reject) {
         reject(new Error('delta'))
       }
@@ -135,6 +136,7 @@ test('run(node[, file], done)', function(t) {
       function transformer() {
         return {then: executor}
       }
+
       function executor(resolve) {
         resolve(a)
       }
@@ -371,6 +373,7 @@ test('run(node[, file])', function(t) {
       function transformer() {
         return {then: executor}
       }
+
       function executor(resolve, reject) {
         reject(new Error('delta'))
       }
@@ -395,6 +398,7 @@ test('run(node[, file])', function(t) {
       function transformer() {
         return {then: executor}
       }
+
       function executor(resolve) {
         resolve(a)
       }
@@ -534,6 +538,7 @@ test('runSync(node[, file])', function(t) {
       function plugin() {
         return transformer
       }
+
       function transformer() {
         return new Error('charlie')
       }
@@ -564,6 +569,7 @@ test('runSync(node[, file])', function(t) {
       function plugin() {
         return transformer
       }
+
       function transformer(tree, file, next) {
         next(new Error('delta'))
       }
@@ -594,9 +600,11 @@ test('runSync(node[, file])', function(t) {
       function plugin() {
         return transformer
       }
+
       function transformer() {
         return {then: executor}
       }
+
       function executor(resolve, reject) {
         reject(new Error('delta'))
       }
@@ -612,6 +620,7 @@ test('runSync(node[, file])', function(t) {
         function transformer() {
           return {then: executor}
         }
+
         function executor(resolve) {
           resolve(a)
         }
@@ -630,6 +639,7 @@ test('runSync(node[, file])', function(t) {
       function plugin() {
         return transformer
       }
+
       function transformer(tree, file, next) {
         setImmediate(tick)
         function tick() {

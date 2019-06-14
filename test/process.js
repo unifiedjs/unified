@@ -173,12 +173,15 @@ test('processSync(file)', function(t) {
       function parse() {
         this.Parser = simple.Parser
       }
+
       function compile() {
         this.Compiler = noop.Compiler
       }
+
       function plugin() {
         return transformer
       }
+
       function transformer() {
         return new Error('bravo')
       }

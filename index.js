@@ -410,6 +410,7 @@ function keys(value) {
   for (key in value) {
     return true
   }
+
   return false
 }
 

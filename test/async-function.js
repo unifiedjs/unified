@@ -27,7 +27,6 @@ test('async function transformer () {}', function(t) {
     return transformer
   }
 
-  /* eslint-disable require-await */
   async function transformer(tree, file) {
     t.equal(tree, n, 'passes correct tree to an async function')
     t.equal(file, f, 'passes correct file to an async function')

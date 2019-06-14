@@ -1,7 +1,6 @@
 'use strict'
 
 /* eslint-disable import/no-unassigned-import */
-
 require('./core')
 require('./freeze')
 require('./data')
@@ -18,7 +17,9 @@ try {
   asyncfunctions = true
 } catch (error) {}
 
-console.log('asyncfunctions: ', asyncfunctions)
+console.log('asyncfunctions:', asyncfunctions)
 if (asyncfunctions) {
   require('./async-function')
 }
+
+/* eslint-enable import/no-unassigned-import */
