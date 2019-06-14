@@ -54,9 +54,9 @@ export interface Processor {
    *
    * @param node
    * @param file `VFile` or anything which can be given to `vfile()`
-   * @returns String representation of the syntax tree file
+   * @returns Typically a string representation of the syntax tree file, sometimes another syntax tree (such as a React node).
    */
-  stringify(node: Node, file?: VFileCompatible): string
+  stringify<P = string>(node: Node, file?: VFileCompatible): P
 
   /**
    * Function handling the compilation of syntax tree to a text.
