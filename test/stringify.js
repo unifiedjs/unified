@@ -10,7 +10,7 @@ test('stringify(node[, file])', function(t) {
   var f
   var n
 
-  t.plan(9)
+  t.plan(13)
 
   t.throws(
     function() {
@@ -59,5 +59,25 @@ test('stringify(node[, file])', function(t) {
     },
     /Expected node, got `undefined`/,
     'should throw without node'
+  )
+
+  class ESCompiler {
+    constructor(node, file) {
+      t.equal(node, n, 'should pass a node')
+      t.ok('message' in file, 'should pass a file')
+    }
+
+    compile() {
+      t.equal(arguments.length, 0, 'should not pass anything to `compile`')
+      return 'echo'
+    }
+  }
+
+  p.Compiler = ESCompiler
+
+  t.equal(
+    p.stringify(n, f),
+    'echo',
+    'should return the result `Compiler#compile` returns on an ES class'
   )
 })

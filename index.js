@@ -267,7 +267,7 @@ function unified() {
     Parser = processor.Parser
     assertParser('parse', Parser)
 
-    if (newable(Parser)) {
+    if (newable(Parser, 'parse')) {
       return new Parser(String(file), file).parse()
     }
 
@@ -337,7 +337,7 @@ function unified() {
     assertCompiler('stringify', Compiler)
     assertNode(node)
 
-    if (newable(Compiler)) {
+    if (newable(Compiler, 'compile')) {
       return new Compiler(node, file).compile()
     }
 
@@ -400,8 +400,14 @@ function unified() {
 }
 
 // Check if `value` is a constructor.
-function newable(value) {
-  return typeof value === 'function' && keys(value.prototype)
+function newable(value, name) {
+  return (
+    typeof value === 'function' &&
+    // A function with keys in its prototype is probably a constructor.
+    // Classes’ prototype methods are not enumerable, so we check if some value
+    // exists in the prototype.
+    (keys(value.prototype) || name in value.prototype)
+  )
 }
 
 // Check if `value` is an object with keys.
