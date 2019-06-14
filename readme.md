@@ -71,6 +71,10 @@ and [opensource.guide][] ([GitHub][]).
 npm install unified
 ```
 
+This package comes with types.
+If you’re using TypeScript, make sure to also install [`@types/unist`][ts-unist]
+and [`@types/vfile`][ts-vfile].
+
 ## Use
 
 ```js
@@ -1106,6 +1110,10 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 [author]: https://wooorm.com
 
 [npm]: https://docs.npmjs.com/cli/install
+
+[ts-unist]: https://www.npmjs.com/package/@types/unist
+
+[ts-vfile]: https://www.npmjs.com/package/@types/vfile
 
 [site]: https://unified.js.org
 
