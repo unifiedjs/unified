@@ -1,7 +1,7 @@
 {
   "name": "unified",
   "version": "7.1.0",
-  "description": "Pluggable text processing interface",
+  "description": "Interface for processing text using syntax trees",
   "license": "MIT",
   "keywords": [
     "process",
