@@ -1087,7 +1087,7 @@ work on [`ware`][ware], which was a huge initial inspiration.
 
 [guides]: https://unified.js.org/#guides
 
-[spectrum]: http://spectrum.chat/unified
+[spectrum]: https://spectrum.chat/unified
 
 [rehype]: https://github.com/rehypejs/rehype
 
