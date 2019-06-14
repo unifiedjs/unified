@@ -4,7 +4,6 @@ var extend = require('extend')
 var bail = require('bail')
 var vfile = require('vfile')
 var trough = require('trough')
-var string = require('x-is-string')
 var plain = require('is-plain-obj')
 
 // Expose a frozen processor.
@@ -131,7 +130,7 @@ function unified() {
 
   // Data management.  Getter / setter for processor-specific informtion.
   function data(key, value) {
-    if (string(key)) {
+    if (typeof key === 'string') {
       // Set `key`.
       if (arguments.length === 2) {
         assertUnfrozen('data', frozen)
@@ -441,7 +440,7 @@ function assertUnfrozen(name, frozen) {
 
 // Assert `node` is a unist node.
 function assertNode(node) {
-  if (!node || !string(node.type)) {
+  if (!node || typeof node.type !== 'string') {
     throw new Error('Expected node, got `' + node + '`')
   }
 }
