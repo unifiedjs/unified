@@ -1,7 +1,7 @@
 language: node_js
 node_js:
-- lts/boron
-- node
+  - lts/dubnium
+  - node
 after_script: bash <(curl -s https://codecov.io/bash)
 deploy:
   provider: releases
@@ -9,7 +9,7 @@ deploy:
   api_key:
     secure: A16yUNG+m/p98L0mFLIy4IYWJsjWOKujHGEnJ2SwwIGvndLCtIig1BTp3C9Wkwf356UfHwcsPSa95bnpHXEsNZZwsVfzF4Hb2Csn0A9JKrpzoc+VdSgSDl+rUoq71x1TnLn4B2sC6k5/webcU26GBtVfeLka47OIUtuzcn8sxWHDr1JgRtSfVsasO4Iw21bSUnKKrIcgVLBoMrjRbJdCt3yzGaWbr/GuEQ/kXJfFY8zYh1iaJ12Nkqrof1lV766TJPL585uiuXQaHv0u+Hq6MNdKQqN1Tb+CgWB9VJrJaN/DxZpKfsl3FkO21c7UokvWIGP9WV/z5JVDcWhjfH7qRk+joMPYpHzUAlFnOWAz/PTWo0o65hKMrQKSYRxVsmWDSE+0EUV79mOaSUasEPHihXuwzqxrJtkCFW0rAs46Jvu0Z8hLtznH8FuiDU9l3BZsQA8/V5dFJ0Z6yLbvhs0Hwv/+IrLVpeDRixwaaar3EL6RE2zKAharSEgUw78lLkqSI6cDHVsIZVp22kAoeXB3m2JPAO0AAf1EbgZW1RA0kNb8gX3e5AoDsDgRb4ULlCCVXE6EXkH8lfa79Yr+7AUNk3v8orXJ5Qkofzby6js+t3qyTV8+i5T2vHj35lE+hq2KdH5LRVi2+0cmOP+8suJcUq3Two8TKPQXmyIsBOnSQBc=
   file:
-    - "unified.js"
-    - "unified.min.js"
+    - 'unified.js'
+    - 'unified.min.js'
   on:
     tags: true
