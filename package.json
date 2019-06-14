@@ -82,9 +82,6 @@
     "esnext": false,
     "rules": {
       "guard-for-in": "off",
-      "no-var": "off",
-      "object-shorthand": "off",
-      "prefer-arrow-callback": "off",
       "unicorn/prefer-type-error": "off"
     },
     "ignores": [
