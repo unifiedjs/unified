@@ -32,8 +32,6 @@
     "lib"
   ],
   "dependencies": {
-    "@types/unist": "^2.0.0",
-    "@types/vfile": "^3.0.0",
     "bail": "^1.0.0",
     "extend": "^3.0.0",
     "is-plain-obj": "^2.0.0",
@@ -41,6 +39,8 @@
     "vfile": "^4.0.0"
   },
   "devDependencies": {
+    "@types/unist": "^2.0.0",
+    "@types/vfile": "^3.0.0",
     "browserify": "^16.0.0",
     "dtslint": "^0.8.0",
     "nyc": "^14.0.0",
