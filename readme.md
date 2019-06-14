@@ -1,33 +1,33 @@
 # [![unified][logo]](https://unified.js.org/)
 
-[![Travis][build-badge]][build]
+[![Build][build-badge]][build]
 [![Coverage][coverage-badge]][coverage]
 [![Downloads][downloads-badge]][downloads]
 [![Size][size-badge]][size]
+[![Sponsors][sponsors-badge]][collective]
+[![Backers][backers-badge]][collective]
 [![Chat][chat-badge]][chat]
 
-**unified** is an interface for processing text using syntax trees.  It’s what
-powers [**remark**][remark], [**retext**][retext], and [**rehype**][rehype],
-but it also allows for processing between multiple syntaxes.
+**unified** is an interface for processing text using syntax trees.
+It’s what powers [**remark**][remark], [**retext**][retext], and
+[**rehype**][rehype], but it also allows for processing between multiple
+syntaxes.
 
-**unified** enabled new exciting projects like [Gatsby][] to pull in markdown,
+## Intro
+
+**unified** enabled new exciting projects like [Gatsby][] to pull in Markdown,
 [MDX][] to embed [JSX][], and [Prettier][] to format it.
 It’s used to check code for [Storybook][], [debugger.html][] ([Mozilla][]),
 and [opensource.guide][] ([GitHub][]).
 
-*   To read about what we’re up to, follow us on [Medium][] and [Twitter][]
+*   To read about what we are up to, follow us on [Medium][] and [Twitter][]
 *   For a less technical and more practical introduction to unified, visit
     [`unified.js.org`][site] and try its introductory [Guides][]
-*   Got questions?  Get help on [our Spectrum community][spectrum]!
-*   To help us out, see [`contributing.md`][contributing], or become a backer
-    or sponsor on [Open Collective][collective]
-
-* * *
-
-<!--lint ignore no-html-->
-
-**Announcing the unified collective!  🎉
-[Read more about it on Medium »][medium]**
+*   Browse [awesome unified][awesome] to find out more about the ecosystem
+*   Got questions?
+    Get help on [our Spectrum community][spectrum]!
+*   Check out [Contribute][] below to find out how to help out, or become a
+    backer or sponsor on [Open Collective][collective]
 
 ## Sponsors
 
@@ -61,15 +61,17 @@ and [opensource.guide][] ([GitHub][]).
   </tr>
 </table>
 
-## Installation
+[**Read more about the unified collective on Medium »**][announcement]
+
+## Install
 
 [npm][]:
 
-```bash
+```sh
 npm install unified
 ```
 
-## Usage
+## Use
 
 ```js
 var unified = require('unified')
@@ -132,12 +134,13 @@ no issues found
 
 ## Description
 
-**unified** is an interface for processing text using syntax trees.  Syntax
-trees are a representation understandable to programs.  Those programs, called
-[**plugin**][plugin]s, take these trees and modify them, amongst other things.
-To get to the syntax tree from input text there’s a [**parser**][parser].  To
-get from that back to text there’s a [**compiler**][compiler].  This is the
-[**process**][process] of a **processor**.
+**unified** is an interface for processing text using syntax trees.
+Syntax trees are a representation understandable to programs.
+Those programs, called [**plugin**][plugin]s, take these trees and modify them,
+amongst other things.
+To get to the syntax tree from input text, there is a [**parser**][parser].
+To get from that back to text, there is a [**compiler**][compiler].
+This is the [**process**][process] of a **processor**.
 
 ```ascii
 | ....................... process() ......................... |
@@ -155,29 +158,33 @@ Input ->- | Parser | ->- Syntax Tree ->- | Compiler | ->- Output
 
 ###### Processors
 
-Every processor implements another processor.  To create a new processor invoke
-another processor.  This creates a processor that is configured to function the
-same as its ancestor.  But when the descendant processor is configured in the
-future it does not affect the ancestral processor.
+Every processor implements another processor.
+To create a new processor, call another processor.
+This creates a processor that is configured to function the same as its
+ancestor.
+But when the descendant processor is configured in the future it does not affect
+the ancestral processor.
 
 When processors are exposed from a module (for example, unified itself) they
 should not be configured directly, as that would change their behaviour for all
-module users.  Those processors are [**frozen**][freeze] and they should be
-invoked to create a new processor before they are used.
+module users.
+Those processors are [**frozen**][freeze] and they should be called to create a
+new processor before they are used.
 
 ###### Node
 
-The syntax trees used in **unified** are [**Unist**][unist] nodes: plain
-JavaScript objects with a `type` property.  The semantics of those `type`s are
-defined by other projects.
+The syntax trees used in **unified** are [**unist**][unist] nodes: plain
+JavaScript objects with a `type` property.
+The semantics of those `type`s are defined by other projects.
 
 There are several [utilities][unist-utilities] for working with these nodes.
 
 ###### List of Processors
 
-The following projects process different syntax trees.  They parse text to
-their respective syntax tree and they compile their syntax trees back to text.
-These processors can be used as-is, or their parsers and compilers can be mixed
+The following projects process different syntax trees.
+They parse text to their respective syntax tree and they compile their syntax
+trees back to text.
+These processors can be used as is, or their parsers and compilers can be mixed
 and matched with **unified** and other plugins to process between different
 syntaxes.
 
@@ -199,29 +206,30 @@ See [**remark**][remark-plugins], [**rehype**][rehype-plugins], and
 ###### File
 
 When processing documents metadata is often gathered about that document.
-[**VFile**][vfile] is a virtual file format which stores data and handles
+[**VFile**][vfile] is a virtual file format that stores data and handles
 metadata and messages for **unified** and its plugins.
 
 There are several [utilities][vfile-utilities] for working with these files.
 
 ###### Configuration
 
-To configure a processor invoke its [`use`][use] method, supply it a
+To configure a processor call its [`use`][use] method, pass it a
 [**plugin**][plugin], and optionally settings.
 
 ###### Integrations
 
-**unified** can integrate with the file-system through
-[`unified-engine`][engine].  On top of that, CLI apps can be created with
-[`unified-args`][args], Gulp plugins with [`unified-engine-gulp`][gulp], and
-Atom Linters with [`unified-engine-atom`][atom].
+**unified** can integrate with the file system through
+[`unified-engine`][engine].
+On top of that, CLI apps can be created with [`unified-args`][args], Gulp
+plugins with [`unified-engine-gulp`][gulp], and Atom Linters with
+[`unified-engine-atom`][atom].
 
 A streaming interface is provided through [`unified-stream`][stream].
 
 ###### Programming interface
 
-The API gives access to processing metadata (such as lint messages) and
-supports multiple passed through files:
+The API gives access to processing metadata (such as lint messages) and supports
+multiple passed through files:
 
 ```js
 var unified = require('unified')
@@ -266,7 +274,8 @@ Yields:
 The processors can be combined in two modes.
 
 **Bridge** mode transforms the syntax tree from one flavour (the origin) to
-another (the destination).  Then, transformations are applied on that tree.
+another (the destination).
+Then, transformations are applied on that tree.
 Finally, the origin processor continues transforming the original syntax tree.
 
 **Mutate** mode also transforms the syntax tree from one flavour to another.
@@ -291,9 +300,10 @@ Object describing how to process text.
 
 ###### Returns
 
-`Function` — New [**unfrozen**][freeze] processor which is configured to
-function the same as its ancestor.  But when the descendant processor is
-configured in the future it does not affect the ancestral processor.
+`Function` — New [**unfrozen**][freeze] processor that is configured to function
+the same as its ancestor.
+But when the descendant processor is configured in the future it does not affect
+the ancestral processor.
 
 ###### Example
 
@@ -337,17 +347,17 @@ that plugin with options.
 
 ###### Returns
 
-`processor` — The processor on which `use` is invoked.
+`processor` — The processor that `use` was called on.
 
 ###### Note
 
-`use` cannot be called on [frozen][freeze] processors.  Invoke the processor
-first to create a new unfrozen processor.
+`use` cannot be called on [frozen][freeze] processors.
+Call the processor first to create a new unfrozen processor.
 
 ###### Example
 
-There are many ways to pass plugins to `.use()`.  The below example gives an
-overview.
+There are many ways to pass plugins to `.use()`.
+The below example gives an overview.
 
 ```js
 var unified = require('unified')
@@ -375,7 +385,7 @@ Parse text to a syntax tree.
 ###### Parameters
 
 *   `file` ([`VFile`][file])
-    — Or anything which can be given to `vfile()`
+    — Or anything that can be given to `vfile()`
 
 ###### Returns
 
@@ -420,17 +430,17 @@ Yields:
 
 #### `processor.Parser`
 
-Function handling the parsing of text to a syntax tree.  Used in the
-[**parse**][parse] phase in the process and invoked with a `string` and
-[`VFile`][file] representation of the document to parse.
+Function handling the parsing of text to a syntax tree.
+Used in the [**parse**][parse] phase in the process and called with a `string`
+and [`VFile`][file] representation of the document to parse.
 
-`Parser` can be a normal function in which case it must return a
+`Parser` can be a normal function, in which case it must return a
 [`Node`][node]: the syntax tree representation of the given file.
 
 `Parser` can also be a constructor function (a function with keys in its
-`prototype`) in which case it’s invoked with `new`.  Instances must have a
-`parse` method which is invoked without arguments and must return a
-[`Node`][node].
+`prototype`), in which case it’s constructed with `new`.
+Instances must have a `parse` method that is called without arguments and must
+return a [`Node`][node].
 
 ### `processor.stringify(node[, file])`
 
@@ -440,7 +450,7 @@ Compile a syntax tree to text.
 
 *   `node` ([`Node`][node])
 *   `file` ([`VFile`][file], optional);
-    — Or anything which can be given to `vfile()`
+    — Or anything that can be given to `vfile()`
 
 ###### Returns
 
@@ -480,16 +490,17 @@ Yields:
 
 #### `processor.Compiler`
 
-Function handling the compilation of syntax tree to a text.  Used in the
-[**stringify**][stringify] phase in the process and invoked with a
+Function handling the compilation of syntax tree to a text.
+Used in the [**stringify**][stringify] phase in the process and called with a
 [`Node`][node] and [`VFile`][file] representation of the document to stringify.
 
-`Compiler` can be a normal function in which case it must return a `string`:
+`Compiler` can be a normal function, in which case it must return a `string`:
 the text representation of the given syntax tree.
 
 `Compiler` can also be a constructor function (a function with keys in its
-`prototype`) in which case it’s invoked with `new`.  Instances must have a
-`compile` method which is invoked without arguments and must return a `string`.
+`prototype`), in which case it’s constructed with `new`.
+Instances must have a `compile` method that is called without arguments and must
+return a `string`.
 
 ### `processor.run(node[, file][, done])`
 
@@ -499,13 +510,13 @@ Transform a syntax tree by applying [**plugin**][plugin]s to it.
 
 *   `node` ([`Node`][node])
 *   `file` ([`VFile`][file], optional)
-    — Or anything which can be given to `vfile()`
+    — Or anything that can be given to `vfile()`
 *   `done` ([`Function`][run-done], optional)
 
 ###### Returns
 
-[`Promise`][promise] if `done` is not given.  Rejected with an error, or
-resolved with the resulting syntax tree.
+[`Promise`][promise] if `done` is not given.
+Rejected with an error, or resolved with the resulting syntax tree.
 
 ###### Note
 
@@ -513,8 +524,8 @@ resolved with the resulting syntax tree.
 
 #### `function done(err[, node, file])`
 
-Invoked when transformation is complete.  Either invoked with an error or a
-syntax tree and a file.
+Called when transformation is complete.
+Either called with an error or a syntax tree and a file.
 
 ###### Parameters
 
@@ -568,7 +579,7 @@ If asynchronous [**plugin**][plugin]s are configured an error is thrown.
 
 *   `node` ([`Node`][node])
 *   `file` ([`VFile`][file], optional)
-    — Or anything which can be given to `vfile()`
+    — Or anything that can be given to `vfile()`
 
 ###### Returns
 
@@ -580,8 +591,8 @@ If asynchronous [**plugin**][plugin]s are configured an error is thrown.
 
 ### `processor.process(file|value[, done])`
 
-Process the given representation of a file as configured on the processor.  The
-process invokes `parse`, `run`, and `stringify` internally.
+Process the given representation of a file as configured on the processor.
+The process calls `parse`, `run`, and `stringify` internally.
 
 ###### Parameters
 
@@ -591,8 +602,8 @@ process invokes `parse`, `run`, and `stringify` internally.
 
 ###### Returns
 
-[`Promise`][promise] if `done` is not given.  Rejected with an error or
-resolved with the resulting file.
+[`Promise`][promise] if `done` is not given.
+Rejected with an error or resolved with the resulting file.
 
 ###### Note
 
@@ -645,8 +656,8 @@ Yields:
 
 #### `function done(err, file)`
 
-Invoked when the process is complete.  Invoked with a fatal error, if any, and
-the [`VFile`][file].
+Called when the process is complete.
+Called with a fatal error, if any, and the [`VFile`][file].
 
 ###### Parameters
 
@@ -684,8 +695,8 @@ no issues found
 
 ### `processor.processSync(file|value)`
 
-Process the given representation of a file as configured on the processor.  The
-process invokes `parse`, `run`, and `stringify` internally.
+Process the given representation of a file as configured on the processor.
+The process calls `parse`, `run`, and `stringify` internally.
 
 If asynchronous [**plugin**][plugin]s are configured an error is thrown.
 
@@ -743,8 +754,9 @@ Yields:
 ### `processor.data([key[, value]])`
 
 Get or set information in an in-memory key-value store accessible to all phases
-of the process.  An example is a list of HTML elements which are self-closing,
-which is needed when parsing, transforming, and compiling HTML.
+of the process.
+An example is a list of HTML elements that are self-closing, something that is
+needed when parsing, transforming, and compiling HTML.
 
 ###### Parameters
 
@@ -753,14 +765,14 @@ which is needed when parsing, transforming, and compiling HTML.
 
 ###### Returns
 
-*   `processor` — If setting, the processor on which `data` is invoked
+*   `processor` — If setting, the processor that `data` is called on
 *   `*` — If getting, the value at `key`
-*   `object` - Without arguments, the key-value store
+*   `object` — Without arguments, the key-value store
 
 ###### Note
 
 Setting information with `data` cannot occur on [frozen][freeze] processors.
-Invoke the processor first to create a new unfrozen processor.
+Call the processor first to create a new unfrozen processor.
 
 ###### Example
 
@@ -778,11 +790,13 @@ processor.data() // {alpha: 'bravo'}
 
 ### `processor.freeze()`
 
-Freeze a processor.  Frozen processors are meant to be extended and not to be
-configured or processed directly.
+Freeze a processor.
+Frozen processors are meant to be extended and not to be configured or processed
+directly.
 
-Once a processor is frozen it cannot be unfrozen.  New processors functioning
-just like it can be created by invoking the processor.
+Once a processor is frozen it cannot be unfrozen.
+New processors functioning just like it can be created by invoking the
+processor.
 
 It’s possible to freeze processors explicitly, by calling `.freeze()`, but
 [`.parse()`][parse], [`.run()`][run], [`.stringify()`][stringify], and
@@ -790,7 +804,7 @@ It’s possible to freeze processors explicitly, by calling `.freeze()`, but
 
 ###### Returns
 
-`Processor` — The processor on which `freeze` is invoked.
+`Processor` — The processor that `freeze` is called on.
 
 ###### Example
 
@@ -820,10 +834,11 @@ rehype()
   // ...
 ```
 
-The below example, `b.js`, shows a similar looking example which operates on
-the frozen [**rehype**][rehype] interface.  If this behaviour was allowed it
-would result in unexpected behaviour so an error is thrown.  **This is
-invalid**:
+The below example, `b.js`, shows a similar looking example that operates on the
+frozen [**rehype**][rehype] interface.
+If this behaviour was allowed it would result in unexpected behaviour so an
+error is thrown.
+**This is invalid**:
 
 ```js
 var rehype = require('rehype')
@@ -851,15 +866,16 @@ Create a new processor first, by invoking it: use `processor()` instead of `proc
 
 ## `Plugin`
 
-**unified** plugins change the way the applied-on processor works in the
-following ways:
+**unified** plugins change the way the processor they are applied on works in
+the following ways:
 
 *   They modify the [**processor**][processor]: such as changing the parser,
     the compiler, or linking it to other processors
 *   They transform [**syntax tree**][node] representation of files
 *   They modify metadata of files
 
-Plugins are a concept.  They materialise as [`attacher`][attacher]s.
+Plugins are a concept.
+They materialise as [`attacher`][attacher]s.
 
 ###### Example
 
@@ -911,8 +927,8 @@ unified()
 
 ### `function attacher([options])`
 
-An attacher is the thing passed to [`use`][use].  It configures the processor
-and in turn can receive options.
+An attacher is the thing passed to [`use`][use].
+It configures the processor and in turn can receive options.
 
 Attachers can configure processors, such as by interacting with parsers and
 compilers, linking them to other processors, or by specifying how the syntax
@@ -920,7 +936,7 @@ tree is handled.
 
 ###### Context
 
-The context object is set to the invoked on [`processor`][processor].
+The context object is set to [`processor`][processor] `use` was called on.
 
 ###### Parameters
 
@@ -932,20 +948,21 @@ The context object is set to the invoked on [`processor`][processor].
 
 ###### Note
 
-Attachers are invoked when the processor is [frozen][freeze]: either when
+Attachers are called when the processor is [frozen][freeze]: either when
 `.freeze()` is called explicitly, or when [`.parse()`][parse], [`.run()`][run],
 [`.stringify()`][stringify], or [`.process()`][process] is called for the first
 time.
 
 ### `function transformer(node, file[, next])`
 
-Transformers modify the syntax tree or metadata of a file.  A transformer is a
-function which is invoked each time a file is passed through the transform
-phase.  If an error occurs (either because it’s thrown, returned, rejected, or
-passed to [`next`][next]), the process stops.
+Transformers modify the syntax tree or metadata of a file.
+A transformer is a function that is called each time a file is passed through
+the transform phase.
+If an error occurs (either because it’s thrown, returned, rejected, or passed to
+[`next`][next]), the process stops.
 
 The transformation process in **unified** is handled by [`trough`][trough], see
-it’s documentation for the exact semantics of transformers.
+its documentation for the exact semantics of transformers.
 
 ###### Parameters
 
@@ -964,8 +981,8 @@ it’s documentation for the exact semantics of transformers.
 
 #### `function next(err[, tree[, file]])`
 
-If the signature of a transformer includes `next` (third argument), the
-function **may** finish asynchronous, and **must** invoke `next()`.
+If the signature of a transformer includes `next` (third argument), the function
+**may** finish asynchronous, and **must** call `next()`.
 
 ###### Parameters
 
@@ -975,8 +992,8 @@ function **may** finish asynchronous, and **must** invoke `next()`.
 
 ## `Preset`
 
-Presets provide a potentially sharable way to configure processors.  They can
-contain multiple plugins and optionally settings as well.
+Presets provide a potentially sharable way to configure processors.
+They can contain multiple plugins and optionally settings as well.
 
 ###### Example
 
@@ -1015,33 +1032,30 @@ remark()
 
 ## Contribute
 
-**unified** is built by people just like you!
-Check out [`contributing.md`][contributing] for ways to get started.
+See [`contributing.md`][contributing] in [`unifiedjs/.github`][health] for ways
+to get started.
+See [`support.md`][support] for ways to get help.
+Ideas for new plugins and tools can be posted in [`unifiedjs/ideas`][ideas].
+
+A curated list of awesome rehype resources can be found in [**awesome
+unified**][awesome].
 
 This project has a [Code of Conduct][coc].
 By interacting with this repository, organisation, or community you agree to
 abide by its terms.
 
-Want to chat with the community and contributors?
-Join us in [spectrum][chat]!
-
-Have an idea for a cool new utility or tool?
-That’s great!
-If you want feedback, help, or just to share it with the world you can do so by
-creating an issue in the [`unifiedjs/ideas`][ideas] repository!
-
 ## Acknowledgments
 
 Preliminary work for unified was done [in 2014][preliminary] for
-[**retext**][retext] and inspired by [`ware`][ware].  Further incubation
-happened in [**remark**][remark].  The project was finally [externalised][]
-in 2015 and [published][] as `unified`.  The project was authored by
-[**@wooorm**](https://github.com/wooorm).
+[**retext**][retext] and inspired by [`ware`][ware].
+Further incubation happened in [**remark**][remark].
+The project was finally [externalised][] in 2015 and [published][] as `unified`.
+The project was authored by [**@wooorm**](https://github.com/wooorm).
 
-Although `unified` since moved it’s plugin architecture to [`trough`][trough],
+Although `unified` since moved its plugin architecture to [`trough`][trough],
 thanks to [**@calvinfo**](https://github.com/calvinfo),
 [**@ianstormtaylor**](https://github.com/ianstormtaylor), and others for their
-work on [`ware`][ware], which was a huge initial inspiration.
+work on [`ware`][ware], as it was a huge initial inspiration.
 
 ## License
 
@@ -1051,7 +1065,7 @@ work on [`ware`][ware], which was a huge initial inspiration.
 
 [logo]: https://raw.githubusercontent.com/unifiedjs/unified/39917ea/logo.svg?sanitize=true
 
-[build-badge]: https://img.shields.io/travis/unifiedjs/unified/master.svg
+[build-badge]: https://img.shields.io/travis/unifiedjs/unified.svg
 
 [build]: https://travis-ci.org/unifiedjs/unified
 
@@ -1067,23 +1081,39 @@ work on [`ware`][ware], which was a huge initial inspiration.
 
 [size]: https://bundlephobia.com/result?p=unified
 
+[sponsors-badge]: https://opencollective.com/unified/sponsors/badge.svg
+
+[backers-badge]: https://opencollective.com/unified/backers/badge.svg
+
+[collective]: https://opencollective.com/unified
+
 [chat-badge]: https://img.shields.io/badge/join%20the%20community-on%20spectrum-7b16ff.svg
 
 [chat]: https://spectrum.chat/unified
 
-[npm]: https://docs.npmjs.com/cli/install
+[health]: https://github.com/unifiedjs/.github
+
+[contributing]: https://github.com/unifiedjs/.github/blob/master/contributing.md
+
+[support]: https://github.com/unifiedjs/.github/blob/master/support.md
+
+[coc]: https://github.com/unifiedjs/.github/blob/master/code-of-conduct.md
+
+[awesome]: https://github.com/unifiedjs/awesome-unified
 
 [license]: license
 
 [author]: https://wooorm.com
 
+[npm]: https://docs.npmjs.com/cli/install
+
 [site]: https://unified.js.org
 
 [medium]: https://medium.com/unifiedjs
 
-[twitter]: https://twitter.com/unifiedjs
+[announcement]: https://medium.com/unifiedjs/collectively-evolving-through-crowdsourcing-22c359ea95cc
 
-[collective]: https://opencollective.com/unified
+[twitter]: https://twitter.com/unifiedjs
 
 [guides]: https://unified.js.org/#guides
 
@@ -1163,6 +1193,8 @@ work on [`ware`][ware], which was a huge initial inspiration.
 
 [process-done]: #function-doneerr-file
 
+[contribute]: #contribute
+
 [trough]: https://github.com/wooorm/trough#function-fninput-next
 
 [promise]: https://developer.mozilla.org/Web/JavaScript/Reference/Global_Objects/Promise
@@ -1174,10 +1206,6 @@ work on [`ware`][ware], which was a huge initial inspiration.
 [retext-plugins]: https://github.com/retextjs/retext/blob/master/doc/plugins.md#list-of-plugins
 
 [stream]: https://github.com/unifiedjs/unified-stream
-
-[contributing]: contributing.md
-
-[coc]: code-of-conduct.md
 
 [ideas]: https://github.com/unifiedjs/ideas
 
