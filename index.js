@@ -86,9 +86,9 @@ function unified() {
 
   // Freeze: used to signal a processor that has finished configuration.
   //
-  // For example, take unified itself.  It’s frozen.  Plugins should not be
-  // added to it.  Rather, it should be extended, by invoking it, before
-  // modifying it.
+  // For example, take unified itself: it’s frozen.
+  // Plugins should not be added to it.
+  // Rather, it should be extended, by invoking it, before modifying it.
   //
   // In essence, always invoke this when exporting a processor.
   function freeze() {
@@ -128,7 +128,8 @@ function unified() {
     return processor
   }
 
-  // Data management.  Getter / setter for processor-specific informtion.
+  // Data management.
+  // Getter / setter for processor-specific informtion.
   function data(key, value) {
     if (typeof key === 'string') {
       // Set `key`.
@@ -398,7 +399,7 @@ function unified() {
   }
 }
 
-// Check if `func` is a constructor.
+// Check if `value` is a constructor.
 function newable(value) {
   return typeof value === 'function' && keys(value.prototype)
 }
