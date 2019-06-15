@@ -1041,7 +1041,7 @@ to get started.
 See [`support.md`][support] for ways to get help.
 Ideas for new plugins and tools can be posted in [`unifiedjs/ideas`][ideas].
 
-A curated list of awesome rehype resources can be found in [**awesome
+A curated list of awesome unified resources can be found in [**awesome
 unified**][awesome].
 
 This project has a [Code of Conduct][coc].
