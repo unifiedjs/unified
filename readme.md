@@ -460,7 +460,7 @@ Compile a syntax tree to text.
 ###### Parameters
 
 *   `node` ([`Node`][node])
-*   `file` ([`VFile`][file], optional);
+*   `file` ([`VFile`][file], optional)
     — Or anything that can be given to `vfile()`
 
 ###### Returns
