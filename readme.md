@@ -89,7 +89,7 @@ var report = require('vfile-reporter')
 unified()
   .use(markdown)
   .use(remark2rehype)
-  .use(doc)
+  .use(doc, {title: '👋🌍'})
   .use(format)
   .use(html)
   .process('# Hello world!', function(err, file) {
@@ -109,6 +109,7 @@ no issues found
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <title>👋🌍</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
@@ -647,7 +648,7 @@ var html = require('rehype-stringify')
 unified()
   .use(markdown)
   .use(remark2rehype)
-  .use(doc)
+  .use(doc, {title: '👋🌍'})
   .use(format)
   .use(html)
   .process('# Hello world!')
@@ -668,6 +669,7 @@ Yields:
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <title>👋🌍</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
@@ -754,7 +756,7 @@ var html = require('rehype-stringify')
 var processor = unified()
   .use(markdown)
   .use(remark2rehype)
-  .use(doc)
+  .use(doc, {title: '👋🌍'})
   .use(format)
   .use(html)
 
@@ -768,6 +770,7 @@ Yields:
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <title>👋🌍</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
