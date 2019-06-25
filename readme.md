@@ -100,8 +100,11 @@ unified()
 
 Yields:
 
-```html
+```txt
 no issues found
+```
+
+```html
 <!doctype html>
 <html lang="en">
   <head>
@@ -270,6 +273,9 @@ Yields:
   1:34-1:38  warning  `guys` may be insensitive, use `people`, `persons`, `folks` instead  gals-men         retext-equality
 
 ⚠ 2 warnings
+```
+
+```html
 <p><em>Emphasis</em> and <em>importance</em>, you guys!</p>
 ```
 
@@ -692,8 +698,11 @@ unified()
 
 Yields:
 
-```markdown
+```txt
 no issues found
+```
+
+```markdown
 [**@mention**](https://github.com/blog/821)
 ```
 
@@ -905,6 +914,12 @@ function move(options) {
 }
 ```
 
+`index.md`:
+
+```markdown
+# Hello, World!
+```
+
 `index.js`:
 
 ```js
@@ -927,6 +942,18 @@ unified()
       vfile.writeSync(file) // Written to `index.html`.
     }
   })
+```
+
+Yields:
+
+```txt
+index.md: no issues found
+```
+
+`index.html`:
+
+```html
+<h1>Hello, World!</h1>
 ```
 
 ### `function attacher([options])`
@@ -1004,15 +1031,29 @@ They can contain multiple plugins and optionally settings as well.
 `preset.js`:
 
 ```js
-exports.settings = {bullet: '*', fences: true}
+exports.settings = {bullet: '*', emphasis: '*', fences: true}
 
 exports.plugins = [
   require('remark-preset-lint-recommended'),
+  require('remark-preset-lint-consistent'),
   require('remark-comment-config'),
-  require('remark-preset-lint-markdown-style-guide'),
   [require('remark-toc'), {maxDepth: 3, tight: true}],
-  require('remark-github')
+  require('remark-license')
 ]
+```
+
+`readme.md`:
+
+```markdown
+# Hello, World!
+
+_Emphasis_ and **importance**.
+
+## Table of Contents
+
+## API
+
+## License
 ```
 
 `index.js`:
@@ -1025,13 +1066,38 @@ var preset = require('./preset')
 
 remark()
   .use(preset)
-  .process(vfile.readSync('index.md'), function(err, file) {
+  .process(vfile.readSync('readme.md'), function(err, file) {
     console.error(report(err || file))
 
     if (file) {
       vfile.writeSync(file)
     }
   })
+```
+
+Yields:
+
+```txt
+readme.md: no issues found
+```
+
+`readme.md` now contains:
+
+```markdown
+# Hello, World!
+
+*Emphasis* and **importance**.
+
+## Table of Contents
+
+*   [API](#api)
+*   [License](#license)
+
+## API
+
+## License
+
+[MIT](license) © [Titus Wormer](https://wooorm.com)
 ```
 
 ## Contribute
