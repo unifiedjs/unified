@@ -10,21 +10,22 @@
 
 **unified** is an interface for processing text using syntax trees.
 It’s what powers [**remark**][remark], [**retext**][retext], and
-[**rehype**][rehype], but it also allows for processing between multiple
-syntaxes.
+[**rehype**][rehype], and allows for processing between formats.
 
 ## Intro
 
 **unified** enables new exciting projects like [Gatsby][] to pull in Markdown,
 [MDX][] to embed [JSX][], and [Prettier][] to format it.
-It’s used to check code for [Storybook][], [debugger.html][] ([Mozilla][]),
-and [opensource.guide][] ([GitHub][]).
+It’s used in about 200k projects on GitHub and has about 10m downloads each
+month on npm: you’re probably using it.
+Some notable users are [Node.js][], [ZEIT][],  [Netlify][], [GitHub][],
+[Mozilla][], [WordPress][], [Adobe][], [Facebook][], [Google][], and many more.
 
 *   To read about what we are up to, follow us on [Medium][] and [Twitter][]
 *   For a less technical and more practical introduction to unified, visit
     [`unified.js.org`][site] and try its introductory [Guides][]
 *   Browse [awesome unified][awesome] to find out more about the ecosystem
-*   Got questions?
+*   Questions?
     Get help on [our Spectrum community][spectrum]!
 *   Check out [Contribute][] below to find out how to help out, or become a
     backer or sponsor on [Open Collective][collective]
@@ -124,11 +125,11 @@ no issues found
 *   [API](#api)
     *   [processor()](#processor)
     *   [processor.use(plugin\[, options\])](#processoruseplugin-options)
-    *   [processor.parse(file|value)](#processorparsefilevalue)
+    *   [processor.parse(file)](#processorparsefile)
     *   [processor.stringify(node\[, file\])](#processorstringifynode-file)
     *   [processor.run(node\[, file\]\[, done\])](#processorrunnode-file-done)
     *   [processor.runSync(node\[, file\])](#processorrunsyncnode-file)
-    *   [processor.process(file|value\[, done\])](#processorprocessfilevalue-done)
+    *   [processor.process(file\[, done\])](#processorprocessfile-done)
     *   [processor.processSync(file|value)](#processorprocesssyncfilevalue)
     *   [processor.data(\[key\[, value\]\])](#processordatakey-value)
     *   [processor.freeze()](#processorfreeze)
@@ -144,15 +145,15 @@ no issues found
 
 **unified** is an interface for processing text using syntax trees.
 Syntax trees are a representation understandable to programs.
-Those programs, called [**plugin**][plugin]s, take these trees and modify them,
-amongst other things.
-To get to the syntax tree from input text, there is a [**parser**][parser].
-To get from that back to text, there is a [**compiler**][compiler].
-This is the [**process**][process] of a **processor**.
+Those programs, called [*plugin*][plugin]s, take these trees and inspect and
+modify them.
+To get to the syntax tree from text, there is a [*parser*][parser].
+To get from that back to text, there is a [*compiler*][compiler].
+This is the [*process*][process] of a *processor*.
 
 ```ascii
-| ....................... process() ......................... |
-| ......... parse() ..... | run() | ..... stringify() ....... |
+| ........................ process ........................... |
+| .......... parse ... | ... run ... | ... stringify ..........|
 
           +--------+                     +----------+
 Input ->- | Parser | ->- Syntax Tree ->- | Compiler | ->- Output
@@ -166,78 +167,78 @@ Input ->- | Parser | ->- Syntax Tree ->- | Compiler | ->- Output
 
 ###### Processors
 
-Every processor implements another processor.
-To create a new processor, call another processor.
-This creates a processor that is configured to function the same as its
-ancestor.
+Every **processor** implements another processor.
+To create a processor, call another processor.
+The new processor is configured to work the same as its ancestor.
 But when the descendant processor is configured in the future it does not affect
 the ancestral processor.
 
-When processors are exposed from a module (for example, unified itself) they
+When processors are exposed from a module (for example, `unified` itself) they
 should not be configured directly, as that would change their behaviour for all
 module users.
-Those processors are [**frozen**][freeze] and they should be called to create a
+Those processors are [*frozen*][freeze] and they should be called to create a
 new processor before they are used.
 
-###### Node
+###### Syntax trees
 
-The syntax trees used in **unified** are [**unist**][unist] nodes: plain
-JavaScript objects with a `type` property.
-The semantics of those `type`s are defined by other projects.
+The **syntax trees** used in **unified** are [**unist**][unist] nodes.
+A [**node**][node] is a plain JavaScript objects with a `type` field.
+The semantics of nodes and format of syntax trees is defined by other projects.
 
-There are several [utilities][unist-utilities] for working with these nodes.
+There are several [*utilities*][unist-utilities] for working with nodes.
+
+*   [**hast**][hast] — HTML
+*   [**mdast**][mdast] — Markdown
+*   [**nlcst**][nlcst] — Natural language
 
 ###### List of Processors
 
-The following projects process different syntax trees.
-They parse text to their respective syntax tree and they compile their syntax
-trees back to text.
-These processors can be used as is, or their parsers and compilers can be mixed
-and matched with **unified** and other plugins to process between different
-syntaxes.
+The following projects process different [*syntax tree*][syntax-tree] formats.
+They parse text to a syntax tree and compile that back to text.
+These processors can be used as is, or their parser and stringifier can be mixed
+and matched with **unified** and plugins to process between different syntaxes.
 
-*   [**rehype**][rehype] ([**hast**][hast]) — HTML
-*   [**remark**][remark] ([**mdast**][mdast]) — Markdown
-*   [**retext**][retext] ([**nlcst**][nlcst]) — Natural language
+*   [**rehype**][rehype] ([*hast*][hast]) — HTML
+*   [**remark**][remark] ([*mdast*][mdast]) — Markdown
+*   [**retext**][retext] ([*nlcst*][nlcst]) — Natural language
 
 ###### List of Plugins
 
-The below plugins work with **unified**, unrelated to what flavour the syntax
-tree is in:
+The below [**plugins**][plugin] work with **unified**, on all [*syntax
+tree*][syntax-tree] formats:
 
 *   [`unified-diff`](https://github.com/unifiedjs/unified-diff)
     — Ignore messages for unchanged lines in Travis
 
 See [**remark**][remark-plugins], [**rehype**][rehype-plugins], and
-[**retext**][retext-plugins] for lists of their plugins.
+[**retext**][retext-plugins] for their lists of plugins.
 
 ###### File
 
-When processing documents metadata is often gathered about that document.
-[**VFile**][vfile] is a virtual file format that stores data and handles
-metadata and messages for **unified** and its plugins.
+When processing a document, **metadata** is often gathered about that document.
+[**vfile**][vfile] is a virtual file format that stores data, metadata, and
+messages about files for **unified** and its plugins.
 
-There are several [utilities][vfile-utilities] for working with these files.
+There are several [*utilities*][vfile-utilities] for working with these files.
 
 ###### Configuration
 
-To configure a processor call its [`use`][use] method, pass it a
-[**plugin**][plugin], and optionally settings.
+[*Processors*][processors] are configured with [*plugin*][plugin]s or
+with the [`data`][data] method.
 
 ###### Integrations
 
-**unified** can integrate with the file system through
-[`unified-engine`][engine].
-On top of that, CLI apps can be created with [`unified-args`][args], Gulp
-plugins with [`unified-engine-gulp`][gulp], and Atom Linters with
+**unified** can integrate with the file system with [`unified-engine`][engine].
+CLI apps can be created with [`unified-args`][args], Gulp plugins with
+[`unified-engine-gulp`][gulp], and Atom Linters with
 [`unified-engine-atom`][atom].
 
-A streaming interface is provided through [`unified-stream`][stream].
+[`unified-stream`][stream] provides a streaming interface.
 
 ###### Programming interface
 
-The API gives access to processing metadata (such as lint messages) and supports
-multiple passed through files:
+The API provided by **unified** allows multiple files to be processed and gives
+access to *metadata* (such as lint messages):
 
 ```js
 var unified = require('unified')
@@ -261,7 +262,7 @@ unified()
   )
   .use(remark2rehype)
   .use(html)
-  .process('*Emphasis* and _importance_, you guys!', function(err, file) {
+  .process('*Emphasis* and _stress_, you guys!', function(err, file) {
     console.error(report(err || file))
     console.log(String(file))
   })
@@ -270,33 +271,32 @@ unified()
 Yields:
 
 ```txt
-  1:16-1:28  warning  Emphasis should use `*` as a marker                                  emphasis-marker  remark-lint
-  1:34-1:38  warning  `guys` may be insensitive, use `people`, `persons`, `folks` instead  gals-men         retext-equality
+  1:16-1:24  warning  Emphasis should use `*` as a marker                                  emphasis-marker  remark-lint
+  1:30-1:34  warning  `guys` may be insensitive, use `people`, `persons`, `folks` instead  gals-men         retext-equality
 
 ⚠ 2 warnings
 ```
 
 ```html
-<p><em>Emphasis</em> and <em>importance</em>, you guys!</p>
+<p><em>Emphasis</em> and <em>stress</em>, you guys!</p>
 ```
 
 ###### Processing between syntaxes
 
-The processors can be combined in two modes.
+[*Processors*][processors] can be combined in two modes.
 
-**Bridge** mode transforms the syntax tree from one flavour (the origin) to
-another (the destination).
-Then, transformations are applied on that tree.
-Finally, the origin processor continues transforming the original syntax tree.
+**Bridge** mode transforms the [*syntax tree*][syntax-tree] from one format
+(*origin*) to another (*destination*).
+Another processor runs on the destination tree.
+Finally, the original processor continues transforming the origin tree.
 
-**Mutate** mode also transforms the syntax tree from one flavour to another.
-But then the origin processor continues transforming the destination syntax
-tree.
+**Mutate** mode also transforms the syntax tree from one format to another.
+But the original processor continues transforming the destination tree.
 
 In the previous example (“Programming interface”), `remark-retext` is used in
-bridge mode: the origin syntax tree is kept after retext is done; whereas
-`remark-rehype` is used in mutate mode: it sets a new syntax tree and discards
-the original.
+*bridge* mode: the origin syntax tree is kept after [**retext**][retext] is
+done; whereas `remark-rehype` is used in *mutate* mode: it sets a new syntax
+tree and discards the origin tree.
 
 *   [`remark-retext`][remark-retext]
 *   [`remark-rehype`][remark-rehype]
@@ -307,14 +307,14 @@ the original.
 
 ### `processor()`
 
-Object describing how to process text.
+[*Processor*][processors] describing how to *process* text.
 
 ###### Returns
 
-`Function` — New [**unfrozen**][freeze] processor that is configured to function
-the same as its ancestor.
-But when the descendant processor is configured in the future it does not affect
-the ancestral processor.
+`Function` — New [*unfrozen*][freeze] processor that is configured to work the
+same as its ancestor.
+When the descendant processor is configured in the future it does not affect the
+ancestral processor.
 
 ###### Example
 
@@ -338,8 +338,8 @@ function onconcat(buf) {
 
 ### `processor.use(plugin[, options])`
 
-Configure the processor to use a [**plugin**][plugin] and optionally configure
-that plugin with options.
+[*Configure*][configuration] the processor to use a [*plugin*][plugin] and
+optionally configure that plugin with options.
 
 ###### Signatures
 
@@ -349,7 +349,7 @@ that plugin with options.
 
 ###### Parameters
 
-*   `plugin` ([`Plugin`][plugin])
+*   `plugin` ([`Attacher`][plugin])
 *   `options` (`*`, optional) — Configuration for `plugin`
 *   `preset` (`Object`) — Object with an optional `plugins` (set to `list`),
     and/or an optional `settings` object
@@ -362,7 +362,7 @@ that plugin with options.
 
 ###### Note
 
-`use` cannot be called on [frozen][freeze] processors.
+`use` cannot be called on [*frozen*][freeze] processors.
 Call the processor first to create a new unfrozen processor.
 
 ###### Example
@@ -389,30 +389,29 @@ function plugin() {}
 function pluginB() {}
 ```
 
-### `processor.parse(file|value)`
+### `processor.parse(file)`
 
-Parse text to a syntax tree.
+Parse text to a [*syntax tree*][syntax-tree].
 
 ###### Parameters
 
-*   `file` ([`VFile`][file])
-    — Or anything that can be given to `vfile()`
+*   `file` ([`VFile`][vfile]) — [*File*][file], any value accepted by `vfile()`
 
 ###### Returns
 
-[`Node`][node] — Syntax tree representation of input.
+[`Node`][node] — Parsed [*syntax tree*][syntax-tree] representing `file`.
 
 ###### Note
 
-`parse` [freezes][freeze] the processor if not already frozen.
+`parse` freezes the processor if not already [*frozen*][freeze].
 
-`parse` does not apply [transformers from the run phase][description] to the
-[syntax tree][node].
+`parse` performs the [*parse phase*][description], not the *run phase* or other
+phases.
 
 ###### Example
 
-The below example shows how the `parse` function can be used to create a
-[syntax tree][node] from a [file][].
+The below example shows how `parse` can be used to create a syntax tree from a
+file.
 
 ```js
 var unified = require('unified')
@@ -441,48 +440,49 @@ Yields:
 
 #### `processor.Parser`
 
-Function handling the parsing of text to a syntax tree.
-Used in the [**parse**][parse] phase in the process and called with a `string`
-and [`VFile`][file] representation of the document to parse.
+A **parser** handles the parsing of text to a [*syntax tree*][syntax-tree].
+Used in the [*parse phase*][description] and called with a `string` and
+[`VFile`][vfile] representation of the text to parse.
 
-`Parser` can be a normal function, in which case it must return a
-[`Node`][node]: the syntax tree representation of the given file.
+`Parser` can be a function, in which case it must return a [`Node`][node]: the
+syntax tree representation of the given file.
 
-`Parser` can also be a constructor function (a function with keys in its
-`prototype`), in which case it’s constructed with `new`.
+`Parser` can also be a constructor function (a function with a `parse` field, or
+other fields, in its `prototype`), in which case it’s constructed with `new`.
 Instances must have a `parse` method that is called without arguments and must
 return a [`Node`][node].
 
 ### `processor.stringify(node[, file])`
 
-Compile a syntax tree to text.
+Stringify a [*syntax tree*][syntax-tree] to text.
 
 ###### Parameters
 
-*   `node` ([`Node`][node])
-*   `file` ([`VFile`][file], optional)
-    — Or anything that can be given to `vfile()`
+*   `node` ([`Node`][node]) — [*Syntax tree*][syntax-tree] to stringify
+*   `file` ([`VFile`][vfile], optional) — [*File*][file], any value accepted by
+    `vfile()`
 
 ###### Returns
 
-`string` (see notes) — String representation of the syntax tree file.
+`string` (see notes) — Textual representation of the [*syntax
+tree*][syntax-tree]
 
 ###### Note
 
-`stringify` [freezes][freeze] the processor if not already frozen.
+`stringify` freezes the processor if not already [*frozen*][freeze].
 
-`stringify` does not apply [transformers from the run phase][description]
-to the [syntax tree][node].
+`stringify` performs the [*stringify phase*][description], not the *run phase*
+or other phases.
 
-Be aware that [compiler][]s typically, but not always, return strings.
-Some compilers, such as [`rehype-react`][rehype-react], define other values (in
-this case, a React tree).
-Be aware of this, and when using TypeScript, cast the value on your side.
+Be aware that [*compiler*][compiler]s typically, but not always, return
+`string`.
+Some compilers, such as the one configured with [`rehype-react`][rehype-react],
+return other values (in this case, a React tree).
+When using TypeScript, cast the type on your side.
 
 ###### Example
 
-The below example shows how the `stringify` function can be used to generate a
-[file][] from a [syntax tree][node].
+The below example shows how `stringify` can be used to stringify a syntax tree.
 
 ```js
 var unified = require('unified')
@@ -506,53 +506,56 @@ Yields:
 
 #### `processor.Compiler`
 
-Function handling the compilation of syntax tree to a text.
-Used in the [**stringify**][stringify] phase in the process and called with a
-[`Node`][node] and [`VFile`][file] representation of the document to stringify.
+A **compiler** handles the compiling of a [*syntax tree*][syntax-tree] to text.
+Used in the [*stringify phase*][description] and called with a [`Node`][node]
+and [`VFile`][file] representation of syntax tree to compile.
 
-`Compiler` can be a normal function, in which case it must return a `string`:
-the text representation of the given syntax tree.
+`Compiler` can be a function, in which case it should return a `string`: the
+textual representation of the syntax tree.
 
-`Compiler` can also be a constructor function (a function with keys in its
-`prototype`), in which case it’s constructed with `new`.
-Instances must have a `compile` method that is called without arguments and must
-return a `string`.
+`Compiler` can also be a constructor function (a function with a `compile`
+field, or other fields, in its `prototype`), in which case it’s constructed with
+`new`.
+Instances must have a `compile` method that is called without arguments and
+should return a `string`.
 
 ### `processor.run(node[, file][, done])`
 
-Transform a syntax tree by applying [**plugin**][plugin]s to it.
+Run [*transformers*][transformer] on a [*syntax tree*][syntax-tree].
 
 ###### Parameters
 
-*   `node` ([`Node`][node])
-*   `file` ([`VFile`][file], optional)
-    — Or anything that can be given to `vfile()`
-*   `done` ([`Function`][run-done], optional)
+*   `node` ([`Node`][node]) — [*Syntax tree*][syntax-tree] to run on
+*   `file` ([`VFile`][vfile], optional) — [*File*][file], any value accepted by
+    `vfile()`
+*   `done` ([`Function`][run-done], optional) — Callback
 
 ###### Returns
 
 [`Promise`][promise] if `done` is not given.
-Rejected with an error, or resolved with the resulting syntax tree.
+The returned promise is rejected with a fatal error, or resolved with the
+transformed [*syntax tree*][syntax-tree].
 
 ###### Note
 
-`run` [freezes][freeze] the processor if not already frozen.
+`run` freezes the processor if not already [*frozen*][freeze].
+
+`run` performs the [*run phase*][description], not other phases.
 
 #### `function done(err[, node, file])`
 
-Called when transformation is complete.
-Either called with an error or a syntax tree and a file.
+Callback called when [*transformers*][transformer] are done.
+Called with either an error or results.
 
 ###### Parameters
 
-*   `err` (`Error`) — Fatal error
-*   `node` ([`Node`][node])
-*   `file` ([`VFile`][file])
+*   `err` (`Error`, optional) — Fatal error
+*   `node` ([`Node`][node], optional) — Transformed [*syntax tree*][syntax-tree]
+*   `file` ([`VFile`][vfile], optional) — [*File*][file]
 
 ###### Example
 
-The below example shows how the `run` function can be used to transform a
-[syntax tree][node].
+The below example shows how `run` can be used to transform a syntax tree.
 
 ```js
 var unified = require('unified')
@@ -587,55 +590,62 @@ Yields:
 
 ### `processor.runSync(node[, file])`
 
-Transform a syntax tree by applying [**plugin**][plugin]s to it.
+Run [*transformers*][transformer] on a [*syntax tree*][syntax-tree].
 
-If asynchronous [**plugin**][plugin]s are configured an error is thrown.
+An error is thrown if asynchronous [*plugin*][plugin]s are configured.
 
 ###### Parameters
 
-*   `node` ([`Node`][node])
-*   `file` ([`VFile`][file], optional)
-    — Or anything that can be given to `vfile()`
+*   `node` ([`Node`][node]) — [*Syntax tree*][syntax-tree] to run on
+*   `file` ([`VFile`][vfile], optional) — [*File*][file], any value accepted by
+    `vfile()`
 
 ###### Returns
 
-[`Node`][node] — The given syntax tree.
+[`Node`][node] — Transformed [*syntax tree*][syntax-tree].
 
 ###### Note
 
-`runSync` [freezes][freeze] the processor if not already frozen.
+`runSync` freezes the processor if not already [*frozen*][freeze].
 
-### `processor.process(file|value[, done])`
+`runSync` performs the [*run phase*][description], not other phases.
 
-Process the given representation of a file as configured on the processor.
-The process calls `parse`, `run`, and `stringify` internally.
+### `processor.process(file[, done])`
+
+[*Process*][description] the given [*file*][file] as configured on the
+processor.
 
 ###### Parameters
 
-*   `file` ([`VFile`][file])
-*   `value` (`string`) — String representation of a file
-*   `done` ([`Function`][process-done], optional)
+*   `file` ([`VFile`][vfile]) — [*File*][file], any value accepted by `vfile()`
+*   `done` ([`Function`][process-done], optional) — Callback
 
 ###### Returns
 
 [`Promise`][promise] if `done` is not given.
-Rejected with an error or resolved with the resulting file.
-The parsed, transformed, and stringified value is exposed on `file.contents`.
+The returned promise is rejected with a fatal error, or resolved with the
+processed [*file*][file].
+
+The parsed, transformed, and stringified value is exposed on
+[`file.contents`][vfile-contents].
 
 ###### Note
 
-`process` [freezes][freeze] the processor if not already frozen.
+`process` freezes the processor if not already [*frozen*][freeze].
 
-Be aware that [compiler][]s typically, but not always, return strings.
-Some compilers, such as [`rehype-react`][rehype-react], define other values (in
-this case, a React tree).
-Be aware that `file.contents` is not always a string, and when using TypeScript,
-cast the value on your side.
+`process` performs the [*parse*, *run*, and *stringify* phases][description].
+
+Be aware that [*compiler*][compiler]s typically, but not always, return
+`string`.
+Some compilers, such as the one configured with [`rehype-react`][rehype-react],
+return other values (in this case, a React tree).
+When using TypeScript, cast the type of [`file.contents`][vfile-contents] on
+your side.
 
 ###### Example
 
-The below example shows how the `process` function can be used to process a
-[file][] whether plugins are asynchronous or not with Promises.
+The below example shows how `process` can be used to process a file, whether
+transformers are asynchronous or not, with promises.
 
 ```js
 var unified = require('unified')
@@ -680,18 +690,18 @@ Yields:
 
 #### `function done(err, file)`
 
-Called when the process is complete.
-Called with a fatal error, if any, and the [`VFile`][file].
+Callback called when the [*process*][description] is done.
+Called with a fatal error, if any, and a [*file*][file].
 
 ###### Parameters
 
 *   `err` (`Error`, optional) — Fatal error
-*   `file` ([`VFile`][file])
+*   `file` ([`VFile`][vfile]) — Processed [*file*][file]
 
 ###### Example
 
-The below example shows how the `process` function can be used to process a
-[file][] whether plugins are asynchronous or not with a callback.
+The below example shows how `process` can be used to process a file, whether
+transformers are asynchronous or not, with a callback.
 
 ```js
 var unified = require('unified')
@@ -722,28 +732,37 @@ no issues found
 
 ### `processor.processSync(file|value)`
 
-Process the given representation of a file as configured on the processor.
-The process calls `parse`, `run`, and `stringify` internally.
+[*Process*][description] the given [*file*][file] as configured on the
+processor.
 
-If asynchronous [**plugin**][plugin]s are configured an error is thrown.
+An error is thrown if asynchronous [*plugin*][plugin]s are configured.
 
 ###### Parameters
 
-*   `file` ([`VFile`][file])
-*   `value` (`string`) — String representation of a file
+*   `file` ([`VFile`][vfile]) — [*File*][file], any value accepted by `vfile()`
 
 ###### Returns
 
-[`VFile`][file] — Virtual file with modified [`contents`][vfile-contents].
+([`VFile`][vfile]) — Processed [*file*][file]
 
 ###### Note
 
-`processSync` [freezes][freeze] the processor if not already frozen.
+`processSync` freezes the processor if not already [*frozen*][freeze].
+
+`processSync` performs the [*parse*, *run*, and *stringify*
+phases][description].
+
+Be aware that [*compiler*][compiler]s typically, but not always, return
+`string`.
+Some compilers, such as the one configured with [`rehype-react`][rehype-react],
+return other values (in this case, a React tree).
+When using TypeScript, cast the type of [`file.contents`][vfile-contents] on
+your side.
 
 ###### Example
 
-The below example shows how the `processSync` function can be used to process a
-[file][] if all plugins are known to be synchronous.
+The below example shows how `processSync` can be used to process a file, if all
+transformers are synchronous.
 
 ```js
 var unified = require('unified')
@@ -781,25 +800,37 @@ Yields:
 
 ### `processor.data([key[, value]])`
 
-Get or set information in an in-memory key-value store accessible to all phases
-of the process.
-An example is a list of HTML elements that are self-closing, something that is
-needed when parsing, transforming, and compiling HTML.
+[*Configure*][configuration] the processor with information available to all
+[*plugin*][plugin]s.
+Information is stored in an in-memory key-value store.
+
+Typically, options can be given to a specific plugin, but sometimes it makes
+sense to have information shared with several plugins.
+For example, a list of HTML elements that are self-closing, which is needed
+during all [*phases*][description] of the *process*.
+
+###### Signatures
+
+*   `processor = processor.data(key, value)`
+*   `processor = processor.data(values)`
+*   `value = processor.data(key)`
+*   `info = processor.data()`
 
 ###### Parameters
 
 *   `key` (`string`, optional) — Identifier
-*   `value` (`*`, optional) — Value to set.  Omit if getting `key`
+*   `value` (`*`, optional) — Value to set
+*   `values` (`Object`, optional) — Values to set
 
 ###### Returns
 
 *   `processor` — If setting, the processor that `data` is called on
-*   `*` — If getting, the value at `key`
-*   `object` — Without arguments, the key-value store
+*   `value` (`*`) — If getting, the value at `key`
+*   `info` (`Object`) — Without arguments, the key-value store
 
 ###### Note
 
-Setting information with `data` cannot occur on [frozen][freeze] processors.
+Setting information cannot occur on [*frozen*][freeze] processors.
 Call the processor first to create a new unfrozen processor.
 
 ###### Example
@@ -814,30 +845,33 @@ var processor = unified().data('alpha', 'bravo')
 processor.data('alpha') // => 'bravo'
 
 processor.data() // {alpha: 'bravo'}
+
+processor.data({charlie: 'delta'})
+
+processor.data() // {charlie: 'delta'}
 ```
 
 ### `processor.freeze()`
 
-Freeze a processor.
-Frozen processors are meant to be extended and not to be configured or processed
-directly.
+**Freeze** a processor.
+*Frozen* processors are meant to be extended and not to be configured directly.
 
-Once a processor is frozen it cannot be unfrozen.
-New processors functioning just like it can be created by invoking the
-processor.
+Once a processor is frozen it cannot be *unfrozen*.
+New processors working the same way can be created by calling the processor.
 
-It’s possible to freeze processors explicitly, by calling `.freeze()`, but
-[`.parse()`][parse], [`.run()`][run], [`.stringify()`][stringify], and
-[`.process()`][process] call `.freeze()` to freeze a processor too.
+It’s possible to freeze processors explicitly by calling `.freeze()`.
+Processors freeze implicitly when [`.parse()`][parse], [`.run()`][run],
+[`.runSync()`][run-sync], [`.stringify()`][stringify], [`.process()`][process],
+or [`.processSync()`][process-sync] are called.
 
 ###### Returns
 
-`Processor` — The processor that `freeze` is called on.
+`processor` — The processor that `freeze` was called on.
 
 ###### Example
 
-The following example, `index.js`, shows how [**rehype**][rehype] prevents
-extensions to itself:
+The following example, `index.js`, shows how rehype prevents extensions to
+itself:
 
 ```js
 var unified = require('unified')
@@ -863,7 +897,7 @@ rehype()
 ```
 
 The below example, `b.js`, shows a similar looking example that operates on the
-frozen [**rehype**][rehype] interface.
+frozen rehype interface because it does not call `rehype`.
 If this behaviour was allowed it would result in unexpected behaviour so an
 error is thrown.
 **This is invalid**:
@@ -894,13 +928,12 @@ Create a new processor first, by invoking it: use `processor()` instead of `proc
 
 ## `Plugin`
 
-**unified** plugins change the way the processor they are applied on works in
+**Plugins** [*configure*][configuration] the processors they are applied on in
 the following ways:
 
-*   They modify the [**processor**][processor]: such as changing the parser,
-    the compiler, or linking it to other processors
-*   They transform [**syntax tree**][node] representation of files
-*   They modify metadata of files
+*   They change the processor: such as the [*parser*][parser], the
+    [*compiler*][compiler], or configuring [*data*][data]
+*   They specify how to handle [*syntax trees*][syntax-tree] and [*files*][file]
 
 Plugins are a concept.
 They materialise as [`attacher`][attacher]s.
@@ -973,16 +1006,17 @@ index.md: no issues found
 
 ### `function attacher([options])`
 
-An attacher is the thing passed to [`use`][use].
-It configures the processor and in turn can receive options.
+**Attachers** are materialised [*plugin*][plugin]s.
+An attacher is a function that can receive options and
+[*configures*][configuration] the processor.
 
-Attachers can configure processors, such as by interacting with parsers and
-compilers, linking them to other processors, or by specifying how the syntax
-tree is handled.
+Attachers change the processor, such as the [*parser*][parser], the
+[*compiler*][compiler], configuring [*data*][data], or by specifying how the
+[*syntax tree*][syntax-tree] or [*file*][file] are handled.
 
 ###### Context
 
-The context object is set to [`processor`][processor] `use` was called on.
+The context object (`this`) is set to the processor the attacher is applied on.
 
 ###### Parameters
 
@@ -994,52 +1028,53 @@ The context object is set to [`processor`][processor] `use` was called on.
 
 ###### Note
 
-Attachers are called when the processor is [frozen][freeze]: either when
-`.freeze()` is called explicitly, or when [`.parse()`][parse], [`.run()`][run],
-[`.stringify()`][stringify], or [`.process()`][process] is called for the first
-time.
+Attachers are called when the processor is [*frozen*][freeze], not when they are
+applied.
 
 ### `function transformer(node, file[, next])`
 
-Transformers modify the syntax tree or metadata of a file.
-A transformer is a function that is called each time a file is passed through
-the transform phase.
+**Transformers** handle [*syntax tree*][syntax-tree]s and [*file*][file]s.
+A transformer is a function that is called each time a syntax tree and file are
+passed through the [*run phase*][description].
 If an error occurs (either because it’s thrown, returned, rejected, or passed to
 [`next`][next]), the process stops.
 
-The transformation process in **unified** is handled by [`trough`][trough], see
-its documentation for the exact semantics of transformers.
+The *run phase* is handled by [`trough`][trough], see its documentation for the
+exact semantics of these functions.
 
 ###### Parameters
 
-*   `node` ([`Node`][node])
-*   `file` ([`VFile`][file])
+*   `node` ([`Node`][node]) — [*Syntax tree*][syntax-tree] to handle
+*   `file` ([`VFile`][vfile]) — [*File*][file] to handle
 *   `next` ([`Function`][next], optional)
 
 ###### Returns
 
-*   `Error` — Can be returned to stop the process
-*   [`Node`][node] — Can be returned and results in further transformations
-    and `stringify`s to be performed on the new tree
-*   `Promise` — If a promise is returned, the function is asynchronous, and
-    **must** be resolved (optionally with a [`Node`][node]) or rejected
-    (optionally with an `Error`)
+*   `Error` — Fatal error to stop the process
+*   `node` ([`Node`][node]) — New [*syntax tree*][syntax-tree].
+    If returned, the next transformer is given this new tree
+*   `Promise` — Returned to perform an asynchronous operation.
+    The promise **must** be resolved (optionally with a [`Node`][node]) or
+    rejected (optionally with an `Error`)
 
 #### `function next(err[, tree[, file]])`
 
-If the signature of a transformer includes `next` (third argument), the function
-**may** finish asynchronous, and **must** call `next()`.
+If the signature of a [*transformer*][transformer] includes `next` (the third
+argument), the transformer **may** perform asynchronous operations, and **must**
+call `next()`.
 
 ###### Parameters
 
-*   `err` (`Error`, optional) — Stop the process
-*   `node` ([`Node`][node], optional) — New syntax tree
-*   `file` ([`VFile`][file], optional) — New virtual file
+*   `err` (`Error`, optional) — Fatal error to stop the process
+*   `node` ([`Node`][node], optional) — New [*syntax tree*][syntax-tree].
+    If given, the next transformer is given this new tree
+*   `file` ([`VFile`][vfile], optional) — New [*file*][file].
+    If given, the next transformer is given this new file
 
 ## `Preset`
 
-Presets provide a potentially sharable way to configure processors.
-They can contain multiple plugins and optionally settings as well.
+**Presets** are sharable [*configuration*][configuration].
+They can contain [*plugins*][plugin] and settings.
 
 ###### Example
 
@@ -1246,17 +1281,23 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 
 [vfile-utilities]: https://github.com/vfile/vfile#related-tools
 
+[node]: https://github.com/syntax-tree/unist#node
+
 [description]: #description
+
+[syntax-tree]: #syntax-trees
+
+[configuration]: #configuration
 
 [file]: #file
 
-[node]: #node
+[processors]: #processors
 
-[processor]: #processor
+[process]: #processorprocessfile-done
 
-[process]: #processorprocessfilevalue-done
+[process-sync]: #processorprocesssyncfilevalue
 
-[parse]: #processorparsefilevalue
+[parse]: #processorparsefile
 
 [parser]: #processorparser
 
@@ -1264,9 +1305,11 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 
 [run]: #processorrunnode-file-done
 
+[run-sync]: #processorrunsyncnode-file
+
 [compiler]: #processorcompiler
 
-[use]: #processoruseplugin-options
+[data]: #processordatakey-value
 
 [attacher]: #function-attacheroptions
 
@@ -1283,6 +1326,8 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 [process-done]: #function-doneerr-file
 
 [contribute]: #contribute
+
+[rehype-react]: https://github.com/rhysd/rehype-react
 
 [trough]: https://github.com/wooorm/trough#function-fninput-next
 
@@ -1314,14 +1359,20 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 
 [prettier]: https://prettier.io
 
-[storybook]: https://storybook.js.org
+[node.js]: https://nodejs.org
 
-[debugger.html]: https://github.com/devtools-html/debugger.html
+[zeit]: https://zeit.co
 
-[mozilla]: https://www.mozilla.org
-
-[opensource.guide]: https://opensource.guide
+[netlify]: https://www.netlify.com
 
 [github]: https://github.com
 
-[rehype-react]: https://github.com/rhysd/rehype-react
+[mozilla]: https://www.mozilla.org
+
+[wordpress]: https://wordpress.com
+
+[adobe]: https://www.adobe.com
+
+[facebook]: https://www.facebook.com
+
+[google]: https://www.google.com
