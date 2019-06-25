@@ -794,9 +794,9 @@ The following example show how to get and set information:
 ```js
 var unified = require('unified')
 
-var processor = unified()
-  .data('alpha', 'bravo')
-  .data('alpha') // => 'bravo'
+var processor = unified().data('alpha', 'bravo')
+
+processor.data('alpha') // => 'bravo'
 
 processor.data() // {alpha: 'bravo'}
 ```
