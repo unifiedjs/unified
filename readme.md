@@ -15,7 +15,7 @@ syntaxes.
 
 ## Intro
 
-**unified** enabled new exciting projects like [Gatsby][] to pull in Markdown,
+**unified** enables new exciting projects like [Gatsby][] to pull in Markdown,
 [MDX][] to embed [JSX][], and [Prettier][] to format it.
 It’s used to check code for [Storybook][], [debugger.html][] ([Mozilla][]),
 and [opensource.guide][] ([GitHub][]).
