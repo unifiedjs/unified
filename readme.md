@@ -840,11 +840,11 @@ The below example, `a.js`, shows how that processor can be used and configured.
 ```js
 var rehype = require('rehype')
 var format = require('rehype-format')
-// ...
+// …
 
 rehype()
   .use(format)
-  // ...
+  // …
 ```
 
 The below example, `b.js`, shows a similar looking example that operates on the
@@ -856,11 +856,11 @@ error is thrown.
 ```js
 var rehype = require('rehype')
 var format = require('rehype-format')
-// ...
+// …
 
 rehype
   .use(format)
-  // ...
+  // …
 ```
 
 Yields:
