@@ -464,7 +464,7 @@ Compile a syntax tree to text.
 
 ###### Returns
 
-`string` — String representation of the syntax tree file.
+`string` (see notes) — String representation of the syntax tree file.
 
 ###### Note
 
@@ -472,6 +472,11 @@ Compile a syntax tree to text.
 
 `stringify` does not apply [transformers from the run phase][description]
 to the [syntax tree][node].
+
+Be aware that [compiler][]s typically, but not always, return strings.
+Some compilers, such as [`rehype-react`][rehype-react], define other values (in
+this case, a React tree).
+Be aware of this, and when using TypeScript, cast the value on your side.
 
 ###### Example
 
@@ -614,10 +619,17 @@ The process calls `parse`, `run`, and `stringify` internally.
 
 [`Promise`][promise] if `done` is not given.
 Rejected with an error or resolved with the resulting file.
+The parsed, transformed, and stringified value is exposed on `file.contents`.
 
 ###### Note
 
 `process` [freezes][freeze] the processor if not already frozen.
+
+Be aware that [compiler][]s typically, but not always, return strings.
+Some compilers, such as [`rehype-react`][rehype-react], define other values (in
+this case, a React tree).
+Be aware that `file.contents` is not always a string, and when using TypeScript,
+cast the value on your side.
 
 ###### Example
 
@@ -1308,3 +1320,5 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 [opensource.guide]: https://opensource.guide
 
 [github]: https://github.com
+
+[rehype-react]: https://github.com/rhysd/rehype-react
