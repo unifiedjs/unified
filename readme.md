@@ -690,7 +690,7 @@ unified()
   .use(parse)
   .use(github)
   .use(stringify)
-  .process('@mention', function(err, file) {
+  .process('@wooorm', function(err, file) {
     console.error(report(err || file))
     console.log(String(file))
   })
@@ -703,7 +703,7 @@ no issues found
 ```
 
 ```markdown
-[**@mention**](https://github.com/blog/821)
+[**@wooorm**](https://github.com/wooorm)
 ```
 
 ### `processor.processSync(file|value)`
