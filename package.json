@@ -39,8 +39,6 @@
     "vfile": "^4.0.0"
   },
   "devDependencies": {
-    "@types/unist": "^2.0.0",
-    "@types/vfile": "^3.0.0",
     "browserify": "^16.0.0",
     "dtslint": "^0.8.0",
     "nyc": "^14.0.0",
