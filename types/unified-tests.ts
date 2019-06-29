@@ -1,12 +1,13 @@
 import {Node} from 'unist'
-import unified, {
+import unified = require('unified')
+import {
   Processor,
   Plugin,
   VFileCompatible,
   RunCallback,
   ProcessCallback
 } from 'unified'
-import vfile from 'vfile'
+import vfile = require('vfile')
 
 let fileValue: vfile.VFile
 let nodeValue: Node
