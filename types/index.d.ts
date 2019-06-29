@@ -1,7 +1,7 @@
 // TypeScript Version: 3.0
 
-import { Node } from 'unist';
-import { VFile, VFileContents, VFileOptions } from 'vfile';
+import {Node} from 'unist'
+import {VFile, VFileContents, VFileOptions} from 'vfile'
 import vfile = require('vfile')
 
 declare namespace unified {
@@ -218,5 +218,5 @@ declare namespace unified {
 /**
  * Object describing how to process text.
  */
-declare function unified(): unified.Processor;
-export = unified;
+declare function unified(): unified.Processor
+export = unified
