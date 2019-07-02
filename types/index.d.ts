@@ -5,7 +5,7 @@ import {VFile, VFileContents, VFileOptions} from 'vfile'
 import vfile = require('vfile')
 
 declare namespace unified {
-  interface Processor {
+  interface Processor<T = Settings> {
     /**
      * @returns New unfrozen processor which is configured to function the same as its ancestor. But when the descendant processor is configured in the future it does not affect the ancestral processor.
      */
@@ -18,7 +18,7 @@ declare namespace unified {
      * @param options Configuration for plugin]
      * @returns The processor on which use is invoked
      */
-    use(plugin: Plugin, options?: unknown): Processor
+    use<T = Settings>(plugin: Plugin<T>, options?: T): Processor
     /**
      * @param preset `Object` with an optional plugins (set to list), and/or an optional settings object
      */
@@ -26,11 +26,11 @@ declare namespace unified {
     /**
      * @param pluginTuple pairs, plugin and options in an array
      */
-    use(pluginTuple: PluginTuple): Processor
+    use<T = Settings>(pluginTuple: PluginTuple<T>): Processor
     /**
      * @param list List of plugins, presets, and pairs
      */
-    use(list: PluggableList): Processor
+    use<T = Settings>(list: PluggableList<T>): Processor
 
     /**
      * Parse text to a syntax tree.
@@ -145,7 +145,7 @@ declare namespace unified {
     freeze(): Processor
   }
 
-  type Plugin = Attacher
+  type Plugin<T = Settings> = Attacher<T>
   type Settings = {
     [key: string]: unknown
   }
@@ -157,9 +157,9 @@ declare namespace unified {
     plugins?: PluggableList
     settings?: Settings
   }
-  type PluginTuple = [Plugin, Settings]
-  type Pluggable = Plugin | Preset | PluginTuple
-  type PluggableList = Pluggable[]
+  type PluginTuple<T = Settings> = [Plugin<T>, T]
+  type Pluggable<T = Settings> = Plugin<T> | Preset | PluginTuple<T>
+  type PluggableList<T = Settings> = Array<Pluggable<T>>
 
   /**
    * An attacher is the thing passed to `use`.
@@ -171,8 +171,8 @@ declare namespace unified {
    * @param options Configuration
    * @returns Optional.
    */
-  interface Attacher {
-    (this: Processor, options?: unknown): Transformer | void
+  interface Attacher<T = Settings> {
+    (this: Processor, options?: T): Transformer | void
   }
 
   /**

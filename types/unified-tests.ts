@@ -27,19 +27,40 @@ const settings = {
   random: 'option'
 }
 
+interface ExamplePluginSettings {
+  example: string
+}
+const typedPlugin: Plugin<ExamplePluginSettings> = function() {}
+const typedSetting = {example: 'example'}
+
 processor.use(plugin)
 processor.use(plugin).use(plugin)
+processor.use(plugin, settings)
+processor.use([plugin, plugin])
+processor.use([plugin])
+processor.use([plugin, settings])
+processor.use([[plugin, settings], [plugin, settings]])
+
+processor.use(typedPlugin)
+processor.use(typedPlugin).use(typedPlugin)
+processor.use(typedPlugin, typedSetting)
+processor.use([typedPlugin, typedSetting])
+processor.use([[typedPlugin, typedSetting], [typedPlugin, typedSetting]])
+processor.use([typedPlugin])
+
+// $ExpectError
+processor.use(typedPlugin, settings)
+// $ExpectError
+processor.use([typedPlugin, settings])
+// $ExpectError
+processor.use([[typedPlugin, settings], [typedPlugin, settings]])
+
 // $ExpectError
 processor.use(false)
 // $ExpectError
 processor.use(true)
 // $ExpectError
 processor.use('alfred')
-processor.use(plugin, settings)
-processor.use([plugin, plugin])
-processor.use([plugin])
-processor.use([plugin, settings])
-processor.use([[plugin, settings], [plugin, settings]])
 // $ExpectError
 processor.use([false])
 // $ExpectError
@@ -54,6 +75,7 @@ processor.use({
   // $ExpectError
   plugins: {foo: true}
 })
+
 processor.use({})
 processor.use({
   plugins: []
