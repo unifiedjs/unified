@@ -46,14 +46,13 @@ processor.use(typedPlugin).use(typedPlugin)
 processor.use(typedPlugin, typedSetting)
 processor.use([typedPlugin, typedSetting])
 processor.use([[typedPlugin, typedSetting], [typedPlugin, typedSetting]])
+processor.use([[plugin, settings], [typedPlugin, typedSetting]])
 processor.use([typedPlugin])
 
 // $ExpectError
 processor.use(typedPlugin, settings)
 // $ExpectError
 processor.use([typedPlugin, settings])
-// $ExpectError
-processor.use([[typedPlugin, settings], [typedPlugin, settings]])
 
 // $ExpectError
 processor.use(false)

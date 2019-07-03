@@ -30,7 +30,7 @@ declare namespace unified {
     /**
      * @param list List of plugins, presets, and pairs
      */
-    use<T = Settings>(list: PluggableList<T>): Processor
+    use(list: PluggableList): Processor
 
     /**
      * Parse text to a syntax tree.
@@ -159,7 +159,7 @@ declare namespace unified {
   }
   type PluginTuple<T = Settings> = [Plugin<T>, T]
   type Pluggable<T = Settings> = Plugin<T> | Preset | PluginTuple<T>
-  type PluggableList<T = Settings> = Array<Pluggable<T>>
+  type PluggableList = Array<Pluggable<any>>
 
   /**
    * An attacher is the thing passed to `use`.
