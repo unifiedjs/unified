@@ -33,6 +33,8 @@ interface ExamplePluginSettings {
 const typedPlugin: Plugin<ExamplePluginSettings> = function() {}
 const typedSetting = {example: 'example'}
 
+const implicitlyTypedPlugin = (settings?: ExamplePluginSettings) => {}  
+
 processor.use(plugin)
 processor.use(plugin).use(plugin)
 processor.use(plugin, settings)
@@ -49,10 +51,23 @@ processor.use([[typedPlugin, typedSetting], [typedPlugin, typedSetting]])
 processor.use([[plugin, settings], [typedPlugin, typedSetting]])
 processor.use([typedPlugin])
 
+processor.use(implicitlyTypedPlugin)
+processor.use(implicitlyTypedPlugin).use(implicitlyTypedPlugin)
+processor.use(implicitlyTypedPlugin, typedSetting)
+processor.use([implicitlyTypedPlugin, typedSetting])
+processor.use([[implicitlyTypedPlugin, typedSetting], [implicitlyTypedPlugin, typedSetting]])
+processor.use([[implicitlyTypedPlugin, settings], [implicitlyTypedPlugin, typedSetting]])
+processor.use([implicitlyTypedPlugin])
+
 // $ExpectError
 processor.use(typedPlugin, settings)
 // $ExpectError
 processor.use([typedPlugin, settings])
+
+// $ExpectError
+processor.use(implicitlyTypedPlugin, settings)
+// $ExpectError
+processor.use([implicitlyTypedPlugin, settings])
 
 // $ExpectError
 processor.use(false)
