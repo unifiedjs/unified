@@ -5,7 +5,7 @@ import {VFile, VFileContents, VFileOptions} from 'vfile'
 import vfile = require('vfile')
 
 declare namespace unified {
-  interface Processor<T = Settings> {
+  interface Processor {
     /**
      * @returns New unfrozen processor which is configured to function the same as its ancestor. But when the descendant processor is configured in the future it does not affect the ancestral processor.
      */
@@ -15,18 +15,33 @@ declare namespace unified {
      * Configure the processor to use a plugin and optionally configure that plugin with options.
      *
      * @param plugin unified plugin
-     * @param options Configuration for plugin]
+     * @param options Configuration for plugin
+     * @param extraOptions Additional configuration for plugin
      * @returns The processor on which use is invoked
      */
-    use<T = Settings>(plugin: Plugin<T>, options?: T): Processor
+    use<T = Settings, S = undefined>(
+      plugin: Plugin<T, S>,
+      options?: T,
+      extraOptions?: S
+    ): Processor
+
     /**
      * @param preset `Object` with an optional plugins (set to list), and/or an optional settings object
      */
     use(preset: Preset): Processor
+
     /**
      * @param pluginTuple pairs, plugin and options in an array
      */
     use<T = Settings>(pluginTuple: PluginTuple<T>): Processor
+
+    /**
+     * @param pluginTriple plugin, options, and extraOptions in an array
+     */
+    use<T = Settings, S = undefined>(
+      pluginTriple: PluginTriple<T, S>
+    ): Processor
+
     /**
      * @param list List of plugins, presets, and pairs
      */
@@ -145,7 +160,7 @@ declare namespace unified {
     freeze(): Processor
   }
 
-  type Plugin<T = Settings> = Attacher<T>
+  type Plugin<T = Settings, S = undefined> = Attacher<T, S>
   type Settings = {
     [key: string]: unknown
   }
@@ -158,8 +173,13 @@ declare namespace unified {
     settings?: Settings
   }
   type PluginTuple<T = Settings> = [Plugin<T>, T]
-  type Pluggable<T = Settings> = Plugin<T> | Preset | PluginTuple<T>
-  type PluggableList = Array<Pluggable<any>>
+  type PluginTriple<T = Settings, S = undefined> = [Plugin<T, S>, T, S]
+  type Pluggable<T = Settings, S = undefined> =
+    | Plugin<T>
+    | Preset
+    | PluginTuple<T>
+    | PluginTriple<T, S>
+  type PluggableList = Array<Pluggable<any, any>>
 
   /**
    * An attacher is the thing passed to `use`.
@@ -169,10 +189,11 @@ declare namespace unified {
    *
    * @this Processor context object is set to the invoked on processor.
    * @param options Configuration
+   * @param extraOptions Secondary configuration
    * @returns Optional.
    */
-  interface Attacher<T = Settings> {
-    (this: Processor, options?: T): Transformer | void
+  interface Attacher<T = Settings, S = undefined> {
+    (this: Processor, options?: T, extraOptions?: S): Transformer | void
   }
 
   /**
