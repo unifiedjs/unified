@@ -27,19 +27,97 @@ const settings = {
   random: 'option'
 }
 
+interface ExamplePluginSettings {
+  example: string
+}
+const typedPlugin: Plugin<ExamplePluginSettings> = function() {}
+const typedSetting = {example: 'example'}
+
+const implicitlyTypedPlugin = (settings?: ExamplePluginSettings) => {}
+
+const pluginWithTwoSettings = (
+  processor?: Processor,
+  settings?: ExamplePluginSettings
+) => {}
+
 processor.use(plugin)
 processor.use(plugin).use(plugin)
+processor.use(plugin, settings)
+processor.use([plugin, plugin])
+processor.use([plugin])
+processor.use([plugin, settings])
+processor.use([[plugin, settings], [plugin, settings]])
+
+processor.use(typedPlugin)
+processor.use(typedPlugin).use(typedPlugin)
+processor.use(typedPlugin, typedSetting)
+processor.use([typedPlugin, typedSetting])
+processor.use([[typedPlugin, typedSetting], [typedPlugin, typedSetting]])
+processor.use([[plugin, settings], [typedPlugin, typedSetting]])
+processor.use([typedPlugin])
+
+processor.use(implicitlyTypedPlugin)
+processor.use(implicitlyTypedPlugin).use(implicitlyTypedPlugin)
+processor.use(implicitlyTypedPlugin, typedSetting)
+processor.use([implicitlyTypedPlugin, typedSetting])
+processor.use([
+  [implicitlyTypedPlugin, typedSetting],
+  [implicitlyTypedPlugin, typedSetting]
+])
+processor.use([[plugin, settings], [implicitlyTypedPlugin, typedSetting]])
+processor.use([implicitlyTypedPlugin])
+
+// NOTE: settings overrides the generic undefined
+// settings value will be unused but TypeScript will not warn
+processor.use(implicitlyTypedPlugin, typedSetting, settings)
+processor.use([implicitlyTypedPlugin, typedSetting, settings])
+
+processor.use(pluginWithTwoSettings)
+processor.use(pluginWithTwoSettings).use(pluginWithTwoSettings)
+processor.use(pluginWithTwoSettings, processor, typedSetting)
+processor.use(pluginWithTwoSettings, processor)
+processor.use([pluginWithTwoSettings, processor, typedSetting])
+processor.use([pluginWithTwoSettings, processor])
+processor.use([
+  [pluginWithTwoSettings, processor, typedSetting],
+  [pluginWithTwoSettings, processor, typedSetting]
+])
+processor.use([
+  [plugin, settings],
+  [pluginWithTwoSettings, processor, typedSetting]
+])
+processor.use([pluginWithTwoSettings])
+
+// $ExpectError
+processor.use(typedPlugin, settings)
+// $ExpectError
+processor.use([typedPlugin, settings])
+// $ExpectError
+processor.use(typedPlugin, typedSetting, settings)
+// $ExpectError
+processor.use([typedPlugin, typedSetting, settings])
+
+// $ExpectError
+processor.use(implicitlyTypedPlugin, settings)
+// $ExpectError
+processor.use([implicitlyTypedPlugin, settings])
+
+// $ExpectError
+processor.use(pluginWithTwoSettings, typedSetting)
+// $ExpectError
+processor.use(pluginWithTwoSettings, typedSetting)
+
+// $ExpectError
+processor.use(pluginWithTwoSettings, processor, settings)
+// $ExpectError
+processor.use([pluginWithTwoSettings, processor, settings])
+
 // $ExpectError
 processor.use(false)
 // $ExpectError
 processor.use(true)
 // $ExpectError
 processor.use('alfred')
-processor.use(plugin, settings)
-processor.use([plugin, plugin])
-processor.use([plugin])
-processor.use([plugin, settings])
-processor.use([[plugin, settings], [plugin, settings]])
 // $ExpectError
 processor.use([false])
 // $ExpectError
@@ -54,6 +132,7 @@ processor.use({
   // $ExpectError
   plugins: {foo: true}
 })
+
 processor.use({})
 processor.use({
   plugins: []
