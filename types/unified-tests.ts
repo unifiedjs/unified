@@ -113,6 +113,8 @@ processor.use(pluginWithTwoSettings, processor, settings)
 processor.use([pluginWithTwoSettings, processor, settings])
 
 // $ExpectError
+processor.use({})
+// $ExpectError
 processor.use(false)
 // $ExpectError
 processor.use(true)
@@ -133,7 +135,6 @@ processor.use({
   plugins: {foo: true}
 })
 
-processor.use({})
 processor.use({
   plugins: []
 })
@@ -249,3 +250,19 @@ unknownValue = processor.data().randomKey
  * processor.freeze
  */
 processor = processor.freeze()
+
+/**
+ * Language specific processors
+ */
+interface RemarkSettings {
+  gfm: boolean
+}
+
+const remark = unified<RemarkSettings>()
+  .use(() => {})
+  .freeze()
+remark.use({settings: {gfm: true}})
+// $ExpectError
+remark.use({settings: {dne: true}})
+// $ExpectError
+remark.use({})

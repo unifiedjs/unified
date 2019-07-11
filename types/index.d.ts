@@ -5,11 +5,11 @@ import {VFile, VFileContents, VFileOptions} from 'vfile'
 import vfile = require('vfile')
 
 declare namespace unified {
-  interface Processor {
+  interface Processor<P = Settings> {
     /**
      * @returns New unfrozen processor which is configured to function the same as its ancestor. But when the descendant processor is configured in the future it does not affect the ancestral processor.
      */
-    (): Processor
+    (): Processor<P>
 
     /**
      * Configure the processor to use a plugin and optionally configure that plugin with options.
@@ -23,29 +23,34 @@ declare namespace unified {
       plugin: Plugin<T, S>,
       options?: T,
       extraOptions?: S
-    ): Processor
+    ): Processor<P>
 
     /**
-     * @param preset `Object` with an optional plugins (set to list), and/or an optional settings object
+     * @param preset `Object` with an plugins (set to list), and/or an optional settings object
      */
-    use(preset: Preset): Processor
+    use<T = Settings>(preset: Preset): Processor<P>
 
     /**
      * @param pluginTuple pairs, plugin and options in an array
      */
-    use<T = Settings>(pluginTuple: PluginTuple<T>): Processor
+    use<T = Settings>(pluginTuple: PluginTuple<T>): Processor<P>
 
     /**
      * @param pluginTriple plugin, options, and extraOptions in an array
      */
     use<T = Settings, S = undefined>(
       pluginTriple: PluginTriple<T, S>
-    ): Processor
+    ): Processor<P>
 
     /**
      * @param list List of plugins, presets, and pairs
      */
-    use(list: PluggableList): Processor
+    use(list: PluggableList): Processor<P>
+
+    /**
+     * @param processorSettings Settings passed to processor
+     */
+    use(processorSettings: ProcessorSettings<P>): Processor<P>
 
     /**
      * Parse text to a syntax tree.
@@ -146,7 +151,7 @@ declare namespace unified {
      * @param value Value to set. Omit if getting key
      * @returns If setting, the processor on which data is invoked
      */
-    data(key: string, value: any): Processor
+    data(key: string, value: any): Processor<P>
 
     /**
      * Freeze a processor. Frozen processors are meant to be extended and not to be configured or processed directly.
@@ -157,7 +162,7 @@ declare namespace unified {
      *
      * @returns The processor on which freeze is invoked.
      */
-    freeze(): Processor
+    freeze(): Processor<P>
   }
 
   type Plugin<T = Settings, S = undefined> = Attacher<T, S>
@@ -169,9 +174,17 @@ declare namespace unified {
    * They can contain multiple plugins and optionally settings as well.
    */
   interface Preset {
-    plugins?: PluggableList
+    plugins: PluggableList
     settings?: Settings
   }
+
+  /**
+   * Settings can be passed directly to the processor
+   */
+  interface ProcessorSettings<T = Settings> {
+    settings: T
+  }
+
   type PluginTuple<T = Settings> = [Plugin<T>, T]
   type PluginTriple<T = Settings, S = undefined> = [Plugin<T, S>, T, S]
   type Pluggable<T = Settings, S = undefined> =
@@ -239,5 +252,5 @@ declare namespace unified {
 /**
  * Object describing how to process text.
  */
-declare function unified(): unified.Processor
+declare function unified<P = unified.Settings>(): unified.Processor<P>
 export = unified
