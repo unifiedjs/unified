@@ -15,37 +15,37 @@ declare namespace unified {
      * Configure the processor to use a plugin and optionally configure that plugin with options.
      *
      * @param plugin unified plugin
-     * @param options Configuration for plugin
-     * @param extraOptions Additional configuration for plugin
+     * @param settings Configuration for plugin
+     * @param extraSettings Additional configuration for plugin
      * @returns The processor on which use is invoked
      */
-    use<T = Settings, S = undefined>(
-      plugin: Plugin<T, S>,
-      options?: T,
-      extraOptions?: S
+    use<S = Settings, S2 = undefined>(
+      plugin: Plugin<S, S2, P>,
+      settings?: S,
+      extraSettings?: S2
     ): Processor<P>
 
     /**
      * @param preset `Object` with an plugins (set to list), and/or an optional settings object
      */
-    use<T = Settings>(preset: Preset): Processor<P>
+    use(preset: Preset<P>): Processor<P>
 
     /**
-     * @param pluginTuple pairs, plugin and options in an array
+     * @param pluginTuple pairs, plugin and settings in an array
      */
-    use<T = Settings>(pluginTuple: PluginTuple<T>): Processor<P>
+    use<S = Settings>(pluginTuple: PluginTuple<S, P>): Processor<P>
 
     /**
-     * @param pluginTriple plugin, options, and extraOptions in an array
+     * @param pluginTriple plugin, setting, and extraSettings in an array
      */
-    use<T = Settings, S = undefined>(
-      pluginTriple: PluginTriple<T, S>
+    use<S = Settings, S2 = undefined>(
+      pluginTriple: PluginTriple<S, S2, P>
     ): Processor<P>
 
     /**
      * @param list List of plugins, presets, and pairs
      */
-    use(list: PluggableList): Processor<P>
+    use(list: PluggableList<P>): Processor<P>
 
     /**
      * @param processorSettings Settings passed to processor
@@ -165,7 +165,7 @@ declare namespace unified {
     freeze(): Processor<P>
   }
 
-  type Plugin<T = Settings, S = undefined> = Attacher<T, S>
+  type Plugin<S = Settings, S2 = undefined, P = Settings> = Attacher<S, S2, P>
   type Settings = {
     [key: string]: unknown
   }
@@ -173,26 +173,30 @@ declare namespace unified {
    * Presets provide a potentially sharable way to configure processors.
    * They can contain multiple plugins and optionally settings as well.
    */
-  interface Preset {
-    plugins: PluggableList
-    settings?: Settings
+  interface Preset<S = Settings, P = Settings> {
+    plugins: PluggableList<P>
+    settings?: S
   }
 
   /**
    * Settings can be passed directly to the processor
    */
-  interface ProcessorSettings<T = Settings> {
-    settings: T
+  interface ProcessorSettings<S = Settings> {
+    settings: S
   }
 
-  type PluginTuple<T = Settings> = [Plugin<T>, T]
-  type PluginTriple<T = Settings, S = undefined> = [Plugin<T, S>, T, S]
-  type Pluggable<T = Settings, S = undefined> =
-    | Plugin<T>
+  type PluginTuple<S = Settings, P = Settings> = [Plugin<S, undefined, P>, S]
+  type PluginTriple<S = Settings, S2 = undefined, P = Settings> = [
+    Plugin<S, S2, P>,
+    S,
+    S2
+  ]
+  type Pluggable<S = Settings, S2 = undefined, P = Settings> =
+    | Plugin<S, S2, P>
     | Preset
-    | PluginTuple<T>
-    | PluginTriple<T, S>
-  type PluggableList = Array<Pluggable<any, any>>
+    | PluginTuple<S, P>
+    | PluginTriple<S, S2, P>
+  type PluggableList<P = Settings> = Array<Pluggable<any, any, P>>
 
   /**
    * An attacher is the thing passed to `use`.
@@ -201,12 +205,12 @@ declare namespace unified {
    * Attachers can configure processors, such as by interacting with parsers and compilers, linking them to other processors, or by specifying how the syntax tree is handled.
    *
    * @this Processor context object is set to the invoked on processor.
-   * @param options Configuration
-   * @param extraOptions Secondary configuration
+   * @param settings Configuration
+   * @param extraSettings Secondary configuration
    * @returns Optional.
    */
-  interface Attacher<T = Settings, S = undefined> {
-    (this: Processor, options?: T, extraOptions?: S): Transformer | void
+  interface Attacher<S = Settings, S2 = undefined, P = Settings> {
+    (this: Processor<P>, settings?: S, extraSettings?: S2): Transformer | void
   }
 
   /**

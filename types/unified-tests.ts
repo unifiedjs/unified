@@ -261,8 +261,22 @@ interface RemarkSettings {
 const remark = unified<RemarkSettings>()
   .use(() => {})
   .freeze()
-remark.use({settings: {gfm: true}})
-// $ExpectError
-remark.use({settings: {dne: true}})
+remark
+  .use({settings: {gfm: true}})
+  // $ExpectError
+  .use({settings: {dne: true}})
+remark
+  // $ExpectError
+  .use({settings: {dne: true}})
+  .use({settings: {gfm: true}})
+remark.use(function() {
+  this
+    // $ExpectError
+    .use({settings: {dne: true}})
+    .use({settings: {gfm: true}})
+  this.use({settings: {gfm: true}})
+    // $ExpectError
+    .use({settings: {dne: true}})
+})
 // $ExpectError
 remark.use({})
