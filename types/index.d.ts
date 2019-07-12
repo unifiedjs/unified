@@ -5,8 +5,15 @@ import {VFile, VFileContents, VFileOptions} from 'vfile'
 import vfile = require('vfile')
 
 declare namespace unified {
+  /**
+   * Processor allows plugins, parsers, and compilers to be chained together to transform content.
+   *
+   * @typeParam P Processor settings. Useful when packaging unified with a preset parser and compiler.
+   */
   interface Processor<P = Settings> {
     /**
+     * Clone current processor
+     *
      * @returns New unfrozen processor which is configured to function the same as its ancestor. But when the descendant processor is configured in the future it does not affect the ancestral processor.
      */
     (): Processor<P>
@@ -17,6 +24,8 @@ declare namespace unified {
      * @param plugin unified plugin
      * @param settings Configuration for plugin
      * @param extraSettings Additional configuration for plugin
+     * @typeParam S Plugin settings
+     * @typeParam S2 Extra plugin settings
      * @returns The processor on which use is invoked
      */
     use<S = Settings, S2 = undefined>(
@@ -26,28 +35,33 @@ declare namespace unified {
     ): Processor<P>
 
     /**
+     * Configure the processor with a preset to use
+     *
      * @param preset `Object` with an plugins (set to list), and/or an optional settings object
      */
     use(preset: Preset<P>): Processor<P>
 
     /**
+     * Configure using a tuple of plugin and setting(s)
+     *
      * @param pluginTuple pairs, plugin and settings in an array
+     * @typeParam S Plugin settings
+     * @typeParam S2 Extra plugin settings
      */
-    use<S = Settings>(pluginTuple: PluginTuple<S, P>): Processor<P>
-
-    /**
-     * @param pluginTriple plugin, setting, and extraSettings in an array
-     */
-    use<S = Settings, S2 = undefined>(
-      pluginTriple: PluginTriple<S, S2, P>
+    use<S = Settings, S2 = Settings>(
+      pluginTuple: PluginTuple<S, S2, P>
     ): Processor<P>
 
     /**
+     * A list of plugins and presets to be applied to processor
+     *
      * @param list List of plugins, presets, and pairs
      */
     use(list: PluggableList<P>): Processor<P>
 
     /**
+     * Configuration passed to a frozen processor
+     *
      * @param processorSettings Settings passed to processor
      */
     use(processorSettings: ProcessorSettings<P>): Processor<P>
@@ -93,15 +107,35 @@ declare namespace unified {
     /**
      * Transform a syntax tree by applying plugins to it.
      *
-     * @param node
-     * @param file `VFile` or anything which can be given to `vfile()`
-     * @param done Invoked when transformation is complete.
-     * Either invoked with an error or a syntax tree and a file.
+     * @param node Node to transform
      * @returns `Promise` if `done` is not given. Rejected with an error, or resolved with the resulting syntax tree.
      */
     run(node: Node): Promise<Node>
+
+    /**
+     * Transform a syntax tree by applying plugins to it.
+     *
+     * @param node Node to transform
+     * @param file `VFile` or anything which can be given to `vfile()`
+     * @returns `Promise` if `done` is not given. Rejected with an error, or resolved with the resulting syntax tree.
+     */
     run(node: Node, file: VFileCompatible): Promise<Node>
+
+    /**
+     * Transform a syntax tree by applying plugins to it.
+     *
+     * @param node Node to transform
+     * @param done Invoked when transformation is complete.
+     */
     run(node: Node, done: RunCallback): void
+
+    /**
+     * Transform a syntax tree by applying plugins to it.
+     *
+     * @param node Node to transform
+     * @param file `VFile` or anything which can be given to `vfile()`
+     * @param done Invoked when transformation is complete.
+     */
     run(node: Node, file: VFileCompatible, done: RunCallback): void
 
     /**
@@ -109,7 +143,7 @@ declare namespace unified {
      *
      * If asynchronous plugins are configured an error is thrown.
      *
-     * @param node
+     * @param node Node to transform
      * @param file `VFile` or anything which can be given to `vfile()`
      * @returns The given syntax tree.
      */
@@ -117,12 +151,17 @@ declare namespace unified {
 
     /**
      * Process the given representation of a file as configured on the processor. The process invokes `parse`, `run`, and `stringify` internally.
-     * @param file
-     * @param done Invoked when the process is complete. Invoked with a fatal error, if any, and the VFile.
+     * @param file `VFile` or anything which can be given to `vfile()`
      * @returns `Promise` if `done` is not given.
      * Rejected with an error or resolved with the resulting file.
      */
     process(file: VFileCompatible): Promise<VFile>
+
+    /**
+     * Process the given representation of a file as configured on the processor. The process invokes `parse`, `run`, and `stringify` internally.
+     * @param file `VFile` or anything which can be given to `vfile()`
+     * @param done Invoked when the process is complete. Invoked with a fatal error, if any, and the VFile.
+     */
     process(file: VFileCompatible, done: ProcessCallback): void
 
     /**
@@ -130,7 +169,7 @@ declare namespace unified {
      *
      * If asynchronous plugins are configured an error is thrown.
      *
-     * @param file
+     * @param file `VFile` or anything which can be given to `vfile()`
      * @returns Virtual file with modified contents.
      */
     processSync(file: VFileCompatible): VFile
@@ -142,11 +181,13 @@ declare namespace unified {
      * @returns key-value store object
      */
     data(): {[key: string]: unknown}
+
     /**
      * @param key Identifier
      * @returns If getting, the value at key
      */
     data(key: string): unknown
+
     /**
      * @param value Value to set. Omit if getting key
      * @returns If setting, the processor on which data is invoked
@@ -165,37 +206,77 @@ declare namespace unified {
     freeze(): Processor<P>
   }
 
+  /**
+   * A Plugin (Attacher) is the thing passed to `use`.
+   * It configures the processor and in turn can receive options.
+   *
+   * Attachers can configure processors, such as by interacting with parsers and compilers, linking them to other processors, or by specifying how the syntax tree is handled.
+   *
+   * @this Processor context object is set to the invoked on processor.
+   * @param settings Configuration
+   * @param extraSettings Secondary configuration
+   * @typeParam S Plugin settings
+   * @typeParam S2 Extra plugin settings
+   * @typeParam P Processor settings
+   * @returns Optional Transformer.
+   */
   type Plugin<S = Settings, S2 = undefined, P = Settings> = Attacher<S, S2, P>
+
+  /**
+   * Configuration passed to a Plugin or Processor
+   */
   type Settings = {
     [key: string]: unknown
   }
+
   /**
    * Presets provide a potentially sharable way to configure processors.
    * They can contain multiple plugins and optionally settings as well.
+   *
+   * @typeParam P Processor settings
    */
-  interface Preset<S = Settings, P = Settings> {
+  interface Preset<P = Settings> {
     plugins: PluggableList<P>
-    settings?: S
+    settings?: Settings
   }
 
   /**
    * Settings can be passed directly to the processor
+   *
+   * @typeParam P Settings applied to a processor. Useful when packaging unified with a preset parser and compiler.
    */
-  interface ProcessorSettings<S = Settings> {
-    settings: S
+  interface ProcessorSettings<P = Settings> {
+    settings: P
   }
 
-  type PluginTuple<S = Settings, P = Settings> = [Plugin<S, undefined, P>, S]
-  type PluginTriple<S = Settings, S2 = undefined, P = Settings> = [
-    Plugin<S, S2, P>,
-    S,
-    S2
-  ]
+  /**
+   * A pairing of a plugin with its settings
+   *
+   * @typeParam S Plugin settings
+   * @typeParam S2 Extra plugin settings
+   * @typeParam P Processor settings
+   */
+  type PluginTuple<S = Settings, S2 = undefined, P = Settings> =
+    | [Plugin<S, undefined, P>, S]
+    | [Plugin<S, S2, P>, S, S2]
+
+  /**
+   * A union of the different ways to add plugins to unified
+   *
+   * @typeParam S Plugin settings
+   * @typeParam S2 Extra plugin settings
+   * @typeParam P Processor settings
+   */
   type Pluggable<S = Settings, S2 = undefined, P = Settings> =
     | Plugin<S, S2, P>
-    | Preset
-    | PluginTuple<S, P>
-    | PluginTriple<S, S2, P>
+    | Preset<P>
+    | PluginTuple<S, S2, P>
+
+  /**
+   * A list of plugins and presets
+   *
+   * @typeParam P Processor settings
+   */
   type PluggableList<P = Settings> = Array<Pluggable<any, any, P>>
 
   /**
@@ -207,7 +288,10 @@ declare namespace unified {
    * @this Processor context object is set to the invoked on processor.
    * @param settings Configuration
    * @param extraSettings Secondary configuration
-   * @returns Optional.
+   * @typeParam S Plugin settings
+   * @typeParam S2 Extra plugin settings
+   * @typeParam P Processor settings
+   * @returns Optional Transformer.
    */
   interface Attacher<S = Settings, S2 = undefined, P = Settings> {
     (this: Processor<P>, settings?: S, extraSettings?: S2): Transformer | void
@@ -219,8 +303,8 @@ declare namespace unified {
    *
    * The transformation process in unified is handled by `trough`, see it’s documentation for the exact semantics of transformers.
    *
-   * @param node
-   * @param file
+   * @param node Node or tree to be transformed
+   * @param file File associated with node or tree
    * @param next If the signature of a transformer includes `next` (third argument), the function may finish asynchronous, and must invoke `next()`.
    * @returns
    * - `Error` — Can be returned to stop the process
@@ -235,26 +319,74 @@ declare namespace unified {
     ): Error | Node | Promise<Node>
   }
 
+  /**
+   * Transform file contents into an AST
+   */
   class Parser {
+    /**
+     * Transform file contents into an AST
+     *
+     * @param file File to transform into AST node(s)
+     */
     parse(file: VFileCompatible): Node
   }
 
+  /**
+   * Transform file contents into an AST
+   * @param file File to transform into AST node(s)
+   */
   type ParserFunction = (file: VFileCompatible) => Node
 
+  /**
+   * Transform an AST node/tree into text
+   */
   class Compiler {
+    /**
+     * Transform an AST node/tree into text
+     *
+     * @param node Node to be stringified
+     * @param file File associated with node
+     * @returns transformed text
+     */
     compile(node: Node, file?: VFileCompatible): string
   }
+
+  /**
+   * Transform an AST node/tree into text
+   *
+   * @param node Node to be stringified
+   * @param file File associated with node
+   * @returns transformed text
+   */
   type CompilerFunction = (node: Node, file?: VFileCompatible) => string
 
+  /**
+   * Access results from transforms
+   *
+   * @param error Error if any occurred
+   * @param node Transformed AST tree/node
+   * @param vfile File associated with node
+   */
   type RunCallback = (error: Error | null, node: Node, file: VFile) => void
 
+  /**
+   * Access results from transforms
+   *
+   * @param error Error if any occurred
+   * @param vfile File with updated content
+   */
   type ProcessCallback = (error: Error | null, file: VFile) => void
 
+  /**
+   * A union of the VFile types unified supports
+   */
   type VFileCompatible = VFile | VFileOptions | VFileContents
 }
 
 /**
- * Object describing how to process text.
+ * Unified processor allows plugins, parsers, and compilers to be chained together to transform content.
+ *
+ * @typeParam P Processor settings. Useful when packaging unified with a preset parser and compiler.
  */
 declare function unified<P = unified.Settings>(): unified.Processor<P>
 export = unified
