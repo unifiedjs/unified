@@ -1,4 +1,4 @@
-// TypeScript Version: 3.0
+// TypeScript Version: 3.4
 
 import {Node} from 'unist'
 import {VFile, VFileContents, VFileOptions} from 'vfile'
@@ -23,15 +23,12 @@ declare namespace unified {
      *
      * @param plugin unified plugin
      * @param settings Configuration for plugin
-     * @param extraSettings Additional configuration for plugin
      * @typeParam S Plugin settings
-     * @typeParam S2 Extra plugin settings
      * @returns The processor on which use is invoked
      */
-    use<S = Settings, S2 = undefined>(
-      plugin: Plugin<S, S2, P>,
-      settings?: S,
-      extraSettings?: S2
+    use<S extends any[] = [Settings?]>(
+      plugin: Plugin<S, P>,
+      ...settings: S
     ): Processor<P>
 
     /**
@@ -39,17 +36,16 @@ declare namespace unified {
      *
      * @param preset `Object` with an plugins (set to list), and/or an optional settings object
      */
-    use(preset: Preset<P>): Processor<P>
+    use<S extends any[] = [Settings?]>(preset: Preset<S, P>): Processor<P>
 
     /**
      * Configure using a tuple of plugin and setting(s)
      *
      * @param pluginTuple pairs, plugin and settings in an array
      * @typeParam S Plugin settings
-     * @typeParam S2 Extra plugin settings
      */
-    use<S = Settings, S2 = Settings>(
-      pluginTuple: PluginTuple<S, S2, P>
+    use<S extends any[] = [Settings?]>(
+      pluginTuple: PluginTuple<S, P>
     ): Processor<P>
 
     /**
@@ -214,13 +210,11 @@ declare namespace unified {
    *
    * @this Processor context object is set to the invoked on processor.
    * @param settings Configuration
-   * @param extraSettings Secondary configuration
    * @typeParam S Plugin settings
-   * @typeParam S2 Extra plugin settings
    * @typeParam P Processor settings
    * @returns Optional Transformer.
    */
-  type Plugin<S = Settings, S2 = undefined, P = Settings> = Attacher<S, S2, P>
+  type Plugin<S extends any[] = [Settings?], P = Settings> = Attacher<S, P>
 
   /**
    * Configuration passed to a Plugin or Processor
@@ -235,7 +229,7 @@ declare namespace unified {
    *
    * @typeParam P Processor settings
    */
-  interface Preset<P = Settings> {
+  interface Preset<S = Settings, P = Settings> {
     plugins: PluggableList<P>
     settings?: Settings
   }
@@ -253,31 +247,35 @@ declare namespace unified {
    * A pairing of a plugin with its settings
    *
    * @typeParam S Plugin settings
-   * @typeParam S2 Extra plugin settings
    * @typeParam P Processor settings
    */
-  type PluginTuple<S = Settings, S2 = undefined, P = Settings> =
-    | [Plugin<S, undefined, P>, S]
-    | [Plugin<S, S2, P>, S, S2]
+  type PluginTuple<S extends any[] = [Settings?], P = Settings> = [
+    Plugin<S, P>,
+    /**
+     * NOTE: ideally this would be S instead of any[]
+     * As of TypeScript 3.5.2 generic tuples cannot be spread
+     * See: https://github.com/microsoft/TypeScript/issues/26113
+     */
+    ...any[]
+  ]
 
   /**
    * A union of the different ways to add plugins to unified
    *
    * @typeParam S Plugin settings
-   * @typeParam S2 Extra plugin settings
    * @typeParam P Processor settings
    */
-  type Pluggable<S = Settings, S2 = undefined, P = Settings> =
-    | Plugin<S, S2, P>
-    | Preset<P>
-    | PluginTuple<S, S2, P>
+  type Pluggable<S extends any[] = [Settings?], P = Settings> =
+    | Plugin<S, P>
+    | Preset<S, P>
+    | PluginTuple<S, P>
 
   /**
    * A list of plugins and presets
    *
    * @typeParam P Processor settings
    */
-  type PluggableList<P = Settings> = Array<Pluggable<any, any, P>>
+  type PluggableList<P = Settings> = Array<Pluggable<[any?], P>>
 
   /**
    * An attacher is the thing passed to `use`.
@@ -287,14 +285,12 @@ declare namespace unified {
    *
    * @this Processor context object is set to the invoked on processor.
    * @param settings Configuration
-   * @param extraSettings Secondary configuration
    * @typeParam S Plugin settings
-   * @typeParam S2 Extra plugin settings
    * @typeParam P Processor settings
    * @returns Optional Transformer.
    */
-  interface Attacher<S = Settings, S2 = undefined, P = Settings> {
-    (this: Processor<P>, settings?: S, extraSettings?: S2): Transformer | void
+  interface Attacher<S extends any[] = [Settings?], P = Settings> {
+    (this: Processor<P>, ...settings: S): Transformer | void
   }
 
   /**

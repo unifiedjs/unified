@@ -30,7 +30,7 @@ const settings = {
 interface ExamplePluginSettings {
   example: string
 }
-const typedPlugin: Plugin<ExamplePluginSettings> = function() {}
+const typedPlugin: Plugin<[ExamplePluginSettings?]> = function() {}
 const typedSetting = {example: 'example'}
 
 const implicitlyTypedPlugin = (settings?: ExamplePluginSettings) => {}
@@ -51,14 +51,18 @@ processor.use([[plugin, settings], [plugin, settings]])
 processor.use(typedPlugin)
 processor.use(typedPlugin).use(typedPlugin)
 processor.use(typedPlugin, typedSetting)
+// NOTE: in tuple/array form settings are not able to be type checked
 processor.use([typedPlugin, typedSetting])
 processor.use([[typedPlugin, typedSetting], [typedPlugin, typedSetting]])
 processor.use([[plugin, settings], [typedPlugin, typedSetting]])
 processor.use([typedPlugin])
+processor.use([typedPlugin, typedSetting, settings])
+processor.use([typedPlugin, settings])
 
 processor.use(implicitlyTypedPlugin)
 processor.use(implicitlyTypedPlugin).use(implicitlyTypedPlugin)
 processor.use(implicitlyTypedPlugin, typedSetting)
+// NOTE: in tuple/array form settings are not able to be type checked
 processor.use([implicitlyTypedPlugin, typedSetting])
 processor.use([
   [implicitlyTypedPlugin, typedSetting],
@@ -66,16 +70,15 @@ processor.use([
 ])
 processor.use([[plugin, settings], [implicitlyTypedPlugin, typedSetting]])
 processor.use([implicitlyTypedPlugin])
-
-// NOTE: settings overrides the generic undefined
-// settings value will be unused but TypeScript will not warn
-processor.use(implicitlyTypedPlugin, typedSetting, settings)
+processor.use([implicitlyTypedPlugin, settings])
 processor.use([implicitlyTypedPlugin, typedSetting, settings])
 
 processor.use(pluginWithTwoSettings)
 processor.use(pluginWithTwoSettings).use(pluginWithTwoSettings)
 processor.use(pluginWithTwoSettings, processor, typedSetting)
 processor.use(pluginWithTwoSettings, processor)
+// NOTE: in tuple/array form settings are not able to be type checked
+processor.use([pluginWithTwoSettings, processor, settings])
 processor.use([pluginWithTwoSettings, processor, typedSetting])
 processor.use([pluginWithTwoSettings, processor])
 processor.use([
@@ -91,16 +94,12 @@ processor.use([pluginWithTwoSettings])
 // $ExpectError
 processor.use(typedPlugin, settings)
 // $ExpectError
-processor.use([typedPlugin, settings])
-// $ExpectError
 processor.use(typedPlugin, typedSetting, settings)
-// $ExpectError
-processor.use([typedPlugin, typedSetting, settings])
 
 // $ExpectError
 processor.use(implicitlyTypedPlugin, settings)
 // $ExpectError
-processor.use([implicitlyTypedPlugin, settings])
+processor.use(implicitlyTypedPlugin, typedSetting, settings)
 
 // $ExpectError
 processor.use(pluginWithTwoSettings, typedSetting)
@@ -109,8 +108,6 @@ processor.use(pluginWithTwoSettings, typedSetting)
 
 // $ExpectError
 processor.use(pluginWithTwoSettings, processor, settings)
-// $ExpectError
-processor.use([pluginWithTwoSettings, processor, settings])
 
 // $ExpectError
 processor.use({})
@@ -141,6 +138,7 @@ processor.use({
 processor.use({
   settings: {}
 })
+
 processor.use({
   plugins: [plugin]
 })
