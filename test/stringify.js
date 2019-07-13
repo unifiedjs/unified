@@ -10,7 +10,7 @@ test('stringify(node[, file])', function(t) {
   var f
   var n
 
-  t.plan(13)
+  t.plan(16)
 
   t.throws(
     function() {
@@ -49,6 +49,18 @@ test('stringify(node[, file])', function(t) {
     p.stringify(n, f),
     'echo',
     'should return the result `compiler` returns if it’s not a constructor'
+  )
+
+  p.Compiler = (node, file) => {
+    t.equal(node, n, 'should pass a node')
+    t.ok('message' in file, 'should pass a file')
+    return 'echo'
+  }
+
+  t.equal(
+    p.stringify(n, f),
+    'echo',
+    'should return the result `compiler` returns if it’s an arrow function'
   )
 
   p.Compiler = noop.Compiler

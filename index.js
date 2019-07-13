@@ -403,6 +403,7 @@ function unified() {
 function newable(value, name) {
   return (
     typeof value === 'function' &&
+    value.prototype &&
     // A function with keys in its prototype is probably a constructor.
     // Classes’ prototype methods are not enumerable, so we check if some value
     // exists in the prototype.

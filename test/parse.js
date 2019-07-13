@@ -7,7 +7,7 @@ test('parse(file)', function(t) {
   var p = unified()
   var n
 
-  t.plan(12)
+  t.plan(15)
 
   t.throws(
     function() {
@@ -45,6 +45,18 @@ test('parse(file)', function(t) {
     p.parse('charlie'),
     n,
     'should return the result `parser` returns if it’s not a constructor'
+  )
+
+  p.Parser = (doc, file) => {
+    t.equal(typeof doc, 'string', 'should pass a document')
+    t.ok('message' in file, 'should pass a file')
+    return n
+  }
+
+  t.equal(
+    p.parse('charlie'),
+    n,
+    'should return the result `parser` returns if it’s an arrow function'
   )
 
   class ESParser {
