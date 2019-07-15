@@ -310,7 +310,7 @@ declare namespace unified {
   interface Transformer {
     (
       node: Node,
-      file: VFileCompatible,
+      file: VFile,
       next?: (error: Error | null, tree: Node, file: VFile) => {}
     ): Error | Node | Promise<Node>
   }
