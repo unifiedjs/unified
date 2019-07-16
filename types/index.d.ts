@@ -322,16 +322,21 @@ declare namespace unified {
     /**
      * Transform file contents into an AST
      *
-     * @param file File to transform into AST node(s)
+     * @param text Text to transfomr into AST node(s)
+     * @param file File associated with text
+     * @returns Parsed AST node/tree
      */
-    parse(file: VFileCompatible): Node
+    parse(text: string, file: VFile): Node
   }
 
   /**
    * Transform file contents into an AST
-   * @param file File to transform into AST node(s)
+   * 
+   * @param text Text to transform into AST node(s)
+   * @param file File associated with text
+   * @returns Parsed AST node/tree
    */
-  type ParserFunction = (file: VFileCompatible) => Node
+  type ParserFunction = (text: string, file: VFile) => Node
 
   /**
    * Transform an AST node/tree into text
@@ -340,21 +345,21 @@ declare namespace unified {
     /**
      * Transform an AST node/tree into text
      *
-     * @param node Node to be stringified
+     * @param node Node/tree to be stringified
      * @param file File associated with node
-     * @returns transformed text
+     * @returns Compiled text
      */
-    compile(node: Node, file?: VFileCompatible): string
+    compile(node: Node, file: VFile): string
   }
 
   /**
    * Transform an AST node/tree into text
    *
-   * @param node Node to be stringified
+   * @param node Node/tree to be stringified
    * @param file File associated with node
-   * @returns transformed text
+   * @returns Compiled text
    */
-  type CompilerFunction = (node: Node, file?: VFileCompatible) => string
+  type CompilerFunction = (node: Node, file: VFile) => string
 
   /**
    * Access results from transforms
