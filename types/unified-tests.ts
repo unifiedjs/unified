@@ -35,8 +35,10 @@ const typedSetting = {example: 'example'}
 
 const implicitlyTypedPlugin = (settings?: ExamplePluginSettings) => {}
 
-const transformerPlugin =
-  (settings?: ExamplePluginSettings) => (tree: Node, file: vfile.VFile) => tree;
+const transformerPlugin = (settings?: ExamplePluginSettings) => (
+  tree: Node,
+  file: vfile.VFile
+) => tree
 
 const pluginWithTwoSettings = (
   processor?: Processor,
