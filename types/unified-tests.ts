@@ -35,6 +35,9 @@ const typedSetting = {example: 'example'}
 
 const implicitlyTypedPlugin = (settings?: ExamplePluginSettings) => {}
 
+const transformerPlugin =
+  (settings?: ExamplePluginSettings) => (tree: Node, file: vfile.VFile) => tree;
+
 const pluginWithTwoSettings = (
   processor?: Processor,
   settings?: ExamplePluginSettings
@@ -72,6 +75,12 @@ processor.use([[plugin, settings], [implicitlyTypedPlugin, typedSetting]])
 processor.use([implicitlyTypedPlugin])
 processor.use([implicitlyTypedPlugin, settings])
 processor.use([implicitlyTypedPlugin, typedSetting, settings])
+
+processor.use(transformerPlugin)
+processor.use([transformerPlugin, transformerPlugin])
+processor.use(transformerPlugin, typedSetting)
+// $ExpectError
+processor.use(transformerPlugin, settings)
 
 processor.use(pluginWithTwoSettings)
 processor.use(pluginWithTwoSettings).use(pluginWithTwoSettings)
