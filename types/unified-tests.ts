@@ -8,7 +8,7 @@ import {
   ProcessCallback
 } from 'unified'
 import vfile = require('vfile')
-import { VFile } from 'vfile'
+import {VFile} from 'vfile'
 
 let fileValue: vfile.VFile
 let nodeValue: Node
@@ -36,7 +36,10 @@ const typedSetting = {example: 'example'}
 
 const implicitlyTypedPlugin = (settings?: ExamplePluginSettings) => {}
 
-const transformerPlugin = (settings?: ExamplePluginSettings) => (tree: Node, file: VFile) => ({
+const transformerPlugin = (settings?: ExamplePluginSettings) => (
+  tree: Node,
+  file: VFile
+) => ({
   type: 'random node'
 })
 
@@ -181,7 +184,11 @@ processor.Parser = (text: string, file: VFile) => ({
   type: 'random node'
 })
 processor.Parser = class CustomParser {
-  parse(text: string, file: VFile): Node {
+  constructor(text: string, file: VFile) {
+    // nothing
+  }
+
+  parse(): Node {
     return {
       type: 'random node'
     }
@@ -200,7 +207,11 @@ processor.Compiler = (node: Node, file: VFile) => {
   return 'random string'
 }
 processor.Compiler = class CustomCompiler {
-  compile(node: Node, file: VFile) {
+  constructor(node: Node, file: VFile) {
+    // nothing
+  }
+
+  compile() {
     return 'random string'
   }
 }

@@ -78,7 +78,7 @@ declare namespace unified {
      *
      * `Parser` can also be a constructor function (a function with keys in its `prototype`) in which case it’s invoked with `new`. Instances must have a parse method which is invoked without arguments and must return a `Node`.
      */
-    Parser: ParserFunction | typeof Parser
+    Parser: ParserConstructor | ParserFunction
 
     /**
      * Compile a syntax tree to text.
@@ -98,7 +98,7 @@ declare namespace unified {
      * `Compiler` can also be a constructor function (a function with keys in its `prototype`) in which case it’s invoked with `new`.
      * Instances must have a `compile` method which is invoked without arguments and must return a `string`.
      */
-    Compiler: CompilerFunction | typeof Compiler
+    Compiler: CompilerConstructor | CompilerFunction
 
     /**
      * Transform a syntax tree by applying plugins to it.
@@ -318,20 +318,32 @@ declare namespace unified {
   /**
    * Transform file contents into an AST
    */
-  class Parser {
+  interface Parser {
     /**
      * Transform file contents into an AST
      *
-     * @param text Text to transfomr into AST node(s)
-     * @param file File associated with text
      * @returns Parsed AST node/tree
      */
-    parse(text: string, file: VFile): Node
+    parse(): Node
+  }
+
+  /**
+   * A constructor function (a function with keys in its `prototype`) or class that implements a
+   * `parse` method.
+   */
+  interface ParserConstructor {
+    /**
+     * Creates a Parser
+     *
+     * @param text Text to transform into AST node(s)
+     * @param file File associated with text
+     */
+    new (text: string, file: VFile): Parser
   }
 
   /**
    * Transform file contents into an AST
-   * 
+   *
    * @param text Text to transform into AST node(s)
    * @param file File associated with text
    * @returns Parsed AST node/tree
@@ -341,15 +353,27 @@ declare namespace unified {
   /**
    * Transform an AST node/tree into text
    */
-  class Compiler {
+  interface Compiler {
     /**
      * Transform an AST node/tree into text
      *
-     * @param node Node/tree to be stringified
-     * @param file File associated with node
      * @returns Compiled text
      */
-    compile(node: Node, file: VFile): string
+    compile(): string
+  }
+
+  /**
+   * A constructor function (a function with keys in its `prototype`) or class that implements a
+   * `compile` method.
+   */
+  interface CompilerConstructor {
+    /**
+     * Creates a Compiler
+     *
+     * @param node Node/tree to be stringified
+     * @param file File associated with node
+     */
+    new (node: Node, file: VFile): Compiler
   }
 
   /**
