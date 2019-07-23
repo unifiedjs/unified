@@ -1,12 +1,6 @@
 import {Node} from 'unist'
 import unified = require('unified')
-import {
-  Processor,
-  Plugin,
-  VFileCompatible,
-  RunCallback,
-  ProcessCallback
-} from 'unified'
+import {Processor, Plugin, RunCallback, ProcessCallback} from 'unified'
 import vfile = require('vfile')
 import {VFile} from 'vfile'
 

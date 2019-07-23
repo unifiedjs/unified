@@ -1,7 +1,7 @@
 // TypeScript Version: 3.4
 
 import {Node} from 'unist'
-import {VFile, VFileContents, VFileOptions} from 'vfile'
+import {VFile, VFileContents, VFileOptions, VFileCompatible} from 'vfile'
 import vfile = require('vfile')
 
 declare namespace unified {
@@ -401,11 +401,6 @@ declare namespace unified {
    * @param vfile File with updated content
    */
   type ProcessCallback = (error: Error | null, file: VFile) => void
-
-  /**
-   * A union of the VFile types unified supports
-   */
-  type VFileCompatible = VFile | VFileOptions | VFileContents
 }
 
 /**
