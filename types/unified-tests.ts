@@ -42,6 +42,26 @@ const pluginWithTwoSettings = (
   settings?: ExamplePluginSettings
 ) => {}
 
+interface ParserPlugin extends unified.Attacher {
+  Parser: unified.ParserFunction
+}
+
+const parserPlugin: ParserPlugin = (() => {
+  const parser = () => {}
+  parser.Parser = (text: string, file: VFile) => ({type: ''})
+  return parser
+})()
+
+interface CompilerPlugin extends unified.Attacher {
+  Compiler: unified.CompilerFunction
+}
+
+const compilerPlugin: CompilerPlugin = (() => {
+  const compiler = () => {}
+  compiler.Compiler = (node: Node, file: VFile) => ''
+  return compiler
+})()
+
 processor.use(plugin)
 processor.use(plugin).use(plugin)
 processor.use(plugin, settings)
@@ -49,6 +69,22 @@ processor.use([plugin, plugin])
 processor.use([plugin])
 processor.use([plugin, settings])
 processor.use([[plugin, settings], [plugin, settings]])
+
+processor.use(parserPlugin)
+processor.use(parserPlugin).use(parserPlugin)
+processor.use(parserPlugin, settings)
+processor.use([parserPlugin, plugin])
+processor.use([parserPlugin])
+processor.use([parserPlugin, settings])
+processor.use([[parserPlugin, settings], [parserPlugin, settings]])
+
+processor.use(compilerPlugin)
+processor.use(compilerPlugin).use(compilerPlugin)
+processor.use(compilerPlugin, settings)
+processor.use([compilerPlugin, plugin])
+processor.use([compilerPlugin])
+processor.use([compilerPlugin, settings])
+processor.use([[compilerPlugin, settings], [compilerPlugin, settings]])
 
 processor.use(typedPlugin)
 processor.use(typedPlugin).use(typedPlugin)
