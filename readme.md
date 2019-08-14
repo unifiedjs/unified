@@ -1,4 +1,4 @@
-# [![unified][logo]](https://unified.js.org/)
+# [![unified][logo]][site]
 
 [![Build][build-badge]][build]
 [![Coverage][coverage-badge]][coverage]
@@ -23,7 +23,7 @@ Some notable users are [Node.js][], [ZEIT][],  [Netlify][], [GitHub][],
 
 *   To read about what we are up to, follow us on [Medium][] and [Twitter][]
 *   For a less technical and more practical introduction to unified, visit
-    [`unified.js.org`][site] and try its introductory [Guides][]
+    [`unifiedjs.com`][site] and try its introductory [Guides][]
 *   Browse [awesome unified][awesome] to find out more about the ecosystem
 *   Questions?
     Get help on [our Spectrum community][spectrum]!
@@ -1231,7 +1231,7 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 
 [ts-vfile]: https://www.npmjs.com/package/@types/vfile
 
-[site]: https://unified.js.org
+[site]: https://unifiedjs.com
 
 [medium]: https://medium.com/unifiedjs
 
@@ -1239,7 +1239,7 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 
 [twitter]: https://twitter.com/unifiedjs
 
-[guides]: https://unified.js.org/#guides
+[guides]: https://unifiedjs.com/#guides
 
 [spectrum]: https://spectrum.chat/unified
 
