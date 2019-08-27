@@ -16,7 +16,7 @@ It’s what powers [**remark**][remark], [**retext**][retext], and
 
 **unified** enables new exciting projects like [Gatsby][] to pull in Markdown,
 [MDX][] to embed [JSX][], and [Prettier][] to format it.
-It’s used in about 200k projects on GitHub and has about 10m downloads each
+It’s used in about 300k projects on GitHub and has about 10m downloads each
 month on npm: you’re probably using it.
 Some notable users are [Node.js][], [ZEIT][],  [Netlify][], [GitHub][],
 [Mozilla][], [WordPress][], [Adobe][], [Facebook][], [Google][], and many more.
