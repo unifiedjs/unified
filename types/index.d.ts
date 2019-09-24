@@ -303,6 +303,7 @@ declare namespace unified {
    * @param file File associated with node or tree
    * @param next If the signature of a transformer includes `next` (third argument), the function may finish asynchronous, and must invoke `next()`.
    * @returns
+   * - `void` — If nothing is returned, the next transformer keeps using same tree.
    * - `Error` — Can be returned to stop the process
    * - `Node` — Can be returned and results in further transformations and `stringify`s to be performed on the new tree
    * - `Promise` — If a promise is returned, the function is asynchronous, and must be resolved (optionally with a `Node`) or rejected (optionally with an `Error`)
@@ -312,7 +313,7 @@ declare namespace unified {
       node: Node,
       file: VFile,
       next?: (error: Error | null, tree: Node, file: VFile) => {}
-    ): Error | Node | Promise<Node>
+    ): Error | Node | Promise<Node> | void | Promise<void>
   }
 
   /**

@@ -1050,6 +1050,7 @@ exact semantics of these functions.
 
 ###### Returns
 
+*   `void` — If nothing is returned, the next transformer keeps using same tree.
 *   `Error` — Fatal error to stop the process
 *   `node` ([`Node`][node]) — New [*syntax tree*][syntax-tree].
     If returned, the next transformer is given this new tree
