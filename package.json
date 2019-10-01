@@ -48,7 +48,7 @@
     "tape": "^4.0.0",
     "tinyify": "^2.5.1",
     "typescript": "^3.0.0",
-    "xo": "^0.24.0"
+    "xo": "^0.25.0"
   },
   "scripts": {
     "format": "remark . -qfo && prettier --write \"**/{*.js,*.ts}\" && xo --fix",
@@ -79,7 +79,8 @@
     "esnext": false,
     "rules": {
       "guard-for-in": "off",
-      "unicorn/prefer-type-error": "off"
+      "unicorn/prefer-type-error": "off",
+      "unicorn/prefer-reflect-apply": "off"
     },
     "ignores": [
       "unified.js"

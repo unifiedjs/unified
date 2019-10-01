@@ -15,7 +15,7 @@ var asyncfunctions = false
 try {
   eval('typeof async function() {}') // eslint-disable-line no-eval
   asyncfunctions = true
-} catch (error) {}
+} catch (_) {}
 
 console.log('asyncfunctions:', asyncfunctions)
 if (asyncfunctions) {
