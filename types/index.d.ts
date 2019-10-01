@@ -219,7 +219,7 @@ declare namespace unified {
   /**
    * Configuration passed to a Plugin or Processor
    */
-  type Settings = {
+  interface Settings {
     [key: string]: unknown
   }
 
