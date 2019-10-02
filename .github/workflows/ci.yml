@@ -1,0 +1,25 @@
+name: CI
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+jobs:
+  build-and-test:
+    name: '${{ matrix.platform }}: node.js ${{ matrix.nodejs-version }}'
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, windows-latest, macos-latest]
+        nodejs-version: [10, 12]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Set up Node.js
+        uses: actions/setup-node@master
+        with:
+          version: ${{ matrix.nodejs-version }}
+      - name: Build and test
+        run: |
+          npm install
+          npm test
