@@ -1,5 +1,6 @@
 # [![unified][logo]][site]
 
+[![GitHub CI][github-ci-badge]][github-ci]
 [![Build][build-badge]][build]
 [![Coverage][coverage-badge]][coverage]
 [![Downloads][downloads-badge]][downloads]
@@ -1186,6 +1187,10 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 
 [logo]: https://raw.githubusercontent.com/unifiedjs/unified/39917ea/logo.svg?sanitize=true
 
+[github-ci-badge]: https://github.com/unifiedjs/unified/workflows/CI/badge.svg
+
+[github-ci]: https://github.com/unifiedjs/unified/actions
+
 [build-badge]: https://img.shields.io/travis/unifiedjs/unified.svg
 
 [build]: https://travis-ci.org/unifiedjs/unified
@@ -1208,7 +1213,7 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 
 [collective]: https://opencollective.com/unified
 
-[chat-badge]: https://img.shields.io/badge/join%20the%20community-on%20spectrum-7b16ff.svg
+[chat-badge]: https://img.shields.io/badge/chat-spectrum-7b16ff.svg
 
 [chat]: https://spectrum.chat/unified
 
