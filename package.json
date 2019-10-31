@@ -25,11 +25,16 @@
     "Vse Mozhet Byt <vsemozhetbyt@gmail.com>",
     "Richard Littauer <richard.littauer@gmail.com>"
   ],
+  "source": "index.js",
+  "main": "dist/unified.js",
+  "module": "dist/unified.mjs",
+  "unpkg": "dist/unified.umd.js",
   "types": "types/index.d.ts",
+  "sideEffects": false,
   "files": [
     "types/index.d.ts",
     "index.js",
-    "lib"
+    "dist"
   ],
   "dependencies": {
     "bail": "^1.0.0",
@@ -40,31 +45,22 @@
   },
   "devDependencies": {
     "browserify": "^16.0.0",
+    "c8": "^6.0.1",
     "dtslint": "^1.0.2",
-    "nyc": "^14.0.0",
+    "microbundle": "^0.11.0",
     "prettier": "^1.0.0",
     "remark-cli": "^7.0.0",
     "remark-preset-wooorm": "^6.0.0",
     "tape": "^4.0.0",
-    "tinyify": "^2.5.1",
-    "typescript": "^3.0.0",
     "xo": "^0.25.0"
   },
   "scripts": {
-    "format": "remark . -qfo && prettier --write \"**/{*.js,*.ts}\" && xo --fix",
-    "build-bundle": "browserify index.js -s unified -o unified.js",
-    "build-mangle": "browserify index.js -s unified -p tinyify -o unified.min.js",
-    "build": "npm run build-bundle && npm run build-mangle",
+    "format": "remark . -qfo && prettier --write \"index.js\" \"types/**\" && xo --fix",
+    "build": "microbundle",
     "test-api": "node test",
-    "test-coverage": "nyc --reporter lcov tape test",
+    "test-coverage": "c8 --reporter=lcov --check-coverage --lines 100 --functions 100 --branches 100 tape test",
     "test-types": "dtslint types",
     "test": "npm run format && npm run build && npm run test-coverage && npm run test-types"
-  },
-  "nyc": {
-    "check-coverage": true,
-    "lines": 100,
-    "functions": 100,
-    "branches": 100
   },
   "prettier": {
     "tabWidth": 2,

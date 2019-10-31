@@ -1,22 +1,10 @@
 'use strict'
 
-var extend = require('extend')
-var bail = require('bail')
-var vfile = require('vfile')
-var trough = require('trough')
-var plain = require('is-plain-obj')
-
-// Expose a frozen processor.
-module.exports = unified().freeze()
-
-var slice = [].slice
-var own = {}.hasOwnProperty
-
-// Process pipeline.
-var pipeline = trough()
-  .use(pipelineParse)
-  .use(pipelineRun)
-  .use(pipelineStringify)
+import extend from 'extend'
+import bail from 'bail'
+import vfile from 'vfile'
+import trough from 'trough'
+import plain from 'is-plain-obj'
 
 function pipelineParse(p, ctx) {
   ctx.tree = p.parse(ctx.file)
@@ -131,6 +119,8 @@ function unified() {
   // Data management.
   // Getter / setter for processor-specific informtion.
   function data(key, value) {
+    var own = {}.hasOwnProperty
+
     if (typeof key === 'string') {
       // Set `key`.
       if (arguments.length === 2) {
@@ -230,6 +220,7 @@ function unified() {
 
     function addPlugin(plugin, value) {
       var entry = find(plugin)
+      var slice = [].slice
 
       if (entry) {
         if (plain(entry[1]) && plain(value)) {
@@ -361,6 +352,11 @@ function unified() {
 
     function executor(resolve, reject) {
       var file = vfile(doc)
+      // Process pipeline.
+      var pipeline = trough()
+        .use(pipelineParse)
+        .use(pipelineRun)
+        .use(pipelineStringify)
 
       pipeline.run(processor, {file: file}, done)
 
@@ -461,3 +457,6 @@ function assertDone(name, asyncName, complete) {
     )
   }
 }
+
+// Expose a frozen processor.
+export default unified().freeze()
