@@ -14,7 +14,8 @@ declare namespace unified {
     /**
      * Clone current processor
      *
-     * @returns New unfrozen processor which is configured to function the same as its ancestor. But when the descendant processor is configured in the future it does not affect the ancestral processor.
+     * @returns New unfrozen processor which is configured to function the same as its ancestor.
+     * But when the descendant processor is configured in the future it does not affect the ancestral processor.
      */
     (): Processor<P>
 
@@ -76,7 +77,8 @@ declare namespace unified {
      *
      * `Parser` can be a normal function in which case it must return a `Node`: the syntax tree representation of the given file.
      *
-     * `Parser` can also be a constructor function (a function with keys in its `prototype`) in which case it’s invoked with `new`. Instances must have a parse method which is invoked without arguments and must return a `Node`.
+     * `Parser` can also be a constructor function (a function with keys in its `prototype`) in which case it’s invoked with `new`.
+     * Instances must have a parse method which is invoked without arguments and must return a `Node`.
      */
     Parser: ParserConstructor | ParserFunction
 
