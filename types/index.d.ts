@@ -85,7 +85,7 @@ declare namespace unified {
     /**
      * Compile a syntax tree to text.
      *
-     * @param node
+     * @param node unist node
      * @param file `VFile` or anything which can be given to `vfile()`
      * @returns String representation of the syntax tree file
      */
@@ -210,7 +210,6 @@ declare namespace unified {
    *
    * Attachers can configure processors, such as by interacting with parsers and compilers, linking them to other processors, or by specifying how the syntax tree is handled.
    *
-   * @this Processor context object is set to the invoked on processor.
    * @param settings Configuration
    * @typeParam S Plugin settings
    * @typeParam P Processor settings
@@ -285,7 +284,6 @@ declare namespace unified {
    *
    * Attachers can configure processors, such as by interacting with parsers and compilers, linking them to other processors, or by specifying how the syntax tree is handled.
    *
-   * @this Processor context object is set to the invoked on processor.
    * @param settings Configuration
    * @typeParam S Plugin settings
    * @typeParam P Processor settings

@@ -68,7 +68,10 @@ processor.use(plugin, settings)
 processor.use([plugin, plugin])
 processor.use([plugin])
 processor.use([plugin, settings])
-processor.use([[plugin, settings], [plugin, settings]])
+processor.use([
+  [plugin, settings],
+  [plugin, settings]
+])
 
 processor.use(parserPlugin)
 processor.use(parserPlugin).use(parserPlugin)
@@ -76,7 +79,10 @@ processor.use(parserPlugin, settings)
 processor.use([parserPlugin, plugin])
 processor.use([parserPlugin])
 processor.use([parserPlugin, settings])
-processor.use([[parserPlugin, settings], [parserPlugin, settings]])
+processor.use([
+  [parserPlugin, settings],
+  [parserPlugin, settings]
+])
 
 processor.use(compilerPlugin)
 processor.use(compilerPlugin).use(compilerPlugin)
@@ -84,15 +90,24 @@ processor.use(compilerPlugin, settings)
 processor.use([compilerPlugin, plugin])
 processor.use([compilerPlugin])
 processor.use([compilerPlugin, settings])
-processor.use([[compilerPlugin, settings], [compilerPlugin, settings]])
+processor.use([
+  [compilerPlugin, settings],
+  [compilerPlugin, settings]
+])
 
 processor.use(typedPlugin)
 processor.use(typedPlugin).use(typedPlugin)
 processor.use(typedPlugin, typedSetting)
 // NOTE: in tuple/array form settings are not able to be type checked
 processor.use([typedPlugin, typedSetting])
-processor.use([[typedPlugin, typedSetting], [typedPlugin, typedSetting]])
-processor.use([[plugin, settings], [typedPlugin, typedSetting]])
+processor.use([
+  [typedPlugin, typedSetting],
+  [typedPlugin, typedSetting]
+])
+processor.use([
+  [plugin, settings],
+  [typedPlugin, typedSetting]
+])
 processor.use([typedPlugin])
 processor.use([typedPlugin, typedSetting, settings])
 processor.use([typedPlugin, settings])
@@ -106,7 +121,10 @@ processor.use([
   [implicitlyTypedPlugin, typedSetting],
   [implicitlyTypedPlugin, typedSetting]
 ])
-processor.use([[plugin, settings], [implicitlyTypedPlugin, typedSetting]])
+processor.use([
+  [plugin, settings],
+  [implicitlyTypedPlugin, typedSetting]
+])
 processor.use([implicitlyTypedPlugin])
 processor.use([implicitlyTypedPlugin, settings])
 processor.use([implicitlyTypedPlugin, typedSetting, settings])
@@ -190,7 +208,10 @@ processor.use({
   plugins: [plugin, plugin]
 })
 processor.use({
-  plugins: [[plugin, settings], [plugin, settings]]
+  plugins: [
+    [plugin, settings],
+    [plugin, settings]
+  ]
 })
 processor.use({
   plugins: [

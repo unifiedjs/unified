@@ -237,7 +237,10 @@ test('use(plugin[, options])', function(t) {
 
     st.plan(1)
 
-    p.use([[plugin, false], [plugin, true]]).freeze()
+    p.use([
+      [plugin, false],
+      [plugin, true]
+    ]).freeze()
 
     function plugin() {
       st.pass('should reconfigure')
@@ -249,7 +252,10 @@ test('use(plugin[, options])', function(t) {
 
     st.plan(1)
 
-    p.use([[plugin, false], [plugin, {foo: true}]]).freeze()
+    p.use([
+      [plugin, false],
+      [plugin, {foo: true}]
+    ]).freeze()
 
     function plugin(options) {
       st.deepEqual(options, {foo: true}, 'should reconfigure')
@@ -397,7 +403,12 @@ test('use(preset)', function(t) {
     var one = {}
     var two = {}
     var p = unified()
-      .use({plugins: [[a, one], [b, two]]})
+      .use({
+        plugins: [
+          [a, one],
+          [b, two]
+        ]
+      })
       .freeze()
     var q = p().freeze()
 
