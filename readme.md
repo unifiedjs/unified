@@ -342,7 +342,9 @@ function onconcat(buf) {
 [*Configure*][configuration] the processor to use a [*plugin*][plugin] and
 optionally configure that plugin with options.
 
-If the processor is already using this plugin, the previous plugin configuration is changed based on the options that are passed in. The plugin is not added a second time.
+If the processor is already using this plugin, the previous plugin configuration
+is changed based on the options that are passed in. The plugin is not added a
+second time.
 
 ###### Signatures
 
