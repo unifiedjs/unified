@@ -380,18 +380,17 @@ var unified = require('unified')
 
 unified()
   // Plugin with options:
-  .use(plugin, {})
+  .use(pluginA, {x: true, y: true})
+  // Passing the same plugin again merges configuration (to `{x: true, y: false, z: true}`):
+  .use(pluginA, {y: false, z: true})
   // Plugins:
-  .use([plugin, pluginB])
+  .use([pluginB, pluginC])
   // Two plugins, the second with options:
-  .use([plugin, [pluginB, {}]])
+  .use([pluginD, [pluginE, {}]])
   // Preset with plugins and settings:
-  .use({plugins: [plugin, [pluginB, {}]], settings: {position: false}})
+  .use({plugins: [pluginF, [pluginG, {}]], settings: {position: false}})
   // Settings only:
   .use({settings: {position: false}})
-
-function plugin() {}
-function pluginB() {}
 ```
 
 ### `processor.parse(file)`
