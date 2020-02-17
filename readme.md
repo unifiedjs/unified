@@ -74,8 +74,7 @@ npm install unified
 ```
 
 This package comes with types.
-If you’re using TypeScript, make sure to also install [`@types/unist`][ts-unist]
-and [`@types/vfile`][ts-vfile].
+If you’re using TypeScript, make sure to also install [`@types/unist`][ts-unist].
 
 ## Use
 
