@@ -1,6 +1,7 @@
 {
   "extends": "dtslint/dtslint.json",
   "rules": {
+    "space-before-function-paren": false,
     "no-unnecessary-generics": false,
     "no-void-expression": false,
     "only-arrow-functions": false,

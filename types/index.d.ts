@@ -289,9 +289,10 @@ declare namespace unified {
    * @typeParam P Processor settings
    * @returns Optional Transformer.
    */
-  interface Attacher<S extends any[] = [Settings?], P = Settings> {
-    (this: Processor<P>, ...settings: S): Transformer | void
-  }
+  type Attacher<S extends any[] = [Settings?], P = Settings> = (
+    this: Processor<P>,
+    ...settings: S
+  ) => Transformer | void
 
   /**
    * Transformers modify the syntax tree or metadata of a file. A transformer is a function which is invoked each time a file is passed through the transform phase.
@@ -308,13 +309,15 @@ declare namespace unified {
    * - `Node` — Can be returned and results in further transformations and `stringify`s to be performed on the new tree
    * - `Promise` — If a promise is returned, the function is asynchronous, and must be resolved (optionally with a `Node`) or rejected (optionally with an `Error`)
    */
-  interface Transformer {
-    (
-      node: Node,
-      file: VFile,
-      next?: (error: Error | null, tree: Node, file: VFile) => {}
-    ): Error | Node | Promise<Node> | void | Promise<void>
-  }
+  type Transformer = (
+    node: Node,
+    file: VFile,
+    next?: (
+      error: Error | null,
+      tree: Node,
+      file: VFile
+    ) => Record<string, unknown>
+  ) => Error | Node | Promise<Node> | void | Promise<void>
 
   /**
    * Transform file contents into an AST
@@ -332,15 +335,7 @@ declare namespace unified {
    * A constructor function (a function with keys in its `prototype`) or class that implements a
    * `parse` method.
    */
-  interface ParserConstructor {
-    /**
-     * Creates a Parser
-     *
-     * @param text Text to transform into AST node(s)
-     * @param file File associated with text
-     */
-    new (text: string, file: VFile): Parser
-  }
+  type ParserConstructor = new (text: string, file: VFile) => Parser
 
   /**
    * Transform file contents into an AST
@@ -367,15 +362,7 @@ declare namespace unified {
    * A constructor function (a function with keys in its `prototype`) or class that implements a
    * `compile` method.
    */
-  interface CompilerConstructor {
-    /**
-     * Creates a Compiler
-     *
-     * @param node Node/tree to be stringified
-     * @param file File associated with node
-     */
-    new (node: Node, file: VFile): Compiler
-  }
+  type CompilerConstructor = new (node: Node, file: VFile) => Compiler
 
   /**
    * Transform an AST node/tree into text

@@ -94,7 +94,7 @@ unified()
   .use(doc, {title: '👋🌍'})
   .use(format)
   .use(html)
-  .process('# Hello world!', function(err, file) {
+  .process('# Hello world!', function (err, file) {
     console.error(report(err || file))
     console.log(String(file))
   })
@@ -255,15 +255,10 @@ var report = require('vfile-reporter')
 unified()
   .use(markdown)
   .use(styleGuide)
-  .use(
-    remark2retext,
-    unified()
-      .use(english)
-      .use(equality)
-  )
+  .use(remark2retext, unified().use(english).use(equality))
   .use(remark2rehype)
   .use(html)
-  .process('*Emphasis* and _stress_, you guys!', function(err, file) {
+  .process('*Emphasis* and _stress_, you guys!', function (err, file) {
     console.error(report(err || file))
     console.log(String(file))
   })
@@ -329,9 +324,7 @@ var concat = require('concat-stream')
 process.stdin.pipe(concat(onconcat))
 
 function onconcat(buf) {
-  var doc = remark()
-    .processSync(buf)
-    .toString()
+  var doc = remark().processSync(buf).toString()
 
   process.stdout.write(doc)
 }
@@ -421,9 +414,7 @@ file.
 var unified = require('unified')
 var markdown = require('remark-parse')
 
-var tree = unified()
-  .use(markdown)
-  .parse('# Hello world!')
+var tree = unified().use(markdown).parse('# Hello world!')
 
 console.log(tree)
 ```
@@ -431,15 +422,16 @@ console.log(tree)
 Yields:
 
 ```js
-{ type: 'root',
-  children:
-   [ { type: 'heading',
-       depth: 1,
-       children: [Array],
-       position: [Position] } ],
-  position:
-   { start: { line: 1, column: 1, offset: 0 },
-     end: { line: 1, column: 15, offset: 14 } } }
+{
+  type: 'root',
+  children: [
+    {type: 'heading', depth: 1, children: [Array], position: [Position]}
+  ],
+  position: {
+    start: {line: 1, column: 1, offset: 0},
+    end: {line: 1, column: 15, offset: 14}
+  }
+}
 ```
 
 #### `processor.Parser`
@@ -495,9 +487,7 @@ var h = require('hastscript')
 
 var tree = h('h1', 'Hello world!')
 
-var doc = unified()
-  .use(html)
-  .stringify(tree)
+var doc = unified().use(html).stringify(tree)
 
 console.log(doc)
 ```
@@ -574,7 +564,7 @@ var tree = u('root', [
 
 unified()
   .use(references)
-  .run(tree, function(err, tree) {
+  .run(tree, function (err, tree) {
     if (err) throw err
     console.log(tree)
   })
@@ -583,13 +573,13 @@ unified()
 Yields:
 
 ```js
-{ type: 'root',
-  children:
-   [ { type: 'paragraph', children: [Array] },
-     { type: 'definition',
-       identifier: '1',
-       title: undefined,
-       url: undefined } ] }
+{
+  type: 'root',
+  children: [
+    {type: 'paragraph', children: [Array]},
+    {type: 'definition', identifier: '1', title: undefined, url: undefined}
+  ]
+}
 ```
 
 ### `processor.runSync(node[, file])`
@@ -667,10 +657,10 @@ unified()
   .use(html)
   .process('# Hello world!')
   .then(
-    function(file) {
+    function (file) {
       console.log(String(file))
     },
-    function(err) {
+    function (err) {
       console.error(String(err))
     }
   )
@@ -718,7 +708,7 @@ unified()
   .use(parse)
   .use(github)
   .use(stringify)
-  .process('@wooorm', function(err, file) {
+  .process('@wooorm', function (err, file) {
     console.error(report(err || file))
     console.log(String(file))
   })
@@ -882,10 +872,7 @@ var unified = require('unified')
 var parse = require('rehype-parse')
 var stringify = require('rehype-stringify')
 
-module.exports = unified()
-  .use(parse)
-  .use(stringify)
-  .freeze()
+module.exports = unified().use(parse).use(stringify).freeze()
 ```
 
 The below example, `a.js`, shows how that processor can be used and configured.
@@ -988,7 +975,7 @@ unified()
   .use(remark2rehype)
   .use(move, {extname: '.html'})
   .use(stringify)
-  .process(vfile.readSync('index.md'), function(err, file) {
+  .process(vfile.readSync('index.md'), function (err, file) {
     console.error(report(err || file))
     if (file) {
       vfile.writeSync(file) // Written to `index.html`.
@@ -1121,7 +1108,7 @@ var preset = require('./preset')
 
 remark()
   .use(preset)
-  .process(vfile.readSync('readme.md'), function(err, file) {
+  .process(vfile.readSync('readme.md'), function (err, file) {
     console.error(report(err || file))
 
     if (file) {

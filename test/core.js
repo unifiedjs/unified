@@ -3,30 +3,30 @@
 var test = require('tape')
 var unified = require('..')
 
-test('unified()', function(t) {
+test('unified()', function (t) {
   var count
-  var p
-  var q
+  var processor
+  var otherProcessor
 
   t.throws(
-    function() {
+    function () {
       unified.use(Function.prototype)
     },
     /Cannot invoke `use` on a frozen processor/,
     'should be frozen'
   )
 
-  p = unified()
+  processor = unified()
 
-  t.equal(typeof p, 'function', 'should return a function')
+  t.equal(typeof processor, 'function', 'should return a function')
 
-  p.use(function() {
+  processor.use(function () {
     count++
     this.data('foo', 'bar')
   })
 
   count = 0
-  q = p().freeze()
+  otherProcessor = processor().freeze()
 
   t.equal(
     count,
@@ -35,7 +35,7 @@ test('unified()', function(t) {
   )
 
   t.equal(
-    q.data('foo'),
+    otherProcessor.data('foo'),
     'bar',
     'should create a new processor implementing the ancestral processor when invoked (#2)'
   )

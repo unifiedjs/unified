@@ -9,15 +9,15 @@ let nodeValue: Node
 let stringValue: string
 
 /**
- * processor()
+ * `processor()`
  */
 let processor: Processor = unified()
 const clonedProcessor: Processor = processor()
 
 /**
- * processor.use
+ * `processor.use`
  */
-const plugin: Plugin = function() {}
+const plugin: Plugin = function () {}
 const settings = {
   random: 'option'
 }
@@ -25,7 +25,7 @@ const settings = {
 interface ExamplePluginSettings {
   example: string
 }
-const typedPlugin: Plugin<[ExamplePluginSettings?]> = function() {}
+const typedPlugin: Plugin<[ExamplePluginSettings?]> = function () {}
 const typedSetting = {example: 'example'}
 
 const implicitlyTypedPlugin = (settings?: ExamplePluginSettings) => {}
@@ -222,21 +222,21 @@ processor.use({
 })
 
 /**
- * processor.parse
+ * `processor.parse`
  */
 nodeValue = processor.parse(vfile())
 processor.parse('random string')
-processor.parse(new Buffer('random buffer'))
+processor.parse(Buffer.from('random buffer'))
 
 /**
- * processor.Parser
+ * `processor.Parser`
  */
 processor.Parser = (text: string, file: VFile) => ({
   type: 'random node'
 })
 processor.Parser = class CustomParser {
   constructor(text: string, file: VFile) {
-    // nothing
+    // Nothing.
   }
 
   parse(): Node {
@@ -247,19 +247,20 @@ processor.Parser = class CustomParser {
 }
 
 /**
- * processor.stringify
+ * `processor.stringify`
  */
 stringValue = processor.stringify(nodeValue)
 
 /**
- * processor.Compiler
+ * `processor.Compiler`
  */
 processor.Compiler = (node: Node, file: VFile) => {
   return 'random string'
 }
+
 processor.Compiler = class CustomCompiler {
   constructor(node: Node, file: VFile) {
-    // nothing
+    // Nothing.
   }
 
   compile() {
@@ -268,9 +269,9 @@ processor.Compiler = class CustomCompiler {
 }
 
 /**
- * processor.run
+ * `processor.run`
  */
-processor.run(nodeValue).then(transFormedNode => {
+processor.run(nodeValue).then((transFormedNode) => {
   nodeValue = transFormedNode
 })
 processor.run(nodeValue, vfile())
@@ -282,33 +283,33 @@ processor.run(nodeValue, runCallback).then(() => {})
 processor.run(nodeValue, vfile(), runCallback).then(() => {})
 
 /**
- * processor.runSync
+ * `processor.runSync`
  */
 nodeValue = processor.runSync(nodeValue)
 processor.runSync(nodeValue, vfile())
 
 /**
- * processor.process
+ * `processor.process`
  */
-processor.process(vfile()).then(file => {
+processor.process(vfile()).then((file) => {
   fileValue = file
 })
 processor.process('random string')
-processor.process(new Buffer('random buffer'))
+processor.process(Buffer.from('random buffer'))
 const processCallback: ProcessCallback = (error, node) => {}
 processor.process(vfile(), processCallback)
 // $ExpectError
 processor.process(vfile(), processCallback).then(() => {})
 
 /**
- * processor.processSync
+ * `processor.processSync`
  */
 fileValue = processor.processSync(vfile())
 processor.processSync('random string')
-processor.processSync(new Buffer('random buffer'))
+processor.processSync(Buffer.from('random buffer'))
 
 /**
- * processor.data
+ * `processor.data`
  */
 processor.data('random key', {})
 processor.data('random key', {}).data('random key2', {})
@@ -318,7 +319,7 @@ processor.data('random key').data('random key2', {})
 unknownValue = processor.data().randomKey
 
 /**
- * processor.freeze
+ * `processor.freeze`
  */
 processor = processor.freeze()
 
@@ -340,7 +341,7 @@ remark
   // $ExpectError
   .use({settings: {dne: true}})
   .use({settings: {gfm: true}})
-remark.use(function() {
+remark.use(function () {
   this
     // $ExpectError
     .use({settings: {dne: true}})

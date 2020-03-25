@@ -6,14 +6,14 @@ var simple = require('./util/simple')
 var noop = require('./util/noop')
 var unified = require('..')
 
-test('process(file, done)', function(t) {
-  var f = vfile('alpha')
-  var n = {type: 'bravo'}
+test('process(file, done)', function (t) {
+  var givenFile = vfile('alpha')
+  var givenNode = {type: 'bravo'}
 
   t.plan(11)
 
   t.throws(
-    function() {
+    function () {
       unified().process()
     },
     /Cannot `process` without `Parser`/,
@@ -21,50 +21,50 @@ test('process(file, done)', function(t) {
   )
 
   t.throws(
-    function() {
-      var p = unified()
-      p.Parser = noop.Parser
-      p.process()
+    function () {
+      var processor = unified()
+      processor.Parser = noop.Parser
+      processor.process()
     },
     /Cannot `process` without `Compiler`/,
     'should throw without `Compiler`'
   )
 
   unified()
-    .use(function() {
+    .use(function () {
       this.Parser = Parser
       Parser.prototype.parse = parse
 
       function Parser(doc, file) {
         t.equal(typeof doc, 'string', 'should pass `doc` to `Parser`')
-        t.equal(file, f, 'should pass `file` to `Parser`')
+        t.equal(file, givenFile, 'should pass `file` to `Parser`')
       }
 
       function parse() {
-        return n
+        return givenNode
       }
     })
-    .use(function() {
+    .use(function () {
       return transformer
       function transformer(tree, file) {
-        t.equal(tree, n, 'should pass `tree` to transformers')
-        t.equal(file, f, 'should pass `file` to transformers')
+        t.equal(tree, givenNode, 'should pass `tree` to transformers')
+        t.equal(file, givenFile, 'should pass `file` to transformers')
       }
     })
-    .use(function() {
+    .use(function () {
       this.Compiler = Compiler
       Compiler.prototype.compile = compile
 
       function Compiler(tree, file) {
-        t.equal(tree, n, 'should pass `tree` to `Compiler`')
-        t.equal(file, f, 'should pass `file` to `Compiler`')
+        t.equal(tree, givenNode, 'should pass `tree` to `Compiler`')
+        t.equal(file, givenFile, 'should pass `file` to `Compiler`')
       }
 
       function compile() {
         return 'charlie'
       }
     })
-    .process(f, function(err, file) {
+    .process(givenFile, function (err, file) {
       t.error(err, 'shouldn’t fail')
 
       t.equal(
@@ -74,10 +74,8 @@ test('process(file, done)', function(t) {
       )
     })
 
-  t.throws(function() {
-    unified()
-      .use(plugin)
-      .process(f, cb)
+  t.throws(function () {
+    unified().use(plugin).process(givenFile, cb)
 
     function cb() {
       throw new Error('Alfred')
@@ -90,62 +88,62 @@ test('process(file, done)', function(t) {
   }, /^Error: Alfred$/)
 })
 
-test('process(file)', function(t) {
-  var f = vfile('alpha')
-  var n = {type: 'bravo'}
+test('process(file)', function (t) {
+  var givenFile = vfile('alpha')
+  var givenNode = {type: 'bravo'}
 
   t.plan(7)
 
   unified()
-    .use(function() {
+    .use(function () {
       this.Parser = Parser
       Parser.prototype.parse = parse
 
       function Parser(doc, file) {
         t.equal(typeof doc, 'string', 'should pass `doc` to `Parser`')
-        t.equal(file, f, 'should pass `file` to `Parser`')
+        t.equal(file, givenFile, 'should pass `file` to `Parser`')
       }
 
       function parse() {
-        return n
+        return givenNode
       }
     })
-    .use(function() {
+    .use(function () {
       return transformer
       function transformer(tree, file) {
-        t.equal(tree, n, 'should pass `tree` to transformers')
-        t.equal(file, f, 'should pass `file` to transformers')
+        t.equal(tree, givenNode, 'should pass `tree` to transformers')
+        t.equal(file, givenFile, 'should pass `file` to transformers')
       }
     })
-    .use(function() {
+    .use(function () {
       this.Compiler = Compiler
       Compiler.prototype.compile = compile
 
       function Compiler(tree, file) {
-        t.equal(tree, n, 'should pass `tree` to `Compiler`')
-        t.equal(file, f, 'should pass `file` to `Compiler`')
+        t.equal(tree, givenNode, 'should pass `tree` to `Compiler`')
+        t.equal(file, givenFile, 'should pass `file` to `Compiler`')
       }
 
       function compile() {
         return 'charlie'
       }
     })
-    .process(f)
+    .process(givenFile)
     .then(
-      function(file) {
+      function (file) {
         t.equal(file.toString(), 'charlie', 'should resolve the file')
       },
-      function() {
+      function () {
         t.fail('should resolve, not reject, the file')
       }
     )
 })
 
-test('processSync(file)', function(t) {
+test('processSync(file)', function (t) {
   t.plan(4)
 
   t.throws(
-    function() {
+    function () {
       unified().processSync()
     },
     /Cannot `processSync` without `Parser`/,
@@ -153,22 +151,18 @@ test('processSync(file)', function(t) {
   )
 
   t.throws(
-    function() {
-      var p = unified()
-      p.Parser = noop.Parser
-      p.processSync()
+    function () {
+      var processor = unified()
+      processor.Parser = noop.Parser
+      processor.processSync()
     },
     /Cannot `processSync` without `Compiler`/,
     'should throw without `Compiler`'
   )
 
   t.throws(
-    function() {
-      unified()
-        .use(parse)
-        .use(plugin)
-        .use(compile)
-        .processSync('delta')
+    function () {
+      unified().use(parse).use(plugin).use(compile).processSync('delta')
 
       function parse() {
         this.Parser = simple.Parser
@@ -192,16 +186,16 @@ test('processSync(file)', function(t) {
 
   t.equal(
     unified()
-      .use(function() {
+      .use(function () {
         this.Parser = simple.Parser
       })
-      .use(function() {
+      .use(function () {
         return transformer
         function transformer(node) {
           node.value = 'alpha'
         }
       })
-      .use(function() {
+      .use(function () {
         this.Compiler = simple.Compiler
       })
       .processSync('delta')
