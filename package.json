@@ -1,14 +1,21 @@
 {
   "name": "unified",
   "version": "8.4.2",
-  "description": "Interface for processing text using syntax trees",
+  "description": "Interface for parsing, inspecting, transforming, and serializing content through syntax trees",
   "license": "MIT",
   "keywords": [
+    "unified",
     "process",
     "parse",
     "transform",
     "compile",
     "stringify",
+    "serialize",
+    "ast",
+    "cst",
+    "syntax",
+    "tree",
+    "content",
     "rehype",
     "retext",
     "remark"
