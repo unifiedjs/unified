@@ -99,7 +99,13 @@
   },
   "remarkConfig": {
     "plugins": [
-      "preset-wooorm"
+      "preset-wooorm",
+      [
+        "toc",
+        {
+          "heading": "contents"
+        }
+      ]
     ]
   },
   "collective": {

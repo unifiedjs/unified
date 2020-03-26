@@ -10,26 +10,27 @@
 [![Chat][chat-badge]][chat]
 
 **unified** is an interface for processing text using syntax trees.
-It’s what powers [**remark**][remark], [**retext**][retext], and
-[**rehype**][rehype], and allows for processing between formats.
+It’s what powers [**remark**][remark] (Markdown), [**retext**][retext] (natural
+language), and [**rehype**][rehype] (HTML), and allows for processing between
+formats.
 
 ## Intro
 
 **unified** enables new exciting projects like [Gatsby][] to pull in Markdown,
 [MDX][] to embed [JSX][], and [Prettier][] to format it.
-It’s used in about 300k projects on GitHub and has about 10m downloads each
+It’s used in about 350k projects on GitHub and has about 15m downloads each
 month on npm: you’re probably using it.
-Some notable users are [Node.js][], [ZEIT][],  [Netlify][], [GitHub][],
+Some notable users are [Node.js][], [ZEIT][], [Netlify][], [GitHub][],
 [Mozilla][], [WordPress][], [Adobe][], [Facebook][], [Google][], and many more.
 
-*   To read about what we are up to, follow us on [Medium][] and [Twitter][]
+*   To read about what we are up to, follow us [Twitter][]
 *   For a less technical and more practical introduction to unified, visit
-    [`unifiedjs.com`][site] and try its introductory [Guides][]
+    [`unifiedjs.com`][site] and peruse its [Learn][] section
 *   Browse [awesome unified][awesome] to find out more about the ecosystem
 *   Questions?
     Get help on [our Spectrum community][spectrum]!
 *   Check out [Contribute][] below to find out how to help out, or become a
-    backer or sponsor on [Open Collective][collective]
+    backer or sponsor on [OpenCollective][collective]
 
 ## Sponsors
 
@@ -62,8 +63,6 @@ Some notable users are [Node.js][], [ZEIT][],  [Netlify][], [GitHub][],
     </td>
   </tr>
 </table>
-
-[**Read more about the unified collective on Medium »**][announcement]
 
 ## Install
 
@@ -120,7 +119,7 @@ no issues found
 </html>
 ```
 
-## Table of Contents
+## Contents
 
 *   [Description](#description)
 *   [API](#api)
@@ -145,7 +144,7 @@ no issues found
 ## Description
 
 **unified** is an interface for processing text using syntax trees.
-Syntax trees are a representation understandable to programs.
+Syntax trees are a representation of text understandable to programs.
 Those programs, called [*plugin*][plugin]s, take these trees and inspect and
 modify them.
 To get to the syntax tree from text, there is a [*parser*][parser].
@@ -175,7 +174,7 @@ But when the descendant processor is configured in the future it does not affect
 the ancestral processor.
 
 When processors are exposed from a module (for example, `unified` itself) they
-should not be configured directly, as that would change their behaviour for all
+should not be configured directly, as that would change their behavior for all
 module users.
 Those processors are [*frozen*][freeze] and they should be called to create a
 new processor before they are used.
@@ -191,25 +190,28 @@ There are several [*utilities*][unist-utilities] for working with nodes.
 *   [**hast**][hast] — HTML
 *   [**mdast**][mdast] — Markdown
 *   [**nlcst**][nlcst] — Natural language
+*   [**xast**][xast] — XML
 
-###### List of Processors
+###### List of processors
 
 The following projects process different [*syntax tree*][syntax-tree] formats.
 They parse text to a syntax tree and compile that back to text.
-These processors can be used as is, or their parser and stringifier can be mixed
+These processors can be used as is, or their parser and compiler can be mixed
 and matched with **unified** and plugins to process between different syntaxes.
 
 *   [**rehype**][rehype] ([*hast*][hast]) — HTML
 *   [**remark**][remark] ([*mdast*][mdast]) — Markdown
 *   [**retext**][retext] ([*nlcst*][nlcst]) — Natural language
 
-###### List of Plugins
+###### List of plugins
 
 The below [**plugins**][plugin] work with **unified**, on all [*syntax
 tree*][syntax-tree] formats:
 
 *   [`unified-diff`](https://github.com/unifiedjs/unified-diff)
     — Ignore messages for unchanged lines in Travis
+*   [`unified-message-control`](https://github.com/unifiedjs/unified-message-control)
+    — Enable, disable, and ignore messages
 
 See [**remark**][remark-plugins], [**rehype**][rehype-plugins], and
 [**retext**][retext-plugins] for their lists of plugins.
@@ -336,8 +338,8 @@ function onconcat(buf) {
 optionally configure that plugin with options.
 
 If the processor is already using this plugin, the previous plugin configuration
-is changed based on the options that are passed in. The plugin is not added a
-second time.
+is changed based on the options that are passed in.
+The plugin is not added a second time.
 
 ###### Signatures
 
@@ -450,11 +452,11 @@ return a [`Node`][node].
 
 ### `processor.stringify(node[, file])`
 
-Stringify a [*syntax tree*][syntax-tree] to text.
+Compile a [*syntax tree*][syntax-tree] to text.
 
 ###### Parameters
 
-*   `node` ([`Node`][node]) — [*Syntax tree*][syntax-tree] to stringify
+*   `node` ([`Node`][node]) — [*Syntax tree*][syntax-tree] to compile
 *   `file` ([`VFile`][vfile], optional) — [*File*][file], any value accepted by
     `vfile()`
 
@@ -478,7 +480,7 @@ When using TypeScript, cast the type on your side.
 
 ###### Example
 
-The below example shows how `stringify` can be used to stringify a syntax tree.
+The below example shows how `stringify` can be used to serialize a syntax tree.
 
 ```js
 var unified = require('unified')
@@ -620,7 +622,7 @@ processor.
 The returned promise is rejected with a fatal error, or resolved with the
 processed [*file*][file].
 
-The parsed, transformed, and stringified value is exposed on
+The parsed, transformed, and compiled value is exposed on
 [`file.contents`][vfile-contents].
 
 ###### Note
@@ -889,7 +891,7 @@ rehype()
 
 The below example, `b.js`, shows a similar looking example that operates on the
 frozen rehype interface because it does not call `rehype`.
-If this behaviour was allowed it would result in unexpected behaviour so an
+If this behavior was allowed it would result in unexpected behavior so an
 error is thrown.
 **This is invalid**:
 
@@ -927,7 +929,7 @@ the following ways:
 *   They specify how to handle [*syntax trees*][syntax-tree] and [*files*][file]
 
 Plugins are a concept.
-They materialise as [`attacher`][attacher]s.
+They materialize as [`attacher`][attacher]s.
 
 ###### Example
 
@@ -956,7 +958,7 @@ function move(options) {
 `index.md`:
 
 ```markdown
-# Hello, World!
+# Hello, world!
 ```
 
 `index.js`:
@@ -992,12 +994,12 @@ index.md: no issues found
 `index.html`:
 
 ```html
-<h1>Hello, World!</h1>
+<h1>Hello, world!</h1>
 ```
 
 ### `function attacher([options])`
 
-**Attachers** are materialised [*plugin*][plugin]s.
+**Attachers** are materialized [*plugin*][plugin]s.
 An attacher is a function that can receive options and
 [*configures*][configuration] the processor.
 
@@ -1087,11 +1089,11 @@ exports.plugins = [
 `readme.md`:
 
 ```markdown
-# Hello, World!
+# Hello, world!
 
 _Emphasis_ and **importance**.
 
-## Table of Contents
+## Table of contents
 
 ## API
 
@@ -1126,11 +1128,11 @@ readme.md: no issues found
 `readme.md` now contains:
 
 ```markdown
-# Hello, World!
+# Hello, world!
 
 *Emphasis* and **importance**.
 
-## Table of Contents
+## Table of contents
 
 *   [API](#api)
 *   [License](#license)
@@ -1152,8 +1154,8 @@ Ideas for new plugins and tools can be posted in [`unifiedjs/ideas`][ideas].
 A curated list of awesome unified resources can be found in [**awesome
 unified**][awesome].
 
-This project has a [Code of Conduct][coc].
-By interacting with this repository, organisation, or community you agree to
+This project has a [code of conduct][coc].
+By interacting with this repository, organization, or community you agree to
 abide by its terms.
 
 ## Acknowledgments
@@ -1227,13 +1229,9 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 
 [site]: https://unifiedjs.com
 
-[medium]: https://medium.com/unifiedjs
-
-[announcement]: https://medium.com/unifiedjs/collectively-evolving-through-crowdsourcing-22c359ea95cc
-
 [twitter]: https://twitter.com/unifiedjs
 
-[guides]: https://unifiedjs.com/#guides
+[learn]: https://unifiedjs.com/learn/
 
 [spectrum]: https://spectrum.chat/unified
 
@@ -1248,6 +1246,8 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 [mdast]: https://github.com/syntax-tree/mdast
 
 [nlcst]: https://github.com/syntax-tree/nlcst
+
+[xast]: https://github.com/syntax-tree/xast
 
 [unist]: https://github.com/syntax-tree/unist
 
