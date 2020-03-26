@@ -461,7 +461,7 @@ return a [`Node`][node].
 
 ### `processor.stringify(node[, file])`
 
-Compile a [*syntax tree*][syntax-tree] to text.
+Compile a [*syntax tree*][syntax-tree].
 
 ###### Parameters
 
@@ -471,7 +471,7 @@ Compile a [*syntax tree*][syntax-tree] to text.
 
 ###### Returns
 
-`string` (see notes) — Textual representation of the [*syntax
+`string` or `Buffer` (see notes) — Textual representation of the [*syntax
 tree*][syntax-tree]
 
 ###### Note
@@ -481,10 +481,11 @@ tree*][syntax-tree]
 `stringify` performs the [*stringify phase*][description], not the *run phase*
 or other phases.
 
-Be aware that [*compiler*][compiler]s typically, but not always, return
-`string`.
+unified typically compiles by serializing: most [*compiler*][compiler]s return
+`string` (or `Buffer`).
 Some compilers, such as the one configured with [`rehype-react`][rehype-react],
 return other values (in this case, a React tree).
+If you’re using a compiler doesn’t serialize, expect different result values.
 When using TypeScript, cast the type on your side.
 
 ###### Example
@@ -632,7 +633,7 @@ The returned promise is rejected with a fatal error, or resolved with the
 processed [*file*][file].
 
 The parsed, transformed, and compiled value is exposed on
-[`file.contents`][vfile-contents].
+[`file.contents`][vfile-contents] or `file.result` (see notes).
 
 ###### Note
 
@@ -646,6 +647,14 @@ Some compilers, such as the one configured with [`rehype-react`][rehype-react],
 return other values (in this case, a React tree).
 When using TypeScript, cast the type of [`file.contents`][vfile-contents] on
 your side.
+
+unified typically compiles by serializing: most [*compiler*][compiler]s return
+`string` (or `Buffer`).
+Some compilers, such as the one configured with [`rehype-react`][rehype-react],
+return other values (in this case, a React tree).
+If you’re using a compiler that serializes, the result is available at
+`file.contents`.
+Otherwise, the result is available at `file.result`.
 
 ###### Example
 
@@ -750,6 +759,9 @@ An error is thrown if asynchronous [*plugin*][plugin]s are configured.
 
 ([`VFile`][vfile]) — Processed [*file*][file]
 
+The parsed, transformed, and compiled value is exposed on
+[`file.contents`][vfile-contents] or `file.result` (see notes).
+
 ###### Note
 
 `processSync` freezes the processor if not already [*frozen*][freeze].
@@ -757,12 +769,13 @@ An error is thrown if asynchronous [*plugin*][plugin]s are configured.
 `processSync` performs the [*parse*, *run*, and *stringify*
 phases][description].
 
-Be aware that [*compiler*][compiler]s typically, but not always, return
-`string`.
+unified typically compiles by serializing: most [*compiler*][compiler]s return
+`string` (or `Buffer`).
 Some compilers, such as the one configured with [`rehype-react`][rehype-react],
 return other values (in this case, a React tree).
-When using TypeScript, cast the type of [`file.contents`][vfile-contents] on
-your side.
+If you’re using a compiler that serializes, the result is available at
+`file.contents`.
+Otherwise, the result is available at `file.result`.
 
 ###### Example
 
