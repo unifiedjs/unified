@@ -1,10 +1,11 @@
 'use strict'
 
-var extend = require('extend')
 var bail = require('bail')
-var vfile = require('vfile')
-var trough = require('trough')
+var buffer = require('is-buffer')
+var extend = require('extend')
 var plain = require('is-plain-obj')
+var trough = require('trough')
+var vfile = require('vfile')
 
 // Expose a frozen processor.
 module.exports = unified().freeze()
@@ -37,7 +38,16 @@ function pipelineRun(p, ctx, next) {
 }
 
 function pipelineStringify(p, ctx) {
-  ctx.file.contents = p.stringify(ctx.tree, ctx.file)
+  var result = p.stringify(ctx.tree, ctx.file)
+  var file = ctx.file
+
+  if (result === undefined || result === null) {
+    // Empty.
+  } else if (typeof result === 'string' || buffer(result)) {
+    file.contents = result
+  } else {
+    file.result = result
+  }
 }
 
 // Function to create the first processor.

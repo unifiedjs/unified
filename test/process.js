@@ -204,3 +204,80 @@ test('processSync(file)', function (t) {
     'should pass the result file'
   )
 })
+
+test('compilers', function (t) {
+  t.plan(4)
+
+  t.equal(
+    unified()
+      .use(function () {
+        this.Parser = simple.Parser
+        this.Compiler = string
+      })
+      .processSync('alpha').contents,
+    'bravo',
+    'should compile strings'
+  )
+
+  t.deepEqual(
+    unified()
+      .use(function () {
+        this.Parser = simple.Parser
+        this.Compiler = buffer
+      })
+      .processSync('alpha').contents,
+    Buffer.from('bravo'),
+    'should compile buffers'
+  )
+
+  t.deepEqual(
+    unified()
+      .use(function () {
+        this.Parser = simple.Parser
+        this.Compiler = nully
+      })
+      .processSync('alpha').contents,
+    'alpha',
+    'should compile null'
+  )
+
+  t.deepEqual(
+    unified()
+      .use(function () {
+        this.Parser = simple.Parser
+        this.Compiler = nonText
+      })
+      .processSync('alpha').result,
+    {
+      _owner: null,
+      type: 'p',
+      ref: null,
+      key: 'h-1',
+      props: {children: ['bravo']}
+    },
+    'should compile non-text'
+  )
+
+  function nully() {
+    return null
+  }
+
+  function string() {
+    return 'bravo'
+  }
+
+  function buffer() {
+    return Buffer.from('bravo')
+  }
+
+  function nonText() {
+    // Somewhat like a React node.
+    return {
+      _owner: null,
+      type: 'p',
+      ref: null,
+      key: 'h-1',
+      props: {children: ['bravo']}
+    }
+  }
+})
