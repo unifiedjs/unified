@@ -83,18 +83,13 @@
     "prettier": true,
     "esnext": false,
     "rules": {
-      "@typescript-eslint/explicit-function-return-type": "off",
-      "@typescript-eslint/no-empty-function": "off",
-      "@typescript-eslint/no-unused-vars": "off",
-      "@typescript-eslint/no-useless-constructor": "off",
-      "@typescript-eslint/unified-signatures": "off",
-      "@typescript-eslint/member-ordering": "off",
       "import/no-extraneous-dependencies": "off",
       "unicorn/prefer-type-error": "off",
       "unicorn/prefer-reflect-apply": "off",
       "guard-for-in": "off"
     },
     "ignores": [
+      "types",
       "unified.js"
     ]
   },
