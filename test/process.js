@@ -234,7 +234,7 @@ test('compilers', function (t) {
     unified()
       .use(function () {
         this.Parser = simple.Parser
-        this.Compiler = nully
+        this.Compiler = nullish
       })
       .processSync('alpha').contents,
     'alpha',
@@ -258,7 +258,7 @@ test('compilers', function (t) {
     'should compile non-text'
   )
 
-  function nully() {
+  function nullish() {
     return null
   }
 
