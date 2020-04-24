@@ -55,11 +55,11 @@
     "c8": "^7.0.0",
     "dtslint": "^3.0.0",
     "prettier": "^2.0.0",
-    "remark-cli": "^7.0.0",
-    "remark-preset-wooorm": "^6.0.0",
+    "remark-cli": "^8.0.0",
+    "remark-preset-wooorm": "^7.0.0",
     "tape": "^4.0.0",
     "tinyify": "^2.0.0",
-    "xo": "^0.28.0"
+    "xo": "^0.29.0"
   },
   "scripts": {
     "format": "remark . -qfo && prettier --write \"**/{*.js,*.ts}\" && xo --fix",

@@ -28,7 +28,7 @@ Some notable users are [Node.js][], [ZEIT][], [Netlify][], [GitHub][],
     [`unifiedjs.com`][site] and peruse its [Learn][] section
 *   Browse [awesome unified][awesome] to find out more about the ecosystem
 *   Questions?
-    Get help on [our Spectrum community][spectrum]!
+    Get help on [our Spectrum community][chat]!
 *   Check out [Contribute][] below to find out how to help out, or become a
     backer or sponsor on [OpenCollective][collective]
 
@@ -1254,8 +1254,6 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 [twitter]: https://twitter.com/unifiedjs
 
 [learn]: https://unifiedjs.com/learn/
-
-[spectrum]: https://spectrum.chat/unified
 
 [rehype]: https://github.com/rehypejs/rehype
 
