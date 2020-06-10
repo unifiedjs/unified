@@ -43,9 +43,9 @@ Some notable users are [Node.js][], [ZEIT][], [Netlify][], [GitHub][],
       <a href="https://www.gatsbyjs.org"><img src="https://avatars1.githubusercontent.com/u/12551863?s=900&v=4"></a>
     </td>
     <td width="33.33%" align="center" colspan="2">
-      <a href="https://zeit.co">ZEIT</a><br>🥇<br><br>
+      <a href="https://vercel.com">Vercel</a><br>🥇<br><br>
       <!--OC has a sharper image-->
-      <a href="https://zeit.co"><img src="https://images.opencollective.com/zeit/d8a5bee/logo/512.png"></a>
+      <a href="https://vercel.com"><img src="https://images.opencollective.com/vercel/7ee187e/logo/512.png"></a>
     </td>
     <td width="33.33%" align="center" colspan="2">
       <a href="https://www.netlify.com">Netlify</a><br>🥇<br><br>
