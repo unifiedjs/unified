@@ -57,12 +57,12 @@
     "prettier": "^2.0.0",
     "remark-cli": "^8.0.0",
     "remark-preset-wooorm": "^7.0.0",
-    "tape": "^4.0.0",
+    "tape": "^5.0.0",
     "tinyify": "^2.0.0",
-    "xo": "^0.29.0"
+    "xo": "^0.32.0"
   },
   "scripts": {
-    "format": "remark . -qfo && prettier --write \"**/{*.js,*.ts}\" && xo --fix",
+    "format": "remark . -qfo && prettier . --write && xo --fix",
     "build-bundle": "browserify index.js -s unified -o unified.js",
     "build-mangle": "browserify index.js -s unified -p tinyify -o unified.min.js",
     "build": "npm run build-bundle && npm run build-mangle",
@@ -83,9 +83,10 @@
     "prettier": true,
     "esnext": false,
     "rules": {
-      "import/no-extraneous-dependencies": "off",
-      "unicorn/prefer-type-error": "off",
+      "unicorn/catch-error-name": "off",
+      "unicorn/prefer-optional-catch-binding": "off",
       "unicorn/prefer-reflect-apply": "off",
+      "unicorn/prefer-type-error": "off",
       "guard-for-in": "off"
     },
     "ignores": [
@@ -95,13 +96,7 @@
   },
   "remarkConfig": {
     "plugins": [
-      "preset-wooorm",
-      [
-        "toc",
-        {
-          "heading": "contents"
-        }
-      ]
+      "preset-wooorm"
     ]
   },
   "collective": {
