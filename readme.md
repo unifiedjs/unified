@@ -20,7 +20,7 @@ formats.
 [MDX][] to embed [JSX][], and [Prettier][] to format it.
 It’s used in about 350k projects on GitHub and has about 15m downloads each
 month on npm: you’re probably using it.
-Some notable users are [Node.js][], [ZEIT][], [Netlify][], [GitHub][],
+Some notable users are [Node.js][], [Vercel][], [Netlify][], [GitHub][],
 [Mozilla][], [WordPress][], [Adobe][], [Facebook][], [Google][], and many more.
 
 *   To read about what we are up to, follow us [Twitter][]
@@ -1375,7 +1375,7 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 
 [node.js]: https://nodejs.org
 
-[zeit]: https://zeit.co
+[vercel]: https://vercel.com
 
 [netlify]: https://www.netlify.com
 
