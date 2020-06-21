@@ -1237,11 +1237,11 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 
 [health]: https://github.com/unifiedjs/.github
 
-[contributing]: https://github.com/unifiedjs/.github/blob/master/contributing.md
+[contributing]: https://github.com/unifiedjs/.github/blob/HEAD/contributing.md
 
-[support]: https://github.com/unifiedjs/.github/blob/master/support.md
+[support]: https://github.com/unifiedjs/.github/blob/HEAD/support.md
 
-[coc]: https://github.com/unifiedjs/.github/blob/master/code-of-conduct.md
+[coc]: https://github.com/unifiedjs/.github/blob/HEAD/code-of-conduct.md
 
 [awesome]: https://github.com/unifiedjs/awesome-unified
 
@@ -1351,11 +1351,11 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 
 [promise]: https://developer.mozilla.org/Web/JavaScript/Reference/Global_Objects/Promise
 
-[remark-plugins]: https://github.com/remarkjs/remark/blob/master/doc/plugins.md#list-of-plugins
+[remark-plugins]: https://github.com/remarkjs/remark/blob/HEAD/doc/plugins.md#list-of-plugins
 
-[rehype-plugins]: https://github.com/rehypejs/rehype/blob/master/doc/plugins.md#list-of-plugins
+[rehype-plugins]: https://github.com/rehypejs/rehype/blob/HEAD/doc/plugins.md#list-of-plugins
 
-[retext-plugins]: https://github.com/retextjs/retext/blob/master/doc/plugins.md#list-of-plugins
+[retext-plugins]: https://github.com/retextjs/retext/blob/HEAD/doc/plugins.md#list-of-plugins
 
 [stream]: https://github.com/unifiedjs/unified-stream
 
