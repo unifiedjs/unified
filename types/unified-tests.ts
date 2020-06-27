@@ -98,7 +98,6 @@ processor.use([
 processor.use(typedPlugin)
 processor.use(typedPlugin).use(typedPlugin)
 processor.use(typedPlugin, typedSetting)
-// NOTE: in tuple/array form settings are not able to be type checked
 processor.use([typedPlugin, typedSetting])
 processor.use([
   [typedPlugin, typedSetting],
@@ -109,13 +108,15 @@ processor.use([
   [typedPlugin, typedSetting]
 ])
 processor.use([typedPlugin])
+processor.use([typedPlugin, typedSetting])
+// $ExpectError
 processor.use([typedPlugin, typedSetting, settings])
+// $ExpectError
 processor.use([typedPlugin, settings])
 
 processor.use(implicitlyTypedPlugin)
 processor.use(implicitlyTypedPlugin).use(implicitlyTypedPlugin)
 processor.use(implicitlyTypedPlugin, typedSetting)
-// NOTE: in tuple/array form settings are not able to be type checked
 processor.use([implicitlyTypedPlugin, typedSetting])
 processor.use([
   [implicitlyTypedPlugin, typedSetting],
@@ -126,7 +127,10 @@ processor.use([
   [implicitlyTypedPlugin, typedSetting]
 ])
 processor.use([implicitlyTypedPlugin])
+processor.use([implicitlyTypedPlugin, typedSetting])
+// $ExpectError
 processor.use([implicitlyTypedPlugin, settings])
+// $ExpectError
 processor.use([implicitlyTypedPlugin, typedSetting, settings])
 
 processor.use(transformerPlugin)
@@ -139,7 +143,7 @@ processor.use(pluginWithTwoSettings)
 processor.use(pluginWithTwoSettings).use(pluginWithTwoSettings)
 processor.use(pluginWithTwoSettings, processor, typedSetting)
 processor.use(pluginWithTwoSettings, processor)
-// NOTE: in tuple/array form settings are not able to be type checked
+// $ExpectError
 processor.use([pluginWithTwoSettings, processor, settings])
 processor.use([pluginWithTwoSettings, processor, typedSetting])
 processor.use([pluginWithTwoSettings, processor])

@@ -1,8 +1,7 @@
-// TypeScript Version: 3.4
+// TypeScript Version: 4.0
 
 import {Node} from 'unist'
-import {VFile, VFileContents, VFileOptions, VFileCompatible} from 'vfile'
-import vfile = require('vfile')
+import {VFile, VFileCompatible} from 'vfile'
 
 declare namespace unified {
   /**
@@ -252,12 +251,7 @@ declare namespace unified {
    */
   type PluginTuple<S extends any[] = [Settings?], P = Settings> = [
     Plugin<S, P>,
-    /**
-     * NOTE: ideally this would be S instead of any[]
-     * As of TypeScript 3.5.2 generic tuples cannot be spread
-     * See: https://github.com/microsoft/TypeScript/issues/26113
-     */
-    ...any[]
+    ...S
   ]
 
   /**
@@ -276,7 +270,7 @@ declare namespace unified {
    *
    * @typeParam P Processor settings
    */
-  type PluggableList<P = Settings> = Array<Pluggable<[any?], P>>
+  type PluggableList<P = Settings> = Array<Pluggable<any[], P>>
 
   /**
    * An attacher is the thing passed to `use`.
