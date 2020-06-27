@@ -25,7 +25,7 @@ const settings = {
 interface ExamplePluginSettings {
   example: string
 }
-const typedPlugin: Plugin<[ExamplePluginSettings?]> = function () {}
+const typedPlugin: Plugin<unknown, [ExamplePluginSettings?]> = function () {}
 const typedSetting = {example: 'example'}
 
 const implicitlyTypedPlugin = (settings?: ExamplePluginSettings) => {}
@@ -113,6 +113,11 @@ processor.use([typedPlugin, typedSetting])
 processor.use([typedPlugin, typedSetting, settings])
 // $ExpectError
 processor.use([typedPlugin, settings])
+// $ExpectError
+processor.use([
+  [plugin, settings],
+  [typedPlugin, settings]
+])
 
 processor.use(implicitlyTypedPlugin)
 processor.use(implicitlyTypedPlugin).use(implicitlyTypedPlugin)
@@ -132,6 +137,11 @@ processor.use([implicitlyTypedPlugin, typedSetting])
 processor.use([implicitlyTypedPlugin, settings])
 // $ExpectError
 processor.use([implicitlyTypedPlugin, typedSetting, settings])
+// $ExpectError
+processor.use([
+  [implicitlyTypedPlugin, settings],
+  [implicitlyTypedPlugin, typedSetting]
+])
 
 processor.use(transformerPlugin)
 processor.use([transformerPlugin, transformerPlugin])
@@ -149,6 +159,11 @@ processor.use([pluginWithTwoSettings, processor, typedSetting])
 processor.use([pluginWithTwoSettings, processor])
 processor.use([
   [pluginWithTwoSettings, processor, typedSetting],
+  [pluginWithTwoSettings, processor, typedSetting]
+])
+// $ExpectError
+processor.use([
+  [pluginWithTwoSettings, processor, settings],
   [pluginWithTwoSettings, processor, typedSetting]
 ])
 processor.use([
@@ -354,5 +369,9 @@ remark.use(function () {
     // $ExpectError
     .use({settings: {dne: true}})
 })
+remark.use(typedPlugin);
+remark.use(implicitlyTypedPlugin);
+// $ExpectError
+remark.use(plugin);
 // $ExpectError
 remark.use({})

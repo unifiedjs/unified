@@ -27,7 +27,7 @@ declare namespace unified {
      * @returns The processor on which use is invoked
      */
     use<S extends any[] = [Settings?]>(
-      plugin: Plugin<S, P>,
+      plugin: Plugin<P, S>,
       ...settings: S
     ): Processor<P>
 
@@ -35,8 +35,55 @@ declare namespace unified {
      * Configure the processor with a preset to use
      *
      * @param preset `Object` with an plugins (set to list), and/or an optional settings object
+     * @typeParam S1 Plugin settings
+     * @typeParam S20 Plugin settings
      */
-    use<S extends any[] = [Settings?]>(preset: Preset<S, P>): Processor<P>
+    use<
+      S1 extends any[] = [Settings?],
+      S2 extends any[] = [Settings?],
+      S3 extends any[] = [Settings?],
+      S4 extends any[] = [Settings?],
+      S5 extends any[] = [Settings?],
+      S6 extends any[] = [Settings?],
+      S7 extends any[] = [Settings?],
+      S8 extends any[] = [Settings?],
+      S9 extends any[] = [Settings?],
+      S10 extends any[] = [Settings?],
+      S11 extends any[] = [Settings?],
+      S12 extends any[] = [Settings?],
+      S13 extends any[] = [Settings?],
+      S14 extends any[] = [Settings?],
+      S15 extends any[] = [Settings?],
+      S16 extends any[] = [Settings?],
+      S17 extends any[] = [Settings?],
+      S18 extends any[] = [Settings?],
+      S19 extends any[] = [Settings?],
+      S20 extends any[] = [Settings?]
+    >(
+      preset: Preset<
+        P,
+        S1,
+        S2,
+        S3,
+        S4,
+        S5,
+        S6,
+        S7,
+        S8,
+        S9,
+        S10,
+        S11,
+        S12,
+        S13,
+        S14,
+        S15,
+        S16,
+        S17,
+        S18,
+        S19,
+        S20
+      >
+    ): Processor<P>
 
     /**
      * Configure using a tuple of plugin and setting(s)
@@ -45,15 +92,62 @@ declare namespace unified {
      * @typeParam S Plugin settings
      */
     use<S extends any[] = [Settings?]>(
-      pluginTuple: PluginTuple<S, P>
+      pluginTuple: PluginTuple<P, S>
     ): Processor<P>
 
     /**
      * A list of plugins and presets to be applied to processor
      *
      * @param list List of plugins, presets, and pairs
+     * @typeParam S1 Plugin settings
+     * @typeParam S20 Plugin settings
      */
-    use(list: PluggableList<P>): Processor<P>
+    use<
+      S1 extends any[] = [Settings?],
+      S2 extends any[] = [Settings?],
+      S3 extends any[] = [Settings?],
+      S4 extends any[] = [Settings?],
+      S5 extends any[] = [Settings?],
+      S6 extends any[] = [Settings?],
+      S7 extends any[] = [Settings?],
+      S8 extends any[] = [Settings?],
+      S9 extends any[] = [Settings?],
+      S10 extends any[] = [Settings?],
+      S11 extends any[] = [Settings?],
+      S12 extends any[] = [Settings?],
+      S13 extends any[] = [Settings?],
+      S14 extends any[] = [Settings?],
+      S15 extends any[] = [Settings?],
+      S16 extends any[] = [Settings?],
+      S17 extends any[] = [Settings?],
+      S18 extends any[] = [Settings?],
+      S19 extends any[] = [Settings?],
+      S20 extends any[] = [Settings?]
+    >(
+      list: PluggableList<
+        P,
+        S1,
+        S2,
+        S3,
+        S4,
+        S5,
+        S6,
+        S7,
+        S8,
+        S9,
+        S10,
+        S11,
+        S12,
+        S13,
+        S14,
+        S15,
+        S16,
+        S17,
+        S18,
+        S19,
+        S20
+      >
+    ): Processor<P>
 
     /**
      * Configuration passed to a frozen processor
@@ -210,11 +304,11 @@ declare namespace unified {
    * Attachers can configure processors, such as by interacting with parsers and compilers, linking them to other processors, or by specifying how the syntax tree is handled.
    *
    * @param settings Configuration
-   * @typeParam S Plugin settings
    * @typeParam P Processor settings
+   * @typeParam S Plugin settings
    * @returns Optional Transformer.
    */
-  type Plugin<S extends any[] = [Settings?], P = Settings> = Attacher<S, P>
+  type Plugin<P = Settings, S extends any[] = [Settings?]> = Attacher<P, S>
 
   /**
    * Configuration passed to a Plugin or Processor
@@ -228,9 +322,55 @@ declare namespace unified {
    * They can contain multiple plugins and optionally settings as well.
    *
    * @typeParam P Processor settings
+   * @typeParam S1 Plugin settings
+   * @typeParam S20 Plugin settings
    */
-  interface Preset<S = Settings, P = Settings> {
-    plugins: PluggableList<P>
+  interface Preset<
+    P = Settings,
+    S1 extends any[] = [Settings?],
+    S2 extends any[] = [Settings?],
+    S3 extends any[] = [Settings?],
+    S4 extends any[] = [Settings?],
+    S5 extends any[] = [Settings?],
+    S6 extends any[] = [Settings?],
+    S7 extends any[] = [Settings?],
+    S8 extends any[] = [Settings?],
+    S9 extends any[] = [Settings?],
+    S10 extends any[] = [Settings?],
+    S11 extends any[] = [Settings?],
+    S12 extends any[] = [Settings?],
+    S13 extends any[] = [Settings?],
+    S14 extends any[] = [Settings?],
+    S15 extends any[] = [Settings?],
+    S16 extends any[] = [Settings?],
+    S17 extends any[] = [Settings?],
+    S18 extends any[] = [Settings?],
+    S19 extends any[] = [Settings?],
+    S20 extends any[] = [Settings?]
+  > {
+    plugins: PluggableList<
+      P,
+      S1,
+      S2,
+      S3,
+      S4,
+      S5,
+      S6,
+      S7,
+      S8,
+      S9,
+      S10,
+      S11,
+      S12,
+      S13,
+      S14,
+      S15,
+      S16,
+      S17,
+      S18,
+      S19,
+      S20
+    >
     settings?: Settings
   }
 
@@ -246,31 +386,122 @@ declare namespace unified {
   /**
    * A pairing of a plugin with its settings
    *
-   * @typeParam S Plugin settings
    * @typeParam P Processor settings
+   * @typeParam S Plugin settings
    */
-  type PluginTuple<S extends any[] = [Settings?], P = Settings> = [
-    Plugin<S, P>,
+  type PluginTuple<P = Settings, S extends any[] = [Settings?]> = [
+    Plugin<P, S>,
     ...S
   ]
 
   /**
    * A union of the different ways to add plugins to unified
    *
-   * @typeParam S Plugin settings
    * @typeParam P Processor settings
+   * @typeParam S1 Plugin settings
+   * @typeParam S20 Plugin settings
    */
-  type Pluggable<S extends any[] = [Settings?], P = Settings> =
-    | Plugin<S, P>
-    | Preset<S, P>
-    | PluginTuple<S, P>
+  type Pluggable<
+    P = Settings,
+    S1 extends any[] = [Settings?],
+    S2 extends any[] = [Settings?],
+    S3 extends any[] = [Settings?],
+    S4 extends any[] = [Settings?],
+    S5 extends any[] = [Settings?],
+    S6 extends any[] = [Settings?],
+    S7 extends any[] = [Settings?],
+    S8 extends any[] = [Settings?],
+    S9 extends any[] = [Settings?],
+    S10 extends any[] = [Settings?],
+    S11 extends any[] = [Settings?],
+    S12 extends any[] = [Settings?],
+    S13 extends any[] = [Settings?],
+    S14 extends any[] = [Settings?],
+    S15 extends any[] = [Settings?],
+    S16 extends any[] = [Settings?],
+    S17 extends any[] = [Settings?],
+    S18 extends any[] = [Settings?],
+    S19 extends any[] = [Settings?],
+    S20 extends any[] = [Settings?]
+  > =
+    | Plugin<P, S1>
+    | PluginTuple<P, S1>
+    | Preset<
+        P,
+        S1,
+        S2,
+        S3,
+        S4,
+        S5,
+        S6,
+        S7,
+        S8,
+        S9,
+        S10,
+        S11,
+        S12,
+        S13,
+        S14,
+        S15,
+        S16,
+        S17,
+        S18,
+        S19,
+        S20
+      >
 
   /**
    * A list of plugins and presets
    *
    * @typeParam P Processor settings
+   * @typeParam S1 Plugin settings
+   * @typeParam S20 Plugin settings
    */
-  type PluggableList<P = Settings> = Array<Pluggable<any[], P>>
+  type PluggableList<
+    P = Settings,
+    S1 extends any[] = [Settings?],
+    S2 extends any[] = [Settings?],
+    S3 extends any[] = [Settings?],
+    S4 extends any[] = [Settings?],
+    S5 extends any[] = [Settings?],
+    S6 extends any[] = [Settings?],
+    S7 extends any[] = [Settings?],
+    S8 extends any[] = [Settings?],
+    S9 extends any[] = [Settings?],
+    S10 extends any[] = [Settings?],
+    S11 extends any[] = [Settings?],
+    S12 extends any[] = [Settings?],
+    S13 extends any[] = [Settings?],
+    S14 extends any[] = [Settings?],
+    S15 extends any[] = [Settings?],
+    S16 extends any[] = [Settings?],
+    S17 extends any[] = [Settings?],
+    S18 extends any[] = [Settings?],
+    S19 extends any[] = [Settings?],
+    S20 extends any[] = [Settings?]
+  > = [
+    Pluggable<P, S1>?,
+    Pluggable<P, S2>?,
+    Pluggable<P, S3>?,
+    Pluggable<P, S4>?,
+    Pluggable<P, S5>?,
+    Pluggable<P, S6>?,
+    Pluggable<P, S7>?,
+    Pluggable<P, S8>?,
+    Pluggable<P, S9>?,
+    Pluggable<P, S10>?,
+    Pluggable<P, S11>?,
+    Pluggable<P, S12>?,
+    Pluggable<P, S13>?,
+    Pluggable<P, S14>?,
+    Pluggable<P, S15>?,
+    Pluggable<P, S16>?,
+    Pluggable<P, S17>?,
+    Pluggable<P, S18>?,
+    Pluggable<P, S19>?,
+    Pluggable<P, S20>?,
+    ...Array<Pluggable<P, any[]>>
+  ]
 
   /**
    * An attacher is the thing passed to `use`.
@@ -279,11 +510,12 @@ declare namespace unified {
    * Attachers can configure processors, such as by interacting with parsers and compilers, linking them to other processors, or by specifying how the syntax tree is handled.
    *
    * @param settings Configuration
-   * @typeParam S Plugin settings
    * @typeParam P Processor settings
+   * @typeParam S1 Plugin settings
+   * @typeParam S20 Plugin settings
    * @returns Optional Transformer.
    */
-  type Attacher<S extends any[] = [Settings?], P = Settings> = (
+  type Attacher<P = Settings, S extends any[] = [Settings?]> = (
     this: Processor<P>,
     ...settings: S
   ) => Transformer | void
