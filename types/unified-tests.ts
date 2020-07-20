@@ -11,7 +11,7 @@ let stringValue: string
 /**
  * `processor()`
  */
-let processor: Processor = unified()
+const processor: Processor = unified()
 const clonedProcessor: Processor = processor()
 
 /**
@@ -321,7 +321,9 @@ unknownValue = processor.data().randomKey
 /**
  * `processor.freeze`
  */
-processor = processor.freeze()
+const frozenProcessor = processor.freeze()
+// $ExpectError
+frozenProcessor.use(plugin)
 
 /**
  * Language specific processors
@@ -333,15 +335,16 @@ interface RemarkSettings {
 const remark = unified<RemarkSettings>()
   .use(() => {})
   .freeze()
-remark
+remark.parse('# Hello markdown')
+remark()
   .use({settings: {gfm: true}})
   // $ExpectError
   .use({settings: {dne: true}})
-remark
+remark()
   // $ExpectError
   .use({settings: {dne: true}})
   .use({settings: {gfm: true}})
-remark.use(function () {
+remark().use(function () {
   this
     // $ExpectError
     .use({settings: {dne: true}})
