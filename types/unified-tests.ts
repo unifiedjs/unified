@@ -332,18 +332,23 @@ interface RemarkSettings {
   gfm: boolean
 }
 
-const remark = unified<RemarkSettings>()
+interface Root {
+  type: 'root'
+}
+
+const remark = unified<RemarkSettings, Root>()
   .use(() => {})
   .freeze()
+// $ExpectType Root
 remark.parse('# Hello markdown')
-remark()
-  .use({settings: {gfm: true}})
-  // $ExpectError
-  .use({settings: {dne: true}})
-remark()
-  // $ExpectError
-  .use({settings: {dne: true}})
-  .use({settings: {gfm: true}})
+remark().Parser = () => ({type: 'root'})
+remark().Parser = class MdastParser {
+  constructor(text: string, file: VFile) {}
+
+  parse(): Root {
+    return {type: 'root'}
+  }
+}
 remark().use(function () {
   this
     // $ExpectError

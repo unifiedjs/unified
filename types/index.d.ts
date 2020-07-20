@@ -10,7 +10,7 @@ declare namespace unified {
    *
    * @typeParam P Processor settings. Useful when packaging unified with a preset parser and compiler.
    */
-  interface Processor<P = Settings> extends FrozenProcessor<P> {
+  interface Processor<P = Settings, N = Node> extends FrozenProcessor<P, N> {
     /**
      * Configure the processor to use a plugin and optionally configure that plugin with options.
      *
@@ -22,14 +22,14 @@ declare namespace unified {
     use<S extends any[] = [Settings?]>(
       plugin: Plugin<S, P>,
       ...settings: S
-    ): Processor<P>
+    ): Processor<P, N>
 
     /**
      * Configure the processor with a preset to use
      *
      * @param preset `Object` with an plugins (set to list), and/or an optional settings object
      */
-    use<S extends any[] = [Settings?]>(preset: Preset<S, P>): Processor<P>
+    use<S extends any[] = [Settings?]>(preset: Preset<S, P>): Processor<P, N>
 
     /**
      * Configure using a tuple of plugin and setting(s)
@@ -39,21 +39,21 @@ declare namespace unified {
      */
     use<S extends any[] = [Settings?]>(
       pluginTuple: PluginTuple<S, P>
-    ): Processor<P>
+    ): Processor<P, N>
 
     /**
      * A list of plugins and presets to be applied to processor
      *
      * @param list List of plugins, presets, and pairs
      */
-    use(list: PluggableList<P>): Processor<P>
+    use(list: PluggableList<P>): Processor<P, N>
 
     /**
      * Configuration passed to a frozen processor
      *
      * @param processorSettings Settings passed to processor
      */
-    use(processorSettings: ProcessorSettings<P>): Processor<P>
+    use(processorSettings: ProcessorSettings<P>): Processor<P, N>
   }
 
   /**
@@ -62,14 +62,14 @@ declare namespace unified {
    *
    * @see Processor
    */
-  interface FrozenProcessor<P = Settings> {
+  interface FrozenProcessor<P = Settings, N = Node> {
     /**
      * Clone current processor
      *
      * @returns New unfrozen processor which is configured to function the same as its ancestor.
      * But when the descendant processor is configured in the future it does not affect the ancestral processor.
      */
-    (): Processor<P>
+    (): Processor<P, N>
 
     /**
      * Parse text to a syntax tree.
@@ -77,7 +77,7 @@ declare namespace unified {
      * @param file VFile or anything which can be given to vfile()
      * @returns Syntax tree representation of input.
      */
-    parse(file: VFileCompatible): Node
+    parse(file: VFileCompatible): N
 
     /**
      * Function handling the parsing of text to a syntax tree.
@@ -88,7 +88,7 @@ declare namespace unified {
      * `Parser` can also be a constructor function (a function with keys in its `prototype`) in which case it’s invoked with `new`.
      * Instances must have a parse method which is invoked without arguments and must return a `Node`.
      */
-    Parser: ParserConstructor | ParserFunction
+    Parser: ParserConstructor<N> | ParserFunction<N>
 
     /**
      * Compile a syntax tree to text.
@@ -198,7 +198,7 @@ declare namespace unified {
      * @param value Value to set. Omit if getting key
      * @returns If setting, the processor on which data is invoked
      */
-    data(key: string, value: any): Processor<P>
+    data(key: string, value: any): Processor<P, N>
 
     /**
      * Freeze a processor. Frozen processors are meant to be extended and not to be configured or processed directly.
@@ -209,7 +209,7 @@ declare namespace unified {
      *
      * @returns The processor on which freeze is invoked.
      */
-    freeze(): FrozenProcessor<P>
+    freeze(): FrozenProcessor<P, N>
   }
 
   /**
@@ -330,20 +330,22 @@ declare namespace unified {
   /**
    * Transform file contents into an AST
    */
-  interface Parser {
+  interface Parser<N = Node> {
     /**
      * Transform file contents into an AST
      *
      * @returns Parsed AST node/tree
      */
-    parse(): Node
+    parse(): N
   }
 
   /**
    * A constructor function (a function with keys in its `prototype`) or class that implements a
    * `parse` method.
    */
-  type ParserConstructor = new (text: string, file: VFile) => Parser
+  type ParserConstructor<N = Node> = new (text: string, file: VFile) => Parser<
+    N
+  >
 
   /**
    * Transform file contents into an AST
@@ -352,7 +354,7 @@ declare namespace unified {
    * @param file File associated with text
    * @returns Parsed AST node/tree
    */
-  type ParserFunction = (text: string, file: VFile) => Node
+  type ParserFunction<N = Node> = (text: string, file: VFile) => N
 
   /**
    * Transform an AST node/tree into text
@@ -404,5 +406,8 @@ declare namespace unified {
  *
  * @typeParam P Processor settings. Useful when packaging unified with a preset parser and compiler.
  */
-declare function unified<P = unified.Settings>(): unified.Processor<P>
+declare function unified<P = unified.Settings, N = Node>(): unified.Processor<
+  P,
+  N
+>
 export = unified
