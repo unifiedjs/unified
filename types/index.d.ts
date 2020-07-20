@@ -57,7 +57,7 @@ declare namespace unified {
   }
 
   /**
-   * A frozen processor is just like a regular processor, except no additional plugins can’t be added.
+   * A frozen processor is just like a regular processor, except no additional plugins can be added.
    * A frozen processor can be created by calling `.freeze()` on a processor.
    *
    * @see Processor
