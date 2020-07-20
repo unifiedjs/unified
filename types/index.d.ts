@@ -229,7 +229,7 @@ declare namespace unified {
    *
    * @typeParam P Processor settings
    */
-  interface Preset<P = Settings> {
+  interface Preset<S = Settings, P = Settings> {
     plugins: PluggableList<P>
     settings?: Settings
   }
