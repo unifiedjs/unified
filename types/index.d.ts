@@ -1,8 +1,7 @@
 // TypeScript Version: 3.4
 
 import {Node} from 'unist'
-import {VFile, VFileContents, VFileOptions, VFileCompatible} from 'vfile'
-import vfile = require('vfile')
+import {VFile, VFileCompatible} from 'vfile'
 
 declare namespace unified {
   /**
@@ -230,7 +229,7 @@ declare namespace unified {
    *
    * @typeParam P Processor settings
    */
-  interface Preset<S = Settings, P = Settings> {
+  interface Preset<P = Settings> {
     plugins: PluggableList<P>
     settings?: Settings
   }
