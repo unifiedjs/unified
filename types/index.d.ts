@@ -1,8 +1,7 @@
 // TypeScript Version: 3.4
 
 import {Node} from 'unist'
-import {VFile, VFileContents, VFileOptions, VFileCompatible} from 'vfile'
-import vfile = require('vfile')
+import {VFile, VFileCompatible} from 'vfile'
 
 declare namespace unified {
   /**
