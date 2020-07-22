@@ -9,15 +9,7 @@ declare namespace unified {
    *
    * @typeParam P Processor settings. Useful when packaging unified with a preset parser and compiler.
    */
-  interface Processor<P = Settings> {
-    /**
-     * Clone current processor
-     *
-     * @returns New unfrozen processor which is configured to function the same as its ancestor.
-     * But when the descendant processor is configured in the future it does not affect the ancestral processor.
-     */
-    (): Processor<P>
-
+  interface Processor<P = Settings> extends FrozenProcessor<P> {
     /**
      * Configure the processor to use a plugin and optionally configure that plugin with options.
      *
@@ -61,6 +53,22 @@ declare namespace unified {
      * @param processorSettings Settings passed to processor
      */
     use(processorSettings: ProcessorSettings<P>): Processor<P>
+  }
+
+  /**
+   * A frozen processor is just like a regular processor, except no additional plugins can be added.
+   * A frozen processor can be created by calling `.freeze()` on a processor.
+   *
+   * @see Processor
+   */
+  interface FrozenProcessor<P = Settings> {
+    /**
+     * Clone current processor
+     *
+     * @returns New unfrozen processor which is configured to function the same as its ancestor.
+     * But when the descendant processor is configured in the future it does not affect the ancestral processor.
+     */
+    (): Processor<P>
 
     /**
      * Parse text to a syntax tree.
@@ -200,7 +208,7 @@ declare namespace unified {
      *
      * @returns The processor on which freeze is invoked.
      */
-    freeze(): Processor<P>
+    freeze(): FrozenProcessor<P>
   }
 
   /**
