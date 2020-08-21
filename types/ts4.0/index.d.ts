@@ -44,8 +44,15 @@ declare namespace unified {
      * A list of plugins and presets to be applied to processor
      *
      * @param list List of plugins, presets, and pairs
+     * @typeParam S first Plugin's settings
+     * @typeParam L tail recursive list of other plugins
      */
-    use(list: PluggableList<P>): Processor<P>
+    use<
+      S extends any[] = [Settings?],
+      L extends PluggableList<any[], P> = []
+    >(
+      list: PluggableList<S, P, L>
+    ): Processor<P>
 
     /**
      * Configuration passed to a frozen processor
@@ -238,7 +245,7 @@ declare namespace unified {
    * @typeParam P Processor settings
    */
   interface Preset<S = Settings, P = Settings> {
-    plugins: PluggableList<P>
+    plugins: PluggableList<any[], P>
     settings?: Settings
   }
 
@@ -276,9 +283,15 @@ declare namespace unified {
   /**
    * A list of plugins and presets
    *
+   * @typeParam S first plugin's settings
    * @typeParam P Processor settings
+   * @typeParam L tail recursive remainder of plugins
    */
-  type PluggableList<P = Settings> = Array<Pluggable<any[], P>>
+  type PluggableList<
+    S extends any[] = [Settings?],
+    P = Settings,
+    L extends PluggableList<any[], P> = []
+  > = [Pluggable<S, P>, ...L] | []
 
   /**
    * An attacher is the thing passed to `use`.
