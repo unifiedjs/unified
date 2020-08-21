@@ -58,8 +58,8 @@
     "remark-cli": "^8.0.0",
     "remark-preset-wooorm": "^7.0.0",
     "tape": "^5.0.0",
-    "tinyify": "^2.0.0",
-    "xo": "^0.32.0"
+    "tinyify": "^3.0.0",
+    "xo": "^0.33.0"
   },
   "scripts": {
     "format": "remark . -qfo && prettier . --write && xo --fix",
@@ -83,11 +83,12 @@
     "prettier": true,
     "esnext": false,
     "rules": {
+      "guard-for-in": "off",
+      "no-unreachable-loop": "off",
       "unicorn/catch-error-name": "off",
       "unicorn/prefer-optional-catch-binding": "off",
       "unicorn/prefer-reflect-apply": "off",
-      "unicorn/prefer-type-error": "off",
-      "guard-for-in": "off"
+      "unicorn/prefer-type-error": "off"
     },
     "ignores": [
       "types",
