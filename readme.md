@@ -28,7 +28,7 @@ Some notable users are [Node.js][], [Vercel][], [Netlify][], [GitHub][],
     [`unifiedjs.com`][site] and peruse its [Learn][] section
 *   Browse [awesome unified][awesome] to find out more about the ecosystem
 *   Questions?
-    Get help on [our Spectrum community][chat]!
+    Get help on [Discussions][chat]!
 *   Check out [Contribute][] below to find out how to help out, or become a
     backer or sponsor on [OpenCollective][collective]
 
@@ -1231,9 +1231,9 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 
 [collective]: https://opencollective.com/unified
 
-[chat-badge]: https://img.shields.io/badge/chat-spectrum-7b16ff.svg
+[chat-badge]: https://img.shields.io/badge/chat-discussions-success.svg
 
-[chat]: https://spectrum.chat/unified
+[chat]: https://github.com/unifiedjs/unified/discussions
 
 [health]: https://github.com/unifiedjs/.github
 
