@@ -36,9 +36,17 @@
     "Vse Mozhet Byt <vsemozhetbyt@gmail.com>",
     "Richard Littauer <richard.littauer@gmail.com>"
   ],
-  "types": "types/index.d.ts",
+  "types": "types/ts3.4/index.d.ts",
+  "typesVersions": {
+    ">=4.0": {
+      "types/ts3.4/*": [
+        "types/ts4.0/*"
+      ]
+    }
+  },
   "files": [
-    "types/index.d.ts",
+    "types/ts3.4/index.d.ts",
+    "types/ts4.0/index.d.ts",
     "index.js",
     "lib"
   ],
@@ -68,7 +76,9 @@
     "build": "npm run build-bundle && npm run build-mangle",
     "test-api": "node test",
     "test-coverage": "c8 --check-coverage --lines 100 --functions 100 --branches 100 --reporter lcov tape test",
-    "test-types": "dtslint types",
+    "test-types": "npm run test-types-3.4 && npm run test-types-4.0",
+    "test-types-3.4": "dtslint types/ts3.4",
+    "test-types-4.0": "dtslint types/ts4.0",
     "test": "npm run format && npm run build && npm run test-coverage && npm run test-types"
   },
   "prettier": {
