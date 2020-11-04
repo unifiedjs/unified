@@ -647,13 +647,6 @@ The parsed, transformed, and compiled value is exposed on
 
 `process` performs the [*parse*, *run*, and *stringify* phases][description].
 
-Be aware that [*compiler*][compiler]s typically, but not always, return
-`string`.
-Some compilers, such as the one configured with [`rehype-react`][rehype-react],
-return other values (in this case, a React tree).
-When using TypeScript, cast the type of [`file.contents`][vfile-contents] on
-your side.
-
 unified typically compiles by serializing: most [*compiler*][compiler]s return
 `string` (or `Buffer`).
 Some compilers, such as the one configured with [`rehype-react`][rehype-react],
