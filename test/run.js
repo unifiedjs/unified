@@ -257,9 +257,9 @@ test('run(node[, file])', function (t) {
           'should reject, not resolve, when an error is passed to `done` from a sync transformer'
         )
       },
-      function (err) {
+      function (error) {
         t.equal(
-          String(err),
+          String(error),
           'Error: charlie',
           'should reject when an error is returned from a sync transformer'
         )
@@ -303,9 +303,9 @@ test('run(node[, file])', function (t) {
           'should reject, not resolve, if an error is given to a sync transformer’s `next`'
         )
       },
-      function (err) {
+      function (error) {
         t.equal(
-          String(err),
+          String(error),
           'Error: delta',
           'should reject, if an error is given to a sync transformer’s `next`'
         )

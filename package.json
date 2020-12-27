@@ -67,10 +67,10 @@
     "remark-preset-wooorm": "^8.0.0",
     "tape": "^5.0.0",
     "tinyify": "^3.0.0",
-    "xo": "^0.34.0"
+    "xo": "^0.36.0"
   },
   "scripts": {
-    "format": "remark . -qfo && prettier . --write && xo --fix",
+    "format": "remark . -qfo && prettier . -w --loglevel warn && xo --fix",
     "build-bundle": "browserify index.js -s unified -o unified.js",
     "build-mangle": "browserify index.js -s unified -p tinyify -o unified.min.js",
     "build": "npm run build-bundle && npm run build-mangle",
@@ -95,7 +95,6 @@
     "rules": {
       "guard-for-in": "off",
       "no-unreachable-loop": "off",
-      "unicorn/catch-error-name": "off",
       "unicorn/prefer-optional-catch-binding": "off",
       "unicorn/prefer-reflect-apply": "off",
       "unicorn/prefer-type-error": "off"
