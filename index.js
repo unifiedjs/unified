@@ -39,14 +39,13 @@ function pipelineRun(p, ctx, next) {
 
 function pipelineStringify(p, ctx) {
   var result = p.stringify(ctx.tree, ctx.file)
-  var file = ctx.file
 
   if (result === undefined || result === null) {
     // Empty.
   } else if (typeof result === 'string' || buffer(result)) {
-    file.contents = result
+    ctx.file.contents = result
   } else {
-    file.result = result
+    ctx.file.result = result
   }
 }
 
@@ -55,8 +54,8 @@ function unified() {
   var attachers = []
   var transformers = trough()
   var namespace = {}
-  var frozen = false
   var freezeIndex = -1
+  var frozen
 
   // Data management.
   processor.data = data
@@ -82,10 +81,9 @@ function unified() {
   // Create a new processor based on the processor in the current scope.
   function processor() {
     var destination = unified()
-    var length = attachers.length
     var index = -1
 
-    while (++index < length) {
+    while (++index < attachers.length) {
       destination.use.apply(null, attachers[index])
     }
 
@@ -103,8 +101,6 @@ function unified() {
   // In essence, always invoke this when exporting a processor.
   function freeze() {
     var values
-    var plugin
-    var options
     var transformer
 
     if (frozen) {
@@ -113,19 +109,16 @@ function unified() {
 
     while (++freezeIndex < attachers.length) {
       values = attachers[freezeIndex]
-      plugin = values[0]
-      options = values[1]
-      transformer = null
 
-      if (options === false) {
+      if (values[1] === false) {
         continue
       }
 
-      if (options === true) {
+      if (values[1] === true) {
         values[1] = undefined
       }
 
-      transformer = plugin.apply(processor, values.slice(1))
+      transformer = values[0].apply(processor, values.slice(1))
 
       if (typeof transformer === 'function') {
         transformers.use(transformer)
@@ -145,9 +138,7 @@ function unified() {
       // Set `key`.
       if (arguments.length === 2) {
         assertUnfrozen('data', frozen)
-
         namespace[key] = value
-
         return processor
       }
 
@@ -221,16 +212,12 @@ function unified() {
     }
 
     function addList(plugins) {
-      var length
-      var index
+      var index = -1
 
       if (plugins === null || plugins === undefined) {
         // Empty.
       } else if (typeof plugins === 'object' && 'length' in plugins) {
-        length = plugins.length
-        index = -1
-
-        while (++index < length) {
+        while (++index < plugins.length) {
           add(plugins[index])
         }
       } else {
@@ -254,15 +241,11 @@ function unified() {
   }
 
   function find(plugin) {
-    var length = attachers.length
     var index = -1
-    var entry
 
-    while (++index < length) {
-      entry = attachers[index]
-
-      if (entry[0] === plugin) {
-        return entry
+    while (++index < attachers.length) {
+      if (attachers[index][0] === plugin) {
+        return attachers[index]
       }
     }
   }
@@ -320,8 +303,8 @@ function unified() {
   // Run transforms on a unist node representation of a file (in string or
   // vfile representation), sync.
   function runSync(node, file) {
-    var complete = false
     var result
+    var complete
 
     run(node, file, done)
 
@@ -331,8 +314,8 @@ function unified() {
 
     function done(err, tree) {
       complete = true
-      bail(err)
       result = tree
+      bail(err)
     }
   }
 
@@ -388,8 +371,8 @@ function unified() {
 
   // Process the given document (in string or vfile representation), sync.
   function processSync(doc) {
-    var complete = false
     var file
+    var complete
 
     freeze()
     assertParser('processSync', processor.Parser)
