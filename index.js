@@ -26,9 +26,9 @@ function pipelineParse(p, ctx) {
 function pipelineRun(p, ctx, next) {
   p.run(ctx.tree, ctx.file, done)
 
-  function done(err, tree, file) {
-    if (err) {
-      next(err)
+  function done(error, tree, file) {
+    if (error) {
+      next(error)
     } else {
       ctx.tree = tree
       ctx.file = file
@@ -287,10 +287,10 @@ function unified() {
     function executor(resolve, reject) {
       transformers.run(node, vfile(file), done)
 
-      function done(err, tree, file) {
+      function done(error, tree, file) {
         tree = tree || node
-        if (err) {
-          reject(err)
+        if (error) {
+          reject(error)
         } else if (resolve) {
           resolve(tree)
         } else {
@@ -312,10 +312,10 @@ function unified() {
 
     return result
 
-    function done(err, tree) {
+    function done(error, tree) {
       complete = true
       result = tree
-      bail(err)
+      bail(error)
     }
   }
 
@@ -357,9 +357,9 @@ function unified() {
 
       pipeline.run(processor, {file: file}, done)
 
-      function done(err) {
-        if (err) {
-          reject(err)
+      function done(error) {
+        if (error) {
+          reject(error)
         } else if (resolve) {
           resolve(file)
         } else {
@@ -385,9 +385,9 @@ function unified() {
 
     return file
 
-    function done(err) {
+    function done(error) {
       complete = true
-      bail(err)
+      bail(error)
     }
   }
 }

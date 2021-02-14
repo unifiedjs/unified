@@ -13,8 +13,8 @@ test('async function transformer () {}', function (t) {
 
   unified()
     .use(plugin)
-    .run(givenNode, givenFile, function (err, tree, file) {
-      t.error(err, 'should’t fail')
+    .run(givenNode, givenFile, function (error, tree, file) {
+      t.error(error, 'should’t fail')
       t.equal(tree, modifiedNode, 'passes given tree to `done`')
       t.equal(file, givenFile, 'passes given file to `done`')
     })

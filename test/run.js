@@ -11,19 +11,19 @@ test('run(node[, file], done)', function (t) {
 
   t.plan(21)
 
-  unified().run(givenNode, givenFile, function (err, tree, file) {
-    t.error(err, 'should’t fail')
+  unified().run(givenNode, givenFile, function (error, tree, file) {
+    t.error(error, 'should’t fail')
     t.equal(tree, givenNode, 'passes given tree to `done`')
     t.equal(file, givenFile, 'passes given file to `done`')
   })
 
-  unified().run(givenNode, null, function (err, tree, file) {
-    t.error(err, 'should’t fail')
+  unified().run(givenNode, null, function (error, tree, file) {
+    t.error(error, 'should’t fail')
     t.equal(file.toString(), '', 'passes file to `done` if not given')
   })
 
-  unified().run(givenNode, function (err, tree, file) {
-    t.error(err, 'should’t fail')
+  unified().run(givenNode, function (error, tree, file) {
+    t.error(error, 'should’t fail')
     t.equal(file.toString(), '', 'passes file to `done` if omitted')
   })
 
@@ -34,9 +34,9 @@ test('run(node[, file], done)', function (t) {
         return new Error('charlie')
       }
     })
-    .run(givenNode, function (err) {
+    .run(givenNode, function (error) {
       t.equal(
-        String(err),
+        String(error),
         'Error: charlie',
         'should pass an error to `done` from a sync transformer'
       )
@@ -49,8 +49,8 @@ test('run(node[, file], done)', function (t) {
         return otherNode
       }
     })
-    .run(givenNode, function (err, tree) {
-      t.error(err, 'should’t fail')
+    .run(givenNode, function (error, tree) {
+      t.error(error, 'should’t fail')
 
       t.equal(
         tree,
@@ -66,9 +66,9 @@ test('run(node[, file], done)', function (t) {
         next(new Error('delta'))
       }
     })
-    .run(givenNode, function (err) {
+    .run(givenNode, function (error) {
       t.equal(
-        String(err),
+        String(error),
         'Error: delta',
         'should pass an error to `done`, if given to a sync transformer’s `next`'
       )
@@ -82,9 +82,9 @@ test('run(node[, file], done)', function (t) {
         next(new Error('delta'))
       }
     })
-    .run(givenNode, function (err) {
+    .run(givenNode, function (error) {
       t.error(
-        err,
+        error,
         'should ignore multiple invocations of `next`when invoked in a synchroneous transformer'
       )
     })
@@ -96,8 +96,8 @@ test('run(node[, file], done)', function (t) {
         next(null, otherNode)
       }
     })
-    .run(givenNode, function (err, tree) {
-      t.error(err, 'should’t fail')
+    .run(givenNode, function (error, tree) {
+      t.error(error, 'should’t fail')
 
       t.equal(
         tree,
@@ -117,9 +117,9 @@ test('run(node[, file], done)', function (t) {
         reject(new Error('delta'))
       }
     })
-    .run(givenNode, function (err) {
+    .run(givenNode, function (error) {
       t.equal(
-        String(err),
+        String(error),
         'Error: delta',
         'should pass an error to `done` rejected from a sync transformer’s returned promise'
       )
@@ -136,8 +136,8 @@ test('run(node[, file], done)', function (t) {
         resolve(otherNode)
       }
     })
-    .run(givenNode, function (err, tree) {
-      t.error(err, 'should’t fail')
+    .run(givenNode, function (error, tree) {
+      t.error(error, 'should’t fail')
 
       t.equal(
         tree,
@@ -156,8 +156,8 @@ test('run(node[, file], done)', function (t) {
         }
       }
     })
-    .run(givenNode, function (err, tree) {
-      t.error(err, 'should’t fail')
+    .run(givenNode, function (error, tree) {
+      t.error(error, 'should’t fail')
 
       t.equal(
         tree,
@@ -176,9 +176,9 @@ test('run(node[, file], done)', function (t) {
         }
       }
     })
-    .run(givenNode, function (err) {
+    .run(givenNode, function (error) {
       t.equal(
-        String(err),
+        String(error),
         'Error: echo',
         'should pass an error to `done` given to `next` from an asynchroneous transformer'
       )
@@ -195,9 +195,9 @@ test('run(node[, file], done)', function (t) {
         }
       }
     })
-    .run(givenNode, function (err) {
+    .run(givenNode, function (error) {
       t.error(
-        err,
+        error,
         'should ignore multiple invocations of `next`when invoked from an asynchroneous transformer'
       )
     })

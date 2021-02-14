@@ -64,8 +64,8 @@ test('process(file, done)', function (t) {
         return 'charlie'
       }
     })
-    .process(givenFile, function (err, file) {
-      t.error(err, 'shouldn’t fail')
+    .process(givenFile, function (error, file) {
+      t.error(error, 'shouldn’t fail')
 
       t.equal(
         file.toString(),
