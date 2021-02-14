@@ -1197,7 +1197,7 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 
 <!-- Definitions -->
 
-[logo]: https://raw.githubusercontent.com/unifiedjs/unified/39917ea/logo.svg?sanitize=true
+[logo]: https://raw.githubusercontent.com/unifiedjs/unified/93862e5/logo.svg?sanitize=true
 
 [build-badge]: https://github.com/unifiedjs/unified/workflows/main/badge.svg
 
