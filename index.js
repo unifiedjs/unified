@@ -230,7 +230,7 @@ function unified() {
 
       if (entry) {
         if (plain(entry[1]) && plain(value)) {
-          value = extend(entry[1], value)
+          value = extend(true, entry[1], value)
         }
 
         entry[1] = value
