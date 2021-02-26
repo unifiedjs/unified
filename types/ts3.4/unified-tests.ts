@@ -325,6 +325,83 @@ const frozenProcessor = processor.freeze()
 // $ExpectError
 frozenProcessor.use(plugin)
 
+interface MDastRoot extends Node {
+  type: 'mdast-root'
+}
+
+interface HastRoot extends Node {
+  type: 'hast-root'
+}
+
+const returnTransformer: unified.Transformer<MDastRoot> = (ast) => {
+  // $ExpectType MDastRoot
+  ast
+  return ast
+}
+
+const voidTransformer: unified.Transformer<MDastRoot> = (ast) => {
+  // $ExpectType MDastRoot
+  ast
+}
+
+// $ExpectError
+const invalidReturnRemarkRehypeTransformer: unified.Transformer<
+  MDastRoot,
+  HastRoot
+> = (ast) => {
+  return ast
+}
+
+// $ExpectError
+const invalidVoidRemarkRehypeTransformer: unified.Transformer<
+  MDastRoot,
+  HastRoot
+> = (ast) => {}
+
+const remarkRehypeTransformer: unified.Transformer<MDastRoot, HastRoot> = (
+  ast
+) => {
+  return {type: 'hast-root'}
+}
+
+const returnAttacher: unified.Plugin<any[], any, MDastRoot> = () => (ast) => {
+  // $ExpectType MDastRoot
+  ast
+  return ast
+}
+
+const voidAttacher: unified.Plugin<any[], any, MDastRoot> = () => (ast) => {
+  // $ExpectType MDastRoot
+  ast
+}
+
+const invalidReturnRemarkRehypeAttacher: unified.Plugin<
+  any[],
+  any,
+  MDastRoot,
+  HastRoot
+  // $ExpectError
+> = () => (ast) => {
+  return ast
+}
+
+const invalidVoidRemarkRehypeAttacher: unified.Plugin<
+  any[],
+  any,
+  MDastRoot,
+  HastRoot
+  // $ExpectError
+> = () => (ast) => {}
+
+const remarkRehypeAttacher: unified.Plugin<
+  any[],
+  any,
+  MDastRoot,
+  HastRoot
+> = () => (ast) => {
+  return {type: 'hast-root'}
+}
+
 /**
  * Language specific processors
  */
@@ -353,5 +430,11 @@ remark().use(function () {
     // $ExpectError
     .use({settings: {dne: true}})
 })
+remark()
+  .use(returnAttacher)
+  .use(voidAttacher)
+  .use(invalidReturnRemarkRehypeAttacher)
+  .use(invalidVoidRemarkRehypeAttacher)
+  .use(remarkRehypeAttacher)
 // $ExpectError
 remark.use({})

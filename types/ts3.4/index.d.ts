@@ -18,8 +18,12 @@ declare namespace unified {
      * @typeParam S Plugin settings
      * @returns The processor on which use is invoked
      */
-    use<S extends any[] = [Settings?]>(
-      plugin: Plugin<S, P>,
+    use<
+      S extends any[] = [Settings?],
+      I extends Node = Node,
+      O extends Node = I
+    >(
+      plugin: Plugin<S, P, I, O>,
       ...settings: S
     ): Processor<P>
 
@@ -222,7 +226,12 @@ declare namespace unified {
    * @typeParam P Processor settings
    * @returns Optional Transformer.
    */
-  type Plugin<S extends any[] = [Settings?], P = Settings> = Attacher<S, P>
+  type Plugin<
+    S extends any[] = [Settings?],
+    P = Settings,
+    I extends Node = Node,
+    O extends Node = I
+  > = Attacher<S, P, I, O>
 
   /**
    * Configuration passed to a Plugin or Processor
@@ -296,10 +305,12 @@ declare namespace unified {
    * @typeParam P Processor settings
    * @returns Optional Transformer.
    */
-  type Attacher<S extends any[] = [Settings?], P = Settings> = (
-    this: Processor<P>,
-    ...settings: S
-  ) => Transformer | void
+  type Attacher<
+    S extends any[] = [Settings?],
+    P = Settings,
+    I extends Node = Node,
+    O extends Node = I
+  > = (this: Processor<P>, ...settings: S) => Transformer<I, O> | void
 
   /**
    * Transformers modify the syntax tree or metadata of a file. A transformer is a function which is invoked each time a file is passed through the transform phase.
@@ -316,15 +327,17 @@ declare namespace unified {
    * - `Node` — Can be returned and results in further transformations and `stringify`s to be performed on the new tree
    * - `Promise` — If a promise is returned, the function is asynchronous, and must be resolved (optionally with a `Node`) or rejected (optionally with an `Error`)
    */
-  type Transformer = (
-    node: Node,
+  type Transformer<I extends Node = Node, O extends Node = I> = (
+    node: I,
     file: VFile,
     next?: (
       error: Error | null,
       tree: Node,
       file: VFile
     ) => Record<string, unknown>
-  ) => Error | Node | Promise<Node> | void | Promise<void>
+  ) => O extends I
+    ? Error | O | Promise<O> | void | Promise<void>
+    : Error | O | Promise<O>
 
   /**
    * Transform file contents into an AST
