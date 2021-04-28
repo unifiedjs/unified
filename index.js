@@ -3,7 +3,7 @@
 var bail = require('bail')
 var buffer = require('is-buffer')
 var extend = require('extend')
-var plain = require('is-plain-obj')
+var {isPlainObject} = require('is-plain-object')
 var trough = require('trough')
 var vfile = require('vfile')
 
@@ -229,7 +229,7 @@ function unified() {
       var entry = find(plugin)
 
       if (entry) {
-        if (plain(entry[1]) && plain(value)) {
+        if (isPlainObject(entry[1]) && isPlainObject(value)) {
           value = extend(true, entry[1], value)
         }
 
