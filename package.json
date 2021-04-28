@@ -54,7 +54,7 @@
     "bail": "^1.0.0",
     "extend": "^3.0.0",
     "is-buffer": "^2.0.0",
-    "is-plain-obj": "^2.0.0",
+    "is-plain-obj": "^4.0.0",
     "trough": "^1.0.0",
     "vfile": "^4.0.0"
   },
