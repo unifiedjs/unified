@@ -2,7 +2,7 @@
 
 var test = require('tape')
 var vfile = require('vfile')
-var noop = require('./util/noop')
+var noop = require('./util/noop.js')
 var unified = require('..')
 
 test('stringify(node[, file])', function (t) {

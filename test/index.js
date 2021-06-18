@@ -1,14 +1,14 @@
 'use strict'
 
 /* eslint-disable import/no-unassigned-import */
-require('./core')
-require('./freeze')
-require('./data')
-require('./use')
-require('./parse')
-require('./run')
-require('./stringify')
-require('./process')
+require('./core.js')
+require('./freeze.js')
+require('./data.js')
+require('./use.js')
+require('./parse.js')
+require('./run.js')
+require('./stringify.js')
+require('./process.js')
 
 var asyncfunctions = false
 
@@ -19,7 +19,7 @@ try {
 
 console.log('asyncfunctions:', asyncfunctions)
 if (asyncfunctions) {
-  require('./async-function')
+  require('./async-function.js')
 }
 
 /* eslint-enable import/no-unassigned-import */
