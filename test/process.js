@@ -2,8 +2,8 @@
 
 var test = require('tape')
 var vfile = require('vfile')
-var simple = require('./util/simple')
-var noop = require('./util/noop')
+var simple = require('./util/simple.js')
+var noop = require('./util/noop.js')
 var unified = require('..')
 
 test('process(file, done)', function (t) {

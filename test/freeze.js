@@ -1,7 +1,7 @@
 'use strict'
 
 var test = require('tape')
-var simple = require('./util/simple')
+var simple = require('./util/simple.js')
 var unified = require('..')
 
 test('freeze()', function (t) {
