@@ -80,6 +80,9 @@ Support this effort and give back by sponsoring on [OpenCollective][collective]!
 
 ## Install
 
+This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c):
+Node 12+ is needed to use it and it must be `import`ed instead of `require`d.
+
 [npm][]:
 
 ```sh
@@ -316,6 +319,9 @@ tree and discards the origin tree.
 *   [`rehype-remark`][rehype-remark]
 
 ## API
+
+This package exports the following identifiers: `unified`.
+There is no default export.
 
 ### `processor()`
 
@@ -638,7 +644,7 @@ The returned promise is rejected with a fatal error, or resolved with the
 processed [*file*][file].
 
 The parsed, transformed, and compiled value is exposed on
-[`file.contents`][vfile-contents] or `file.result` (see notes).
+[`file.value`][vfile-value] or `file.result` (see notes).
 
 ###### Note
 
@@ -651,7 +657,7 @@ unified typically compiles by serializing: most [*compiler*][compiler]s return
 Some compilers, such as the one configured with [`rehype-react`][rehype-react],
 return other values (in this case, a React tree).
 If you’re using a compiler that serializes, the result is available at
-`file.contents`.
+`file.value`.
 Otherwise, the result is available at `file.result`.
 
 ###### Example
@@ -758,7 +764,7 @@ An error is thrown if asynchronous [*plugin*][plugin]s are configured.
 ([`VFile`][vfile]) — Processed [*file*][file]
 
 The parsed, transformed, and compiled value is exposed on
-[`file.contents`][vfile-contents] or `file.result` (see notes).
+[`file.value`][vfile-value] or `file.result` (see notes).
 
 ###### Note
 
@@ -772,7 +778,7 @@ unified typically compiles by serializing: most [*compiler*][compiler]s return
 Some compilers, such as the one configured with [`rehype-react`][rehype-react],
 return other values (in this case, a React tree).
 If you’re using a compiler that serializes, the result is available at
-`file.contents`.
+`file.value`.
 Otherwise, the result is available at `file.result`.
 
 ###### Example
@@ -1285,7 +1291,7 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 
 [vfile]: https://github.com/vfile/vfile
 
-[vfile-contents]: https://github.com/vfile/vfile#vfilecontents
+[vfile-value]: https://github.com/vfile/vfile#vfilevalue
 
 [vfile-utilities]: https://github.com/vfile/vfile#related-tools
 

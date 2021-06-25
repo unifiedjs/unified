@@ -1,13 +1,11 @@
-'use strict'
-
-var test = require('tape')
-var vfile = require('vfile')
-var simple = require('./util/simple.js')
-var noop = require('./util/noop.js')
-var unified = require('..')
+import test from 'tape'
+import {VFile} from 'vfile'
+import {NoopCompiler, NoopParser} from './util/noop.js'
+import {SimpleCompiler, SimpleParser} from './util/simple.js'
+import {unified} from '../index.js'
 
 test('process(file, done)', function (t) {
-  var givenFile = vfile('alpha')
+  var givenFile = new VFile('alpha')
   var givenNode = {type: 'bravo'}
 
   t.plan(11)
@@ -23,7 +21,7 @@ test('process(file, done)', function (t) {
   t.throws(
     function () {
       var processor = unified()
-      processor.Parser = noop.Parser
+      processor.Parser = NoopParser
       processor.process()
     },
     /Cannot `process` without `Compiler`/,
@@ -82,14 +80,14 @@ test('process(file, done)', function (t) {
     }
 
     function plugin() {
-      this.Parser = simple.Parser
-      this.Compiler = simple.Compiler
+      this.Parser = SimpleParser
+      this.Compiler = SimpleCompiler
     }
   }, /^Error: Alfred$/)
 })
 
 test('process(file)', function (t) {
-  var givenFile = vfile('alpha')
+  var givenFile = new VFile('alpha')
   var givenNode = {type: 'bravo'}
 
   t.plan(7)
@@ -153,7 +151,7 @@ test('processSync(file)', function (t) {
   t.throws(
     function () {
       var processor = unified()
-      processor.Parser = noop.Parser
+      processor.Parser = NoopParser
       processor.processSync()
     },
     /Cannot `processSync` without `Compiler`/,
@@ -165,11 +163,11 @@ test('processSync(file)', function (t) {
       unified().use(parse).use(plugin).use(compile).processSync('delta')
 
       function parse() {
-        this.Parser = simple.Parser
+        this.Parser = SimpleParser
       }
 
       function compile() {
-        this.Compiler = noop.Compiler
+        this.Compiler = NoopCompiler
       }
 
       function plugin() {
@@ -187,7 +185,7 @@ test('processSync(file)', function (t) {
   t.equal(
     unified()
       .use(function () {
-        this.Parser = simple.Parser
+        this.Parser = SimpleParser
       })
       .use(function () {
         return transformer
@@ -196,7 +194,7 @@ test('processSync(file)', function (t) {
         }
       })
       .use(function () {
-        this.Compiler = simple.Compiler
+        this.Compiler = SimpleCompiler
       })
       .processSync('delta')
       .toString(),
@@ -211,10 +209,10 @@ test('compilers', function (t) {
   t.equal(
     unified()
       .use(function () {
-        this.Parser = simple.Parser
+        this.Parser = SimpleParser
         this.Compiler = string
       })
-      .processSync('alpha').contents,
+      .processSync('alpha').value,
     'bravo',
     'should compile strings'
   )
@@ -222,10 +220,10 @@ test('compilers', function (t) {
   t.deepEqual(
     unified()
       .use(function () {
-        this.Parser = simple.Parser
+        this.Parser = SimpleParser
         this.Compiler = buffer
       })
-      .processSync('alpha').contents,
+      .processSync('alpha').value,
     Buffer.from('bravo'),
     'should compile buffers'
   )
@@ -233,10 +231,10 @@ test('compilers', function (t) {
   t.deepEqual(
     unified()
       .use(function () {
-        this.Parser = simple.Parser
+        this.Parser = SimpleParser
         this.Compiler = nullish
       })
-      .processSync('alpha').contents,
+      .processSync('alpha').value,
     'alpha',
     'should compile null'
   )
@@ -244,7 +242,7 @@ test('compilers', function (t) {
   t.deepEqual(
     unified()
       .use(function () {
-        this.Parser = simple.Parser
+        this.Parser = SimpleParser
         this.Compiler = nonText
       })
       .processSync('alpha').result,

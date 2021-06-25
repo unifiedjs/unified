@@ -36,6 +36,8 @@
     "Vse Mozhet Byt <vsemozhetbyt@gmail.com>",
     "Richard Littauer <richard.littauer@gmail.com>"
   ],
+  "sideEffects": false,
+  "type": "module",
   "types": "types/ts3.4/index.d.ts",
   "typesVersions": {
     ">=4.0": {
@@ -47,39 +49,34 @@
   "files": [
     "types/ts3.4/index.d.ts",
     "types/ts4.0/index.d.ts",
-    "index.js",
-    "lib"
+    "index.d.ts",
+    "index.js"
   ],
   "dependencies": {
-    "bail": "^1.0.0",
+    "bail": "^2.0.0",
     "extend": "^3.0.0",
     "is-buffer": "^2.0.0",
-    "is-plain-obj": "^2.0.0",
-    "trough": "^1.0.0",
-    "vfile": "^4.0.0"
+    "is-plain-obj": "^4.0.0",
+    "trough": "^2.0.0",
+    "vfile": "^5.0.0"
   },
   "devDependencies": {
-    "browserify": "^17.0.0",
     "c8": "^7.0.0",
     "dtslint": "^4.0.0",
     "prettier": "^2.0.0",
     "remark-cli": "^9.0.0",
     "remark-preset-wooorm": "^8.0.0",
     "tape": "^5.0.0",
-    "tinyify": "^3.0.0",
-    "xo": "^0.38.0"
+    "xo": "^0.39.0"
   },
   "scripts": {
     "format": "remark . -qfo && prettier . -w --loglevel warn && xo --fix",
-    "build-bundle": "browserify index.js -s unified -o unified.js",
-    "build-mangle": "browserify index.js -s unified -p tinyify -o unified.min.js",
-    "build": "npm run build-bundle && npm run build-mangle",
-    "test-api": "node test",
-    "test-coverage": "c8 --check-coverage --lines 100 --functions 100 --branches 100 --reporter lcov tape test",
-    "test-types": "npm run test-types-3.4 && npm run test-types-4.0",
-    "test-types-3.4": "dtslint types/ts3.4",
-    "test-types-4.0": "dtslint types/ts4.0",
-    "test": "npm run format && npm run build && npm run test-coverage && npm run test-types"
+    "test-api": "node --conditions development test/index.js",
+    "test-coverage": "c8 --check-coverage --branches 100 --functions 100 --lines 100 --statements 100 --reporter lcov node --conditions development test/index.js",
+    "xxx-test-types": "npm run test-types-3.4 && npm run test-types-4.0",
+    "xxx-test-types-3.4": "dtslint types/ts3.4",
+    "xxx-test-types-4.0": "dtslint types/ts4.0",
+    "test": "npm run format && npm run test-coverage"
   },
   "prettier": {
     "tabWidth": 2,
@@ -91,8 +88,9 @@
   },
   "xo": {
     "prettier": true,
-    "esnext": false,
     "rules": {
+      "no-var": "off",
+      "prefer-arrow-callback": "off",
       "guard-for-in": "off",
       "no-unreachable-loop": "off",
       "unicorn/prefer-number-properties": "off",
@@ -101,8 +99,7 @@
       "unicorn/prefer-type-error": "off"
     },
     "ignores": [
-      "types",
-      "unified.js"
+      "types/"
     ]
   },
   "remarkConfig": {

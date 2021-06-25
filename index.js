@@ -1,14 +1,12 @@
-'use strict'
-
-var bail = require('bail')
-var buffer = require('is-buffer')
-var extend = require('extend')
-var plain = require('is-plain-obj')
-var trough = require('trough')
-var vfile = require('vfile')
+import {bail} from 'bail'
+import isBuffer from 'is-buffer'
+import extend from 'extend'
+import isPlainObj from 'is-plain-obj'
+import {trough} from 'trough'
+import {VFile} from 'vfile'
 
 // Expose a frozen processor.
-module.exports = unified().freeze()
+export const unified = base().freeze()
 
 var slice = [].slice
 var own = {}.hasOwnProperty
@@ -42,15 +40,15 @@ function pipelineStringify(p, ctx) {
 
   if (result === undefined || result === null) {
     // Empty.
-  } else if (typeof result === 'string' || buffer(result)) {
-    ctx.file.contents = result
+  } else if (typeof result === 'string' || isBuffer(result)) {
+    ctx.file.value = result
   } else {
     ctx.file.result = result
   }
 }
 
 // Function to create the first processor.
-function unified() {
+function base() {
   var attachers = []
   var transformers = trough()
   var namespace = {}
@@ -80,7 +78,7 @@ function unified() {
 
   // Create a new processor based on the processor in the current scope.
   function processor() {
-    var destination = unified()
+    var destination = base()
     var index = -1
 
     while (++index < attachers.length) {
@@ -172,7 +170,7 @@ function unified() {
     if (value === null || value === undefined) {
       // Empty.
     } else if (typeof value === 'function') {
-      addPlugin.apply(null, arguments)
+      addPlugin(...arguments)
     } else if (typeof value === 'object') {
       if ('length' in value) {
         addList(value)
@@ -202,7 +200,7 @@ function unified() {
         addPlugin(value)
       } else if (typeof value === 'object') {
         if ('length' in value) {
-          addPlugin.apply(null, value)
+          addPlugin(...value)
         } else {
           addPreset(value)
         }
@@ -229,7 +227,7 @@ function unified() {
       var entry = find(plugin)
 
       if (entry) {
-        if (plain(entry[1]) && plain(value)) {
+        if (isPlainObj(entry[1]) && isPlainObj(value)) {
           value = extend(true, entry[1], value)
         }
 
@@ -355,7 +353,7 @@ function unified() {
     function executor(resolve, reject) {
       var file = vfile(doc)
 
-      pipeline.run(processor, {file: file}, done)
+      pipeline.run(processor, {file}, done)
 
       function done(error) {
         if (error) {
@@ -453,4 +451,8 @@ function assertDone(name, asyncName, complete) {
       '`' + name + '` finished async. Use `' + asyncName + '` instead'
     )
   }
+}
+
+function vfile(doc) {
+  return doc instanceof VFile ? doc : new VFile(doc)
 }

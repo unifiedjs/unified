@@ -175,7 +175,7 @@ declare namespace unified {
      * If asynchronous plugins are configured an error is thrown.
      *
      * @param file `VFile` or anything which can be given to `vfile()`
-     * @returns Virtual file with modified contents.
+     * @returns Virtual file with modified value.
      */
     processSync(file: VFileCompatible): VFile
 
@@ -322,11 +322,11 @@ declare namespace unified {
   ) => Error | Node | Promise<Node> | void | Promise<void>
 
   /**
-   * Transform file contents into an AST
+   * Transform file value into an AST
    */
   interface Parser {
     /**
-     * Transform file contents into an AST
+     * Transform file value into an AST
      *
      * @returns Parsed AST node/tree
      */
@@ -340,7 +340,7 @@ declare namespace unified {
   type ParserConstructor = new (text: string, file: VFile) => Parser
 
   /**
-   * Transform file contents into an AST
+   * Transform file value into an AST
    *
    * @param text Text to transform into AST node(s)
    * @param file File associated with text

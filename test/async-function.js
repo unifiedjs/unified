@@ -1,11 +1,9 @@
-'use strict'
-
-var test = require('tape')
-var vfile = require('vfile')
-var unified = require('..')
+import test from 'tape'
+import {VFile} from 'vfile'
+import {unified} from '../index.js'
 
 test('async function transformer () {}', function (t) {
-  var givenFile = vfile('alpha')
+  var givenFile = new VFile('alpha')
   var givenNode = {type: 'bravo'}
   var modifiedNode = {type: 'charlie'}
 

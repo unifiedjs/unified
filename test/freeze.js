@@ -1,16 +1,14 @@
-'use strict'
-
-var test = require('tape')
-var simple = require('./util/simple.js')
-var unified = require('..')
+import test from 'tape'
+import {SimpleCompiler, SimpleParser} from './util/simple.js'
+import {unified} from '../index.js'
 
 test('freeze()', function (t) {
   var frozen = unified().use(config).freeze()
   var unfrozen = frozen()
 
   function config() {
-    this.Parser = simple.Parser
-    this.Compiler = simple.Compiler
+    this.Parser = SimpleParser
+    this.Compiler = SimpleCompiler
   }
 
   t.doesNotThrow(function () {

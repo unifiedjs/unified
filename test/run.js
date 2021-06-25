@@ -1,11 +1,9 @@
-'use strict'
-
-var test = require('tape')
-var vfile = require('vfile')
-var unified = require('..')
+import test from 'tape'
+import {VFile} from 'vfile'
+import {unified} from '../index.js'
 
 test('run(node[, file], done)', function (t) {
-  var givenFile = vfile('alpha')
+  var givenFile = new VFile('alpha')
   var givenNode = {type: 'bravo'}
   var otherNode = {type: 'delta'}
 
@@ -17,12 +15,12 @@ test('run(node[, file], done)', function (t) {
     t.equal(file, givenFile, 'passes given file to `done`')
   })
 
-  unified().run(givenNode, null, function (error, tree, file) {
+  unified().run(givenNode, null, function (error, _, file) {
     t.error(error, 'should’t fail')
     t.equal(file.toString(), '', 'passes file to `done` if not given')
   })
 
-  unified().run(givenNode, function (error, tree, file) {
+  unified().run(givenNode, function (error, _, file) {
     t.error(error, 'should’t fail')
     t.equal(file.toString(), '', 'passes file to `done` if omitted')
   })
@@ -62,7 +60,7 @@ test('run(node[, file], done)', function (t) {
   unified()
     .use(function () {
       return transformer
-      function transformer(tree, file, next) {
+      function transformer(_, _1, next) {
         next(new Error('delta'))
       }
     })
@@ -77,7 +75,7 @@ test('run(node[, file], done)', function (t) {
   unified()
     .use(function () {
       return transformer
-      function transformer(tree, file, next) {
+      function transformer(_, _1, next) {
         next()
         next(new Error('delta'))
       }
@@ -92,7 +90,7 @@ test('run(node[, file], done)', function (t) {
   unified()
     .use(function () {
       return transformer
-      function transformer(tree, file, next) {
+      function transformer(_, _1, next) {
         next(null, otherNode)
       }
     })
@@ -110,10 +108,10 @@ test('run(node[, file], done)', function (t) {
     .use(function () {
       return transformer
       function transformer() {
-        return {then: executor}
+        return new Promise(executor)
       }
 
-      function executor(resolve, reject) {
+      function executor(_, reject) {
         reject(new Error('delta'))
       }
     })
@@ -129,7 +127,7 @@ test('run(node[, file], done)', function (t) {
     .use(function () {
       return transformer
       function transformer() {
-        return {then: executor}
+        return new Promise(executor)
       }
 
       function executor(resolve) {
@@ -149,7 +147,7 @@ test('run(node[, file], done)', function (t) {
   unified()
     .use(function () {
       return transformer
-      function transformer(tree, file, next) {
+      function transformer(_, _1, next) {
         setImmediate(tick)
         function tick() {
           next(null, otherNode)
@@ -169,7 +167,7 @@ test('run(node[, file], done)', function (t) {
   unified()
     .use(function () {
       return transformer
-      function transformer(tree, file, next) {
+      function transformer(_, _1, next) {
         setImmediate(tick)
         function tick() {
           next(new Error('echo'))
@@ -187,7 +185,7 @@ test('run(node[, file], done)', function (t) {
   unified()
     .use(function () {
       return transformer
-      function transformer(tree, file, next) {
+      function transformer(_, _1, next) {
         setImmediate(tick)
         function tick() {
           next()
@@ -204,7 +202,7 @@ test('run(node[, file], done)', function (t) {
 })
 
 test('run(node[, file])', function (t) {
-  var givenFile = vfile('alpha')
+  var givenFile = new VFile('alpha')
   var givenNode = {type: 'bravo'}
   var otherNode = {type: 'delta'}
 
@@ -292,7 +290,7 @@ test('run(node[, file])', function (t) {
   unified()
     .use(function () {
       return transformer
-      function transformer(tree, file, next) {
+      function transformer(_, _1, next) {
         next(new Error('delta'))
       }
     })
@@ -315,7 +313,7 @@ test('run(node[, file])', function (t) {
   unified()
     .use(function () {
       return transformer
-      function transformer(tree, file, next) {
+      function transformer(_, _1, next) {
         next()
         next(new Error('delta'))
       }
@@ -337,7 +335,7 @@ test('run(node[, file])', function (t) {
   unified()
     .use(function () {
       return transformer
-      function transformer(tree, file, next) {
+      function transformer(_, _1, next) {
         next(null, otherNode)
       }
     })
@@ -361,10 +359,10 @@ test('run(node[, file])', function (t) {
     .use(function () {
       return transformer
       function transformer() {
-        return {then: executor}
+        return new Promise(executor)
       }
 
-      function executor(resolve, reject) {
+      function executor(_, reject) {
         reject(new Error('delta'))
       }
     })
@@ -386,7 +384,7 @@ test('run(node[, file])', function (t) {
     .use(function () {
       return transformer
       function transformer() {
-        return {then: executor}
+        return new Promise(executor)
       }
 
       function executor(resolve) {
@@ -410,7 +408,7 @@ test('run(node[, file])', function (t) {
   unified()
     .use(function () {
       return transformer
-      function transformer(tree, file, next) {
+      function transformer(_, _1, next) {
         setImmediate(tick)
         function tick() {
           next(null, otherNode)
@@ -434,7 +432,7 @@ test('run(node[, file])', function (t) {
   unified()
     .use(function () {
       return transformer
-      function transformer(tree, file, next) {
+      function transformer(_, _1, next) {
         setImmediate(tick)
         function tick() {
           next(new Error('echo'))
@@ -458,7 +456,7 @@ test('run(node[, file])', function (t) {
   unified()
     .use(function () {
       return transformer
-      function transformer(tree, file, next) {
+      function transformer(_, _1, next) {
         setImmediate(tick)
         function tick() {
           next()
@@ -482,11 +480,11 @@ test('run(node[, file])', function (t) {
 })
 
 test('runSync(node[, file])', function (t) {
-  var givenFile = vfile('alpha')
+  var givenFile = new VFile('alpha')
   var givenNode = {type: 'bravo'}
   var otherNode = {type: 'delta'}
 
-  t.plan(11)
+  t.plan(12)
 
   t.throws(
     function () {
@@ -509,7 +507,7 @@ test('runSync(node[, file])', function (t) {
   unified()
     .use(function () {
       return transformer
-      function transformer(tree, file) {
+      function transformer(_, file) {
         t.equal(
           file.toString(),
           '',
@@ -556,7 +554,7 @@ test('runSync(node[, file])', function (t) {
         return transformer
       }
 
-      function transformer(tree, file, next) {
+      function transformer(_, _1, next) {
         next(new Error('delta'))
       }
     },
@@ -568,7 +566,7 @@ test('runSync(node[, file])', function (t) {
     unified()
       .use(function () {
         return transformer
-        function transformer(tree, file, next) {
+        function transformer(_, _1, next) {
           next(null, otherNode)
         }
       })
@@ -586,33 +584,41 @@ test('runSync(node[, file])', function (t) {
       }
 
       function transformer() {
-        return {then: executor}
+        return new Promise(executor)
       }
 
-      function executor(resolve, reject) {
+      function executor(_, reject) {
         reject(new Error('delta'))
       }
     },
-    /delta/,
-    'should throw an error rejected from a sync transformer’s returned promise'
+    /`runSync` finished async. Use `run` instead/,
+    'should not support a promise returning transformer rejecting in `runSync`'
   )
 
-  t.equal(
-    unified()
-      .use(function () {
-        return transformer
-        function transformer() {
-          return {then: executor}
-        }
+  t.throws(
+    function () {
+      unified()
+        .use(function () {
+          return transformer
+          function transformer() {
+            return new Promise(executor)
+          }
 
-        function executor(resolve) {
-          resolve(otherNode)
-        }
-      })
-      .runSync(givenNode),
-    otherNode,
-    'should return a new tree resolved from a sync transformer’s returned promise'
+          function executor(resolve) {
+            resolve(otherNode)
+          }
+        })
+        .runSync(givenNode)
+    },
+    /`runSync` finished async. Use `run` instead/,
+    'should not support a promise returning transformer resolving in `runSync`'
   )
+
+  process.on('uncaughtException', () => {
+    t.pass(
+      'should throw the actual error from a rejecting transformer in `runSync`'
+    )
+  })
 
   t.throws(
     function () {
@@ -622,7 +628,7 @@ test('runSync(node[, file])', function (t) {
         return transformer
       }
 
-      function transformer(tree, file, next) {
+      function transformer(_, _1, next) {
         setImmediate(tick)
         function tick() {
           next(null, otherNode)

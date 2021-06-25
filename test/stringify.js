@@ -1,13 +1,11 @@
-'use strict'
-
-var test = require('tape')
-var vfile = require('vfile')
-var noop = require('./util/noop.js')
-var unified = require('..')
+import test from 'tape'
+import {VFile} from 'vfile'
+import {NoopCompiler} from './util/noop.js'
+import {unified} from '../index.js'
 
 test('stringify(node[, file])', function (t) {
   var processor = unified()
-  var givenFile = vfile('charlie')
+  var givenFile = new VFile('charlie')
   var givenNode = {type: 'delta'}
 
   t.plan(16)
@@ -60,7 +58,7 @@ test('stringify(node[, file])', function (t) {
     'should return the result `compiler` returns if it’s an arrow function'
   )
 
-  processor.Compiler = noop.Compiler
+  processor.Compiler = NoopCompiler
 
   t.throws(
     function () {

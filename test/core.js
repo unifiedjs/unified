@@ -1,7 +1,5 @@
-'use strict'
-
-var test = require('tape')
-var unified = require('..')
+import test from 'tape'
+import {unified} from '../index.js'
 
 test('unified()', function (t) {
   var count

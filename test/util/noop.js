@@ -1,18 +1,14 @@
-'use strict'
+export class NoopParser {
+  parse() {}
+}
 
-exports = noop
-module.exports = exports
-exports.Parser = Parser
-exports.Compiler = Compiler
+export class NoopCompiler {
+  compile() {}
+}
 
-function noop() {}
-function Compiler() {}
-function Parser() {}
-
-Parser.prototype.parse = noop
-Compiler.prototype.compile = noop
+export function noop() {}
 
 // Coverage:
 noop()
-new Parser() // eslint-disable-line no-new
-new Compiler() // eslint-disable-line no-new
+new NoopParser() // eslint-disable-line no-new
+new NoopCompiler() // eslint-disable-line no-new
