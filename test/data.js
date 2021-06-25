@@ -1,8 +1,8 @@
 import test from 'tape'
 import {unified} from '../index.js'
 
-test('data(key[, value])', function (t) {
-  var processor = unified()
+test('data(key[, value])', (t) => {
+  const processor = unified()
 
   t.equal(
     processor.data('foo', 'bar'),

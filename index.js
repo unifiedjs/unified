@@ -8,11 +8,11 @@ import {VFile} from 'vfile'
 // Expose a frozen processor.
 export const unified = base().freeze()
 
-var slice = [].slice
-var own = {}.hasOwnProperty
+const slice = [].slice
+const own = {}.hasOwnProperty
 
 // Process pipeline.
-var pipeline = trough()
+const pipeline = trough()
   .use(pipelineParse)
   .use(pipelineRun)
   .use(pipelineStringify)
@@ -36,7 +36,7 @@ function pipelineRun(p, ctx, next) {
 }
 
 function pipelineStringify(p, ctx) {
-  var result = p.stringify(ctx.tree, ctx.file)
+  const result = p.stringify(ctx.tree, ctx.file)
 
   if (result === undefined || result === null) {
     // Empty.
@@ -49,11 +49,11 @@ function pipelineStringify(p, ctx) {
 
 // Function to create the first processor.
 function base() {
-  var attachers = []
-  var transformers = trough()
-  var namespace = {}
-  var freezeIndex = -1
-  var frozen
+  const attachers = []
+  const transformers = trough()
+  let namespace = {}
+  let freezeIndex = -1
+  let frozen
 
   // Data management.
   processor.data = data
@@ -78,8 +78,8 @@ function base() {
 
   // Create a new processor based on the processor in the current scope.
   function processor() {
-    var destination = base()
-    var index = -1
+    const destination = base()
+    let index = -1
 
     while (++index < attachers.length) {
       destination.use.apply(null, attachers[index])
@@ -94,19 +94,16 @@ function base() {
   //
   // For example, take unified itself: it’s frozen.
   // Plugins should not be added to it.
-  // Rather, it should be extended, by invoking it, before modifying it.
+  // Rather, it should be extended, by calling it, before modifying it.
   //
-  // In essence, always invoke this when exporting a processor.
+  // In essence, always call this when exporting a processor.
   function freeze() {
-    var values
-    var transformer
-
     if (frozen) {
       return processor
     }
 
     while (++freezeIndex < attachers.length) {
-      values = attachers[freezeIndex]
+      const values = attachers[freezeIndex]
 
       if (values[1] === false) {
         continue
@@ -116,7 +113,7 @@ function base() {
         values[1] = undefined
       }
 
-      transformer = values[0].apply(processor, values.slice(1))
+      const transformer = values[0].apply(processor, values.slice(1))
 
       if (typeof transformer === 'function') {
         transformers.use(transformer)
@@ -124,7 +121,7 @@ function base() {
     }
 
     frozen = true
-    freezeIndex = Infinity
+    freezeIndex = Number.POSITIVE_INFINITY
 
     return processor
   }
@@ -163,7 +160,7 @@ function base() {
   // *   a list of presets, attachers, and arguments (list of attachers and
   //     options).
   function use(value) {
-    var settings
+    let settings
 
     assertUnfrozen('use', frozen)
 
@@ -172,13 +169,13 @@ function base() {
     } else if (typeof value === 'function') {
       addPlugin(...arguments)
     } else if (typeof value === 'object') {
-      if ('length' in value) {
+      if (Array.isArray(value)) {
         addList(value)
       } else {
         addPreset(value)
       }
     } else {
-      throw new Error('Expected usable value, not `' + value + '`')
+      throw new TypeError('Expected usable value, not `' + value + '`')
     }
 
     if (settings) {
@@ -199,32 +196,32 @@ function base() {
       if (typeof value === 'function') {
         addPlugin(value)
       } else if (typeof value === 'object') {
-        if ('length' in value) {
+        if (Array.isArray(value)) {
           addPlugin(...value)
         } else {
           addPreset(value)
         }
       } else {
-        throw new Error('Expected usable value, not `' + value + '`')
+        throw new TypeError('Expected usable value, not `' + value + '`')
       }
     }
 
     function addList(plugins) {
-      var index = -1
+      let index = -1
 
       if (plugins === null || plugins === undefined) {
         // Empty.
-      } else if (typeof plugins === 'object' && 'length' in plugins) {
+      } else if (Array.isArray(plugins)) {
         while (++index < plugins.length) {
           add(plugins[index])
         }
       } else {
-        throw new Error('Expected a list of plugins, not `' + plugins + '`')
+        throw new TypeError('Expected a list of plugins, not `' + plugins + '`')
       }
     }
 
     function addPlugin(plugin, value) {
-      var entry = find(plugin)
+      const entry = find(plugin)
 
       if (entry) {
         if (isPlainObj(entry[1]) && isPlainObj(value)) {
@@ -239,7 +236,7 @@ function base() {
   }
 
   function find(plugin) {
-    var index = -1
+    let index = -1
 
     while (++index < attachers.length) {
       if (attachers[index][0] === plugin) {
@@ -251,11 +248,9 @@ function base() {
   // Parse a file (in string or vfile representation) into a unist node using
   // the `Parser` on the processor.
   function parse(doc) {
-    var file = vfile(doc)
-    var Parser
-
     freeze()
-    Parser = processor.Parser
+    const file = vfile(doc)
+    const Parser = processor.Parser
     assertParser('parse', Parser)
 
     if (newable(Parser, 'parse')) {
@@ -301,8 +296,8 @@ function base() {
   // Run transforms on a unist node representation of a file (in string or
   // vfile representation), sync.
   function runSync(node, file) {
-    var result
-    var complete
+    let result
+    let complete
 
     run(node, file, done)
 
@@ -311,8 +306,8 @@ function base() {
     return result
 
     function done(error, tree) {
-      complete = true
       result = tree
+      complete = true
       bail(error)
     }
   }
@@ -320,11 +315,9 @@ function base() {
   // Stringify a unist node representation of a file (in string or vfile
   // representation) into a string using the `Compiler` on the processor.
   function stringify(node, doc) {
-    var file = vfile(doc)
-    var Compiler
-
     freeze()
-    Compiler = processor.Compiler
+    const file = vfile(doc)
+    const Compiler = processor.Compiler
     assertCompiler('stringify', Compiler)
     assertNode(node)
 
@@ -351,7 +344,7 @@ function base() {
     executor(null, cb)
 
     function executor(resolve, reject) {
-      var file = vfile(doc)
+      const file = vfile(doc)
 
       pipeline.run(processor, {file}, done)
 
@@ -369,13 +362,11 @@ function base() {
 
   // Process the given document (in string or vfile representation), sync.
   function processSync(doc) {
-    var file
-    var complete
-
     freeze()
     assertParser('processSync', processor.Parser)
     assertCompiler('processSync', processor.Compiler)
-    file = vfile(doc)
+    let complete
+    const file = vfile(doc)
 
     process(file, done)
 
@@ -404,9 +395,12 @@ function newable(value, name) {
 
 // Check if `value` is an object with keys.
 function keys(value) {
-  var key
+  let key
+
   for (key in value) {
-    return true
+    if (own.call(value, key)) {
+      return true
+    }
   }
 
   return false
@@ -415,14 +409,14 @@ function keys(value) {
 // Assert a parser is available.
 function assertParser(name, Parser) {
   if (typeof Parser !== 'function') {
-    throw new Error('Cannot `' + name + '` without `Parser`')
+    throw new TypeError('Cannot `' + name + '` without `Parser`')
   }
 }
 
 // Assert a compiler is available.
 function assertCompiler(name, Compiler) {
   if (typeof Compiler !== 'function') {
-    throw new Error('Cannot `' + name + '` without `Compiler`')
+    throw new TypeError('Cannot `' + name + '` without `Compiler`')
   }
 }
 
@@ -430,9 +424,9 @@ function assertCompiler(name, Compiler) {
 function assertUnfrozen(name, frozen) {
   if (frozen) {
     throw new Error(
-      'Cannot invoke `' +
+      'Cannot call `' +
         name +
-        '` on a frozen processor.\nCreate a new processor first, by invoking it: use `processor()` instead of `processor`.'
+        '` on a frozen processor.\nCreate a new processor first, by calling it: use `processor()` instead of `processor`.'
     )
   }
 }
@@ -440,7 +434,7 @@ function assertUnfrozen(name, frozen) {
 // Assert `node` is a unist node.
 function assertNode(node) {
   if (!node || typeof node.type !== 'string') {
-    throw new Error('Expected node, got `' + node + '`')
+    throw new TypeError('Expected node, got `' + node + '`')
   }
 }
 

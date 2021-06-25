@@ -3,15 +3,15 @@ import {VFile} from 'vfile'
 import {NoopCompiler} from './util/noop.js'
 import {unified} from '../index.js'
 
-test('stringify(node[, file])', function (t) {
-  var processor = unified()
-  var givenFile = new VFile('charlie')
-  var givenNode = {type: 'delta'}
+test('stringify(node[, file])', (t) => {
+  const processor = unified()
+  const givenFile = new VFile('charlie')
+  const givenNode = {type: 'delta'}
 
   t.plan(16)
 
   t.throws(
-    function () {
+    () => {
       processor.stringify('')
     },
     /Cannot `stringify` without `Compiler`/,
@@ -61,7 +61,7 @@ test('stringify(node[, file])', function (t) {
   processor.Compiler = NoopCompiler
 
   t.throws(
-    function () {
+    () => {
       processor.stringify()
     },
     /Expected node, got `undefined`/,

@@ -4,14 +4,14 @@ import {NoopCompiler, NoopParser} from './util/noop.js'
 import {SimpleCompiler, SimpleParser} from './util/simple.js'
 import {unified} from '../index.js'
 
-test('process(file, done)', function (t) {
-  var givenFile = new VFile('alpha')
-  var givenNode = {type: 'bravo'}
+test('process(file, done)', (t) => {
+  const givenFile = new VFile('alpha')
+  const givenNode = {type: 'bravo'}
 
   t.plan(11)
 
   t.throws(
-    function () {
+    () => {
       unified().process()
     },
     /Cannot `process` without `Parser`/,
@@ -19,8 +19,8 @@ test('process(file, done)', function (t) {
   )
 
   t.throws(
-    function () {
-      var processor = unified()
+    () => {
+      const processor = unified()
       processor.Parser = NoopParser
       processor.process()
     },
@@ -42,7 +42,7 @@ test('process(file, done)', function (t) {
         return givenNode
       }
     })
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer(tree, file) {
         t.equal(tree, givenNode, 'should pass `tree` to transformers')
@@ -62,7 +62,7 @@ test('process(file, done)', function (t) {
         return 'charlie'
       }
     })
-    .process(givenFile, function (error, file) {
+    .process(givenFile, (error, file) => {
       t.error(error, 'shouldn’t fail')
 
       t.equal(
@@ -72,7 +72,7 @@ test('process(file, done)', function (t) {
       )
     })
 
-  t.throws(function () {
+  t.throws(() => {
     unified().use(plugin).process(givenFile, cb)
 
     function cb() {
@@ -86,9 +86,9 @@ test('process(file, done)', function (t) {
   }, /^Error: Alfred$/)
 })
 
-test('process(file)', function (t) {
-  var givenFile = new VFile('alpha')
-  var givenNode = {type: 'bravo'}
+test('process(file)', (t) => {
+  const givenFile = new VFile('alpha')
+  const givenNode = {type: 'bravo'}
 
   t.plan(7)
 
@@ -106,7 +106,7 @@ test('process(file)', function (t) {
         return givenNode
       }
     })
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer(tree, file) {
         t.equal(tree, givenNode, 'should pass `tree` to transformers')
@@ -128,20 +128,20 @@ test('process(file)', function (t) {
     })
     .process(givenFile)
     .then(
-      function (file) {
+      (file) => {
         t.equal(file.toString(), 'charlie', 'should resolve the file')
       },
-      function () {
+      () => {
         t.fail('should resolve, not reject, the file')
       }
     )
 })
 
-test('processSync(file)', function (t) {
+test('processSync(file)', (t) => {
   t.plan(4)
 
   t.throws(
-    function () {
+    () => {
       unified().processSync()
     },
     /Cannot `processSync` without `Parser`/,
@@ -149,8 +149,8 @@ test('processSync(file)', function (t) {
   )
 
   t.throws(
-    function () {
-      var processor = unified()
+    () => {
+      const processor = unified()
       processor.Parser = NoopParser
       processor.processSync()
     },
@@ -159,7 +159,7 @@ test('processSync(file)', function (t) {
   )
 
   t.throws(
-    function () {
+    () => {
       unified().use(parse).use(plugin).use(compile).processSync('delta')
 
       function parse() {
@@ -187,7 +187,7 @@ test('processSync(file)', function (t) {
       .use(function () {
         this.Parser = SimpleParser
       })
-      .use(function () {
+      .use(() => {
         return transformer
         function transformer(node) {
           node.value = 'alpha'
@@ -203,7 +203,7 @@ test('processSync(file)', function (t) {
   )
 })
 
-test('compilers', function (t) {
+test('compilers', (t) => {
   t.plan(4)
 
   t.equal(

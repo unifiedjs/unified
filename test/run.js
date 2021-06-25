@@ -2,37 +2,37 @@ import test from 'tape'
 import {VFile} from 'vfile'
 import {unified} from '../index.js'
 
-test('run(node[, file], done)', function (t) {
-  var givenFile = new VFile('alpha')
-  var givenNode = {type: 'bravo'}
-  var otherNode = {type: 'delta'}
+test('run(node[, file], done)', (t) => {
+  const givenFile = new VFile('alpha')
+  const givenNode = {type: 'bravo'}
+  const otherNode = {type: 'delta'}
 
   t.plan(21)
 
-  unified().run(givenNode, givenFile, function (error, tree, file) {
+  unified().run(givenNode, givenFile, (error, tree, file) => {
     t.error(error, 'should’t fail')
     t.equal(tree, givenNode, 'passes given tree to `done`')
     t.equal(file, givenFile, 'passes given file to `done`')
   })
 
-  unified().run(givenNode, null, function (error, _, file) {
+  unified().run(givenNode, null, (error, _, file) => {
     t.error(error, 'should’t fail')
     t.equal(file.toString(), '', 'passes file to `done` if not given')
   })
 
-  unified().run(givenNode, function (error, _, file) {
+  unified().run(givenNode, (error, _, file) => {
     t.error(error, 'should’t fail')
     t.equal(file.toString(), '', 'passes file to `done` if omitted')
   })
 
   unified()
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer() {
         return new Error('charlie')
       }
     })
-    .run(givenNode, function (error) {
+    .run(givenNode, (error) => {
       t.equal(
         String(error),
         'Error: charlie',
@@ -41,13 +41,13 @@ test('run(node[, file], done)', function (t) {
     })
 
   unified()
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer() {
         return otherNode
       }
     })
-    .run(givenNode, function (error, tree) {
+    .run(givenNode, (error, tree) => {
       t.error(error, 'should’t fail')
 
       t.equal(
@@ -58,13 +58,13 @@ test('run(node[, file], done)', function (t) {
     })
 
   unified()
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer(_, _1, next) {
         next(new Error('delta'))
       }
     })
-    .run(givenNode, function (error) {
+    .run(givenNode, (error) => {
       t.equal(
         String(error),
         'Error: delta',
@@ -73,28 +73,28 @@ test('run(node[, file], done)', function (t) {
     })
 
   unified()
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer(_, _1, next) {
         next()
         next(new Error('delta'))
       }
     })
-    .run(givenNode, function (error) {
+    .run(givenNode, (error) => {
       t.error(
         error,
-        'should ignore multiple invocations of `next`when invoked in a synchroneous transformer'
+        'should ignore multiple calls of `next` when called in a synchroneous transformer'
       )
     })
 
   unified()
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer(_, _1, next) {
         next(null, otherNode)
       }
     })
-    .run(givenNode, function (error, tree) {
+    .run(givenNode, (error, tree) => {
       t.error(error, 'should’t fail')
 
       t.equal(
@@ -105,7 +105,7 @@ test('run(node[, file], done)', function (t) {
     })
 
   unified()
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer() {
         return new Promise(executor)
@@ -115,7 +115,7 @@ test('run(node[, file], done)', function (t) {
         reject(new Error('delta'))
       }
     })
-    .run(givenNode, function (error) {
+    .run(givenNode, (error) => {
       t.equal(
         String(error),
         'Error: delta',
@@ -124,7 +124,7 @@ test('run(node[, file], done)', function (t) {
     })
 
   unified()
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer() {
         return new Promise(executor)
@@ -134,7 +134,7 @@ test('run(node[, file], done)', function (t) {
         resolve(otherNode)
       }
     })
-    .run(givenNode, function (error, tree) {
+    .run(givenNode, (error, tree) => {
       t.error(error, 'should’t fail')
 
       t.equal(
@@ -145,7 +145,7 @@ test('run(node[, file], done)', function (t) {
     })
 
   unified()
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer(_, _1, next) {
         setImmediate(tick)
@@ -154,7 +154,7 @@ test('run(node[, file], done)', function (t) {
         }
       }
     })
-    .run(givenNode, function (error, tree) {
+    .run(givenNode, (error, tree) => {
       t.error(error, 'should’t fail')
 
       t.equal(
@@ -165,7 +165,7 @@ test('run(node[, file], done)', function (t) {
     })
 
   unified()
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer(_, _1, next) {
         setImmediate(tick)
@@ -174,7 +174,7 @@ test('run(node[, file], done)', function (t) {
         }
       }
     })
-    .run(givenNode, function (error) {
+    .run(givenNode, (error) => {
       t.equal(
         String(error),
         'Error: echo',
@@ -183,7 +183,7 @@ test('run(node[, file], done)', function (t) {
     })
 
   unified()
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer(_, _1, next) {
         setImmediate(tick)
@@ -193,28 +193,28 @@ test('run(node[, file], done)', function (t) {
         }
       }
     })
-    .run(givenNode, function (error) {
+    .run(givenNode, (error) => {
       t.error(
         error,
-        'should ignore multiple invocations of `next`when invoked from an asynchroneous transformer'
+        'should ignore multiple calls of `next` when called from an asynchroneous transformer'
       )
     })
 })
 
-test('run(node[, file])', function (t) {
-  var givenFile = new VFile('alpha')
-  var givenNode = {type: 'bravo'}
-  var otherNode = {type: 'delta'}
+test('run(node[, file])', (t) => {
+  const givenFile = new VFile('alpha')
+  const givenNode = {type: 'bravo'}
+  const otherNode = {type: 'delta'}
 
   t.plan(13)
 
   unified()
     .run(givenNode, givenFile)
     .then(
-      function (tree) {
+      (tree) => {
         t.equal(tree, givenNode, 'should resolve the given tree')
       },
-      function () {
+      () => {
         t.fail('should resolve, not reject, when `file` is given')
       }
     )
@@ -222,10 +222,10 @@ test('run(node[, file])', function (t) {
   unified()
     .run(givenNode, null)
     .then(
-      function (tree) {
+      (tree) => {
         t.equal(tree, givenNode, 'should work if `file` is not given')
       },
-      function () {
+      () => {
         t.fail('should resolve, not reject, when `file` is not given')
       }
     )
@@ -233,16 +233,16 @@ test('run(node[, file])', function (t) {
   unified()
     .run(givenNode)
     .then(
-      function (tree) {
+      (tree) => {
         t.equal(tree, givenNode, 'should work if `file` is omitted')
       },
-      function () {
+      () => {
         t.fail('should resolve, not reject, when `file` is omitted')
       }
     )
 
   unified()
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer() {
         return new Error('charlie')
@@ -250,12 +250,12 @@ test('run(node[, file])', function (t) {
     })
     .run(givenNode)
     .then(
-      function () {
+      () => {
         t.fail(
           'should reject, not resolve, when an error is passed to `done` from a sync transformer'
         )
       },
-      function (error) {
+      (error) => {
         t.equal(
           String(error),
           'Error: charlie',
@@ -265,7 +265,7 @@ test('run(node[, file])', function (t) {
     )
 
   unified()
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer() {
         return otherNode
@@ -273,14 +273,14 @@ test('run(node[, file])', function (t) {
     })
     .run(givenNode)
     .then(
-      function (tree) {
+      (tree) => {
         t.equal(
           tree,
           otherNode,
           'should resolve a new tree when returned from a sync transformer'
         )
       },
-      function () {
+      () => {
         t.fail(
           'should resolve, not reject, when a new tree is given from a sync transformer'
         )
@@ -288,7 +288,7 @@ test('run(node[, file])', function (t) {
     )
 
   unified()
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer(_, _1, next) {
         next(new Error('delta'))
@@ -296,12 +296,12 @@ test('run(node[, file])', function (t) {
     })
     .run(givenNode)
     .then(
-      function () {
+      () => {
         t.fail(
           'should reject, not resolve, if an error is given to a sync transformer’s `next`'
         )
       },
-      function (error) {
+      (error) => {
         t.equal(
           String(error),
           'Error: delta',
@@ -311,7 +311,7 @@ test('run(node[, file])', function (t) {
     )
 
   unified()
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer(_, _1, next) {
         next()
@@ -320,20 +320,20 @@ test('run(node[, file])', function (t) {
     })
     .run(givenNode)
     .then(
-      function () {
+      () => {
         t.pass(
-          'should ignore multiple invocations of `next`when invoked in a synchroneous transformer'
+          'should ignore multiple calls of `next` when called in a synchroneous transformer'
         )
       },
-      function () {
+      () => {
         t.fail(
-          'should ignore multiple invocations of `next`when invoked in a synchroneous transformer'
+          'should ignore multiple calls of `next` when called in a synchroneous transformer'
         )
       }
     )
 
   unified()
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer(_, _1, next) {
         next(null, otherNode)
@@ -341,14 +341,14 @@ test('run(node[, file])', function (t) {
     })
     .run(givenNode)
     .then(
-      function (tree) {
+      (tree) => {
         t.equal(
           tree,
           otherNode,
           'should resolve if a new tree is given to a sync transformer’s `next`'
         )
       },
-      function () {
+      () => {
         t.fail(
           'should resolve, not reject, if a new tree is given to a sync transformer’s `next`'
         )
@@ -356,7 +356,7 @@ test('run(node[, file])', function (t) {
     )
 
   unified()
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer() {
         return new Promise(executor)
@@ -368,12 +368,12 @@ test('run(node[, file])', function (t) {
     })
     .run(givenNode)
     .then(
-      function () {
+      () => {
         t.fail(
           'should reject, not resolve, if an error is rejected from a sync transformer’s returned promise'
         )
       },
-      function () {
+      () => {
         t.pass(
           'should reject if an error is rejected from a sync transformer’s returned promise'
         )
@@ -381,7 +381,7 @@ test('run(node[, file])', function (t) {
     )
 
   unified()
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer() {
         return new Promise(executor)
@@ -393,12 +393,12 @@ test('run(node[, file])', function (t) {
     })
     .run(givenNode)
     .then(
-      function () {
+      () => {
         t.pass(
           'should resolve a new tree if it’s resolved from a sync transformer’s returned promise'
         )
       },
-      function () {
+      () => {
         t.fail(
           'should resolve, not reject, a new tree if it’s resolved from a sync transformer’s returned promise'
         )
@@ -406,7 +406,7 @@ test('run(node[, file])', function (t) {
     )
 
   unified()
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer(_, _1, next) {
         setImmediate(tick)
@@ -417,12 +417,12 @@ test('run(node[, file])', function (t) {
     })
     .run(givenNode)
     .then(
-      function () {
+      () => {
         t.pass(
           'should resolve a new tree if it’s given to `next` from an asynchroneous transformer'
         )
       },
-      function () {
+      () => {
         t.fail(
           'should resolve, not reject, if a new tree is given to `next` from an asynchroneous transformer'
         )
@@ -430,7 +430,7 @@ test('run(node[, file])', function (t) {
     )
 
   unified()
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer(_, _1, next) {
         setImmediate(tick)
@@ -441,12 +441,12 @@ test('run(node[, file])', function (t) {
     })
     .run(givenNode)
     .then(
-      function () {
+      () => {
         t.fail(
           'should reject, not resolve, if an error is given to `next` from an asynchroneous transformer'
         )
       },
-      function () {
+      () => {
         t.pass(
           'should reject if an error is given to `next` from an asynchroneous transformer'
         )
@@ -454,7 +454,7 @@ test('run(node[, file])', function (t) {
     )
 
   unified()
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer(_, _1, next) {
         setImmediate(tick)
@@ -466,28 +466,28 @@ test('run(node[, file])', function (t) {
     })
     .run(givenNode)
     .then(
-      function () {
+      () => {
         t.pass(
-          'should ignore multiple invocations of `next`when invoked from an asynchroneous transformer'
+          'should ignore multiple calls of `next` when called from an asynchroneous transformer'
         )
       },
-      function () {
+      () => {
         t.fail(
-          'should ignore multiple invocations of `next`when invoked from an asynchroneous transformer'
+          'should ignore multiple calls of `next` when called from an asynchroneous transformer'
         )
       }
     )
 })
 
-test('runSync(node[, file])', function (t) {
-  var givenFile = new VFile('alpha')
-  var givenNode = {type: 'bravo'}
-  var otherNode = {type: 'delta'}
+test('runSync(node[, file])', (t) => {
+  const givenFile = new VFile('alpha')
+  const givenNode = {type: 'bravo'}
+  const otherNode = {type: 'delta'}
 
   t.plan(12)
 
   t.throws(
-    function () {
+    () => {
       unified().runSync()
     },
     /Expected node, got `undefined`/,
@@ -495,7 +495,7 @@ test('runSync(node[, file])', function (t) {
   )
 
   unified()
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer(tree, file) {
         t.equal(tree, givenNode, 'passes given tree to transformers')
@@ -505,7 +505,7 @@ test('runSync(node[, file])', function (t) {
     .runSync(givenNode, givenFile)
 
   unified()
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer(_, file) {
         t.equal(
@@ -518,7 +518,7 @@ test('runSync(node[, file])', function (t) {
     .runSync(givenNode)
 
   t.throws(
-    function () {
+    () => {
       unified().use(plugin).runSync(givenNode)
 
       function plugin() {
@@ -535,7 +535,7 @@ test('runSync(node[, file])', function (t) {
 
   t.equal(
     unified()
-      .use(function () {
+      .use(() => {
         return transformer
         function transformer() {
           return otherNode
@@ -547,7 +547,7 @@ test('runSync(node[, file])', function (t) {
   )
 
   t.throws(
-    function () {
+    () => {
       unified().use(plugin).runSync(givenNode)
 
       function plugin() {
@@ -564,7 +564,7 @@ test('runSync(node[, file])', function (t) {
 
   t.equal(
     unified()
-      .use(function () {
+      .use(() => {
         return transformer
         function transformer(_, _1, next) {
           next(null, otherNode)
@@ -576,7 +576,7 @@ test('runSync(node[, file])', function (t) {
   )
 
   t.throws(
-    function () {
+    () => {
       unified().use(plugin).runSync(givenNode)
 
       function plugin() {
@@ -596,9 +596,9 @@ test('runSync(node[, file])', function (t) {
   )
 
   t.throws(
-    function () {
+    () => {
       unified()
-        .use(function () {
+        .use(() => {
           return transformer
           function transformer() {
             return new Promise(executor)
@@ -621,7 +621,7 @@ test('runSync(node[, file])', function (t) {
   })
 
   t.throws(
-    function () {
+    () => {
       unified().use(plugin).runSync(givenNode)
 
       function plugin() {

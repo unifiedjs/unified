@@ -1,14 +1,14 @@
 import test from 'tape'
 import {unified} from '../index.js'
 
-test('parse(file)', function (t) {
-  var processor = unified()
-  var givenNode = {type: 'delta'}
+test('parse(file)', (t) => {
+  const processor = unified()
+  const givenNode = {type: 'delta'}
 
   t.plan(15)
 
   t.throws(
-    function () {
+    () => {
       processor.parse('')
     },
     /Cannot `parse` without `Parser`/,

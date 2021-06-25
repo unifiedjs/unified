@@ -16,7 +16,7 @@ declare namespace unified {
      * @param plugin unified plugin
      * @param settings Configuration for plugin
      * @typeParam S Plugin settings
-     * @returns The processor on which use is invoked
+     * @returns The processor on which use is called
      */
     use<S extends any[] = [Settings?]>(
       plugin: Plugin<S, P>,
@@ -80,12 +80,12 @@ declare namespace unified {
 
     /**
      * Function handling the parsing of text to a syntax tree.
-     * Used in the parse phase in the process and invoked with a `string` and `VFile` representation of the document to parse.
+     * Used in the parse phase in the process and called with a `string` and `VFile` representation of the document to parse.
      *
      * `Parser` can be a normal function in which case it must return a `Node`: the syntax tree representation of the given file.
      *
-     * `Parser` can also be a constructor function (a function with keys in its `prototype`) in which case it’s invoked with `new`.
-     * Instances must have a parse method which is invoked without arguments and must return a `Node`.
+     * `Parser` can also be a constructor function (a function with keys in its `prototype`) in which case it’s called with `new`.
+     * Instances must have a parse method which is called without arguments and must return a `Node`.
      */
     Parser: ParserConstructor | ParserFunction
 
@@ -100,12 +100,12 @@ declare namespace unified {
 
     /**
      * Function handling the compilation of syntax tree to a text.
-     * Used in the stringify phase in the process and invoked with a `Node` and `VFile` representation of the document to stringify.
+     * Used in the stringify phase in the process and called with a `Node` and `VFile` representation of the document to stringify.
      *
      * `Compiler` can be a normal function in which case it must return a `string`: the text representation of the given syntax tree.
      *
-     * `Compiler` can also be a constructor function (a function with keys in its `prototype`) in which case it’s invoked with `new`.
-     * Instances must have a `compile` method which is invoked without arguments and must return a `string`.
+     * `Compiler` can also be a constructor function (a function with keys in its `prototype`) in which case it’s called with `new`.
+     * Instances must have a `compile` method which is called without arguments and must return a `string`.
      */
     Compiler: CompilerConstructor | CompilerFunction
 
@@ -130,7 +130,7 @@ declare namespace unified {
      * Transform a syntax tree by applying plugins to it.
      *
      * @param node Node to transform
-     * @param done Invoked when transformation is complete.
+     * @param done called when transformation is complete.
      */
     run(node: Node, done: RunCallback): void
 
@@ -139,7 +139,7 @@ declare namespace unified {
      *
      * @param node Node to transform
      * @param file `VFile` or anything which can be given to `vfile()`
-     * @param done Invoked when transformation is complete.
+     * @param done called when transformation is complete.
      */
     run(node: Node, file: VFileCompatible, done: RunCallback): void
 
@@ -155,7 +155,7 @@ declare namespace unified {
     runSync(node: Node, file?: VFileCompatible): Node
 
     /**
-     * Process the given representation of a file as configured on the processor. The process invokes `parse`, `run`, and `stringify` internally.
+     * Process the given representation of a file as configured on the processor. The process calls `parse`, `run`, and `stringify` internally.
      * @param file `VFile` or anything which can be given to `vfile()`
      * @returns `Promise` if `done` is not given.
      * Rejected with an error or resolved with the resulting file.
@@ -163,14 +163,14 @@ declare namespace unified {
     process(file: VFileCompatible): Promise<VFile>
 
     /**
-     * Process the given representation of a file as configured on the processor. The process invokes `parse`, `run`, and `stringify` internally.
+     * Process the given representation of a file as configured on the processor. The process calls `parse`, `run`, and `stringify` internally.
      * @param file `VFile` or anything which can be given to `vfile()`
-     * @param done Invoked when the process is complete. Invoked with a fatal error, if any, and the VFile.
+     * @param done Called when the process is complete. Called with a fatal error, if any, and the VFile.
      */
     process(file: VFileCompatible, done: ProcessCallback): void
 
     /**
-     * Process the given representation of a file as configured on the processor. The process invokes `parse`, `run`, and `stringify` internally.
+     * Process the given representation of a file as configured on the processor. The process calls `parse`, `run`, and `stringify` internally.
      *
      * If asynchronous plugins are configured an error is thrown.
      *
@@ -195,7 +195,7 @@ declare namespace unified {
 
     /**
      * @param value Value to set. Omit if getting key
-     * @returns If setting, the processor on which data is invoked
+     * @returns If setting, the processor on which data is called
      */
     data(key: string, value: any): Processor<P>
 
@@ -206,7 +206,7 @@ declare namespace unified {
      *
      * It’s possible to freeze processors explicitly, by calling `.freeze()`, but `.parse()`, `.run()`, `.stringify()`, and `.process()` call `.freeze()` to freeze a processor too.
      *
-     * @returns The processor on which freeze is invoked.
+     * @returns The processor on which freeze is called.
      */
     freeze(): FrozenProcessor<P>
   }
@@ -297,14 +297,14 @@ declare namespace unified {
   ) => Transformer | void
 
   /**
-   * Transformers modify the syntax tree or metadata of a file. A transformer is a function which is invoked each time a file is passed through the transform phase.
+   * Transformers modify the syntax tree or metadata of a file. A transformer is a function which is called each time a file is passed through the transform phase.
    * If an error occurs (either because it’s thrown, returned, rejected, or passed to `next`), the process stops.
    *
    * The transformation process in unified is handled by `trough`, see it’s documentation for the exact semantics of transformers.
    *
    * @param node Node or tree to be transformed
    * @param file File associated with node or tree
-   * @param next If the signature of a transformer includes `next` (third argument), the function may finish asynchronous, and must invoke `next()`.
+   * @param next If the signature of a transformer includes `next` (third argument), the function may finish asynchronous, and must call `next()`.
    * @returns
    * - `void` — If nothing is returned, the next transformer keeps using same tree.
    * - `Error` — Can be returned to stop the process

@@ -938,7 +938,7 @@ Yields:
     throw new Error(
     ^
 
-Error: Cannot invoke `use` on a frozen processor.
+Error: Cannot call `use` on a frozen processor.
 Create a new processor first, by invoking it: use `processor()` instead of `processor`.
     at assertUnfrozen (~/node_modules/unified/index.js:440:11)
     at Function.use (~/node_modules/unified/index.js:172:5)

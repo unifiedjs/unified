@@ -2,64 +2,64 @@ import test from 'tape'
 import {SimpleCompiler, SimpleParser} from './util/simple.js'
 import {unified} from '../index.js'
 
-test('freeze()', function (t) {
-  var frozen = unified().use(config).freeze()
-  var unfrozen = frozen()
+test('freeze()', (t) => {
+  const frozen = unified().use(config).freeze()
+  const unfrozen = frozen()
 
   function config() {
     this.Parser = SimpleParser
     this.Compiler = SimpleCompiler
   }
 
-  t.doesNotThrow(function () {
+  t.doesNotThrow(() => {
     unfrozen.data()
-  }, '`data` can be invoked on unfrozen interfaces')
+  }, '`data` can be called on unfrozen interfaces')
 
   t.throws(
-    function () {
+    () => {
       frozen.data('foo', 'bar')
     },
-    /Cannot invoke `data` on a frozen processor/,
-    '`data` cannot be invoked on frozen interfaces'
+    /Cannot call `data` on a frozen processor/,
+    '`data` cannot be called on frozen interfaces'
   )
 
   t.throws(
-    function () {
+    () => {
       frozen.use()
     },
-    /Cannot invoke `use` on a frozen processor/,
-    '`use` cannot be invoked on frozen interfaces'
+    /Cannot call `use` on a frozen processor/,
+    '`use` cannot be called on frozen interfaces'
   )
 
-  t.doesNotThrow(function () {
+  t.doesNotThrow(() => {
     frozen.parse()
-  }, '`parse` can be invoked on frozen interfaces')
+  }, '`parse` can be called on frozen interfaces')
 
-  t.doesNotThrow(function () {
+  t.doesNotThrow(() => {
     frozen.stringify({type: 'foo'})
-  }, '`stringify` can be invoked on frozen interfaces')
+  }, '`stringify` can be called on frozen interfaces')
 
-  t.doesNotThrow(function () {
+  t.doesNotThrow(() => {
     frozen.runSync({type: 'foo'})
-  }, '`runSync` can be invoked on frozen interfaces')
+  }, '`runSync` can be called on frozen interfaces')
 
-  t.doesNotThrow(function () {
-    frozen.run({type: 'foo'}, function () {})
-  }, '`run` can be invoked on frozen interfaces')
+  t.doesNotThrow(() => {
+    frozen.run({type: 'foo'}, () => {})
+  }, '`run` can be called on frozen interfaces')
 
-  t.doesNotThrow(function () {
+  t.doesNotThrow(() => {
     frozen.processSync('')
-  }, '`processSync` can be invoked on frozen interfaces')
+  }, '`processSync` can be called on frozen interfaces')
 
-  t.doesNotThrow(function () {
-    frozen.process('', function () {})
-  }, '`process` can be invoked on frozen interfaces')
+  t.doesNotThrow(() => {
+    frozen.process('', () => {})
+  }, '`process` can be called on frozen interfaces')
 
-  t.test('should freeze once, even for nested calls', function (t) {
+  t.test('should freeze once, even for nested calls', (t) => {
     t.plan(2)
 
-    var index = 0
-    var processor = unified()
+    let index = 0
+    const processor = unified()
       .use(plugin)
       .use({plugins: [freezingPlugin]})
       .use({plugins: [freezingPlugin]})

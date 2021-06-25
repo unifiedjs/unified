@@ -1,20 +1,18 @@
 import test from 'tape'
 import {unified} from '../index.js'
 
-test('unified()', function (t) {
-  var count
-  var processor
-  var otherProcessor
+test('unified()', (t) => {
+  let count
 
   t.throws(
-    function () {
+    () => {
       unified.use(Function.prototype)
     },
-    /Cannot invoke `use` on a frozen processor/,
+    /Cannot call `use` on a frozen processor/,
     'should be frozen'
   )
 
-  processor = unified()
+  const processor = unified()
 
   t.equal(typeof processor, 'function', 'should return a function')
 
@@ -24,18 +22,18 @@ test('unified()', function (t) {
   })
 
   count = 0
-  otherProcessor = processor().freeze()
+  const otherProcessor = processor().freeze()
 
   t.equal(
     count,
     1,
-    'should create a new processor implementing the ancestral processor when invoked (#1)'
+    'should create a new processor implementing the ancestral processor when called (#1)'
   )
 
   t.equal(
     otherProcessor.data('foo'),
     'bar',
-    'should create a new processor implementing the ancestral processor when invoked (#2)'
+    'should create a new processor implementing the ancestral processor when called (#2)'
   )
 
   t.end()
