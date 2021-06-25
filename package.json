@@ -38,17 +38,9 @@
   ],
   "sideEffects": false,
   "type": "module",
-  "types": "types/ts3.4/index.d.ts",
-  "typesVersions": {
-    ">=4.0": {
-      "types/ts3.4/*": [
-        "types/ts4.0/*"
-      ]
-    }
-  },
+  "types": "types/index.d.ts",
   "files": [
-    "types/ts3.4/index.d.ts",
-    "types/ts4.0/index.d.ts",
+    "types/index.d.ts",
     "index.d.ts",
     "index.js"
   ],
@@ -73,9 +65,7 @@
     "format": "remark . -qfo && prettier . -w --loglevel warn && xo --fix",
     "test-api": "node --conditions development test/index.js",
     "test-coverage": "c8 --check-coverage --branches 100 --functions 100 --lines 100 --statements 100 --reporter lcov node --conditions development test/index.js",
-    "xxx-test-types": "npm run test-types-3.4 && npm run test-types-4.0",
-    "xxx-test-types-3.4": "dtslint types/ts3.4",
-    "xxx-test-types-4.0": "dtslint types/ts4.0",
+    "xxx-test-types": "dtslint types",
     "test": "npm run format && npm run test-coverage"
   },
   "prettier": {
