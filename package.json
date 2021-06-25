@@ -63,8 +63,8 @@
   },
   "scripts": {
     "format": "remark . -qfo && prettier . -w --loglevel warn && xo --fix",
-    "test-api": "node --conditions development test/index.js",
-    "test-coverage": "c8 --check-coverage --branches 100 --functions 100 --lines 100 --statements 100 --reporter lcov node --conditions development test/index.js",
+    "test-api": "node --unhandled-rejections=strict --conditions development test/index.js",
+    "test-coverage": "c8 --check-coverage --branches 100 --functions 100 --lines 100 --statements 100 --reporter lcov node --unhandled-rejections=strict --conditions development test/index.js",
     "xxx-test-types": "dtslint types",
     "test": "npm run format && npm run test-coverage"
   },
