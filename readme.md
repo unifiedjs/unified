@@ -96,24 +96,31 @@ If you’re using TypeScript, make sure to also install
 ## Use
 
 ```js
-var unified = require('unified')
-var markdown = require('remark-parse')
-var remark2rehype = require('remark-rehype')
-var doc = require('rehype-document')
-var format = require('rehype-format')
-var html = require('rehype-stringify')
-var report = require('vfile-reporter')
+import {unified} from 'unified'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+import rehypeDocument from 'rehype-document'
+import rehypeFormat from 'rehype-format'
+import rehypeStringify from 'rehype-stringify'
+import {reporter} from 'vfile-reporter'
 
 unified()
-  .use(markdown)
-  .use(remark2rehype)
-  .use(doc, {title: '👋🌍'})
-  .use(format)
-  .use(html)
-  .process('# Hello world!', function (err, file) {
-    console.error(report(err || file))
-    console.log(String(file))
-  })
+  .use(remarkParse)
+  .use(remarkRehype)
+  .use(rehypeDocument, {title: '👋🌍'})
+  .use(rehypeFormat)
+  .use(rehypeStringify)
+  .process('# Hello world!')
+  .then(
+    (file) => {
+      console.error(reporter(file))
+      console.log(String(file))
+    },
+    (error) => {
+      // Handle your error here!
+      throw error
+    }
+  )
 ```
 
 Yields:
@@ -261,33 +268,40 @@ The API provided by **unified** allows multiple files to be processed and gives
 access to *metadata* (such as lint messages):
 
 ```js
-var unified = require('unified')
-var markdown = require('remark-parse')
-var styleGuide = require('remark-preset-lint-markdown-style-guide')
-var remark2retext = require('remark-retext')
-var english = require('retext-english')
-var equality = require('retext-equality')
-var remark2rehype = require('remark-rehype')
-var html = require('rehype-stringify')
-var report = require('vfile-reporter')
+import {unified} from 'unified'
+import remarkParse from 'remark-parse'
+import remarkPresetLintMarkdownStyleGuide from 'remark-preset-lint-markdown-style-guide'
+import remarkRetext from 'remark-retext'
+import retextEnglish from 'retext-english'
+import retextEquality from 'retext-equality'
+import remarkRehype from 'remark-rehype'
+import rehypeStringify from 'rehype-stringify'
+import {reporter} from 'vfile-reporter'
 
 unified()
-  .use(markdown)
-  .use(styleGuide)
-  .use(remark2retext, unified().use(english).use(equality))
-  .use(remark2rehype)
-  .use(html)
-  .process('*Emphasis* and _stress_, you guys!', function (err, file) {
-    console.error(report(err || file))
-    console.log(String(file))
-  })
+  .use(remarkParse)
+  .use(remarkPresetLintMarkdownStyleGuide)
+  .use(remarkRetext, unified().use(retextEnglish).use(retextEquality))
+  .use(remarkRehype)
+  .use(rehypeStringify)
+  .process('*Emphasis* and _stress_, you guys!')
+  .then(
+    (file) => {
+      console.error(reporter(file))
+      console.log(String(file))
+    },
+    (error) => {
+      // Handle your error here!
+      throw error
+    }
+  )
 ```
 
 Yields:
 
 ```txt
   1:16-1:24  warning  Emphasis should use `*` as a marker                                  emphasis-marker  remark-lint
-  1:30-1:34  warning  `guys` may be insensitive, use `people`, `persons`, `folks` instead  gals-men         retext-equality
+  1:30-1:34  warning  `guys` may be insensitive, use `people`, `persons`, `folks` instead  gals-man         retext-equality
 
 ⚠ 2 warnings
 ```
@@ -340,16 +354,14 @@ The following example shows how a new processor can be created (from the remark
 processor) and linked to **stdin**(4) and **stdout**(4).
 
 ```js
-var remark = require('remark')
-var concat = require('concat-stream')
+import {remark} from 'remark'
+import concatStream from 'concat-stream'
 
-process.stdin.pipe(concat(onconcat))
-
-function onconcat(buf) {
-  var doc = remark().processSync(buf).toString()
-
-  process.stdout.write(doc)
-}
+process.stdin.pipe(
+  concatStream((buf) => {
+    process.stdout.write(remark().processSync(buf).toString())
+  })
+)
 ```
 
 ### `processor.use(plugin[, options])`
@@ -391,7 +403,7 @@ There are many ways to pass plugins to `.use()`.
 The below example gives an overview.
 
 ```js
-var unified = require('unified')
+import {unified} from 'unified'
 
 unified()
   // Plugin with options:
@@ -433,10 +445,10 @@ The below example shows how `parse` can be used to create a syntax tree from a
 file.
 
 ```js
-var unified = require('unified')
-var markdown = require('remark-parse')
+import {unified} from 'unified'
+import remarkParse from 'remark-parse'
 
-var tree = unified().use(markdown).parse('# Hello world!')
+const tree = unified().use(remarkParse).parse('# Hello world!')
 
 console.log(tree)
 ```
@@ -504,13 +516,13 @@ When using TypeScript, cast the type on your side.
 The below example shows how `stringify` can be used to serialize a syntax tree.
 
 ```js
-var unified = require('unified')
-var html = require('rehype-stringify')
-var h = require('hastscript')
+import {unified} from 'unified'
+import rehypeStringify from 'rehype-stringify'
+import {h} from 'hastscript'
 
-var tree = h('h1', 'Hello world!')
+const tree = h('h1', 'Hello world!')
 
-var doc = unified().use(html).stringify(tree)
+const doc = unified().use(rehypeStringify).stringify(tree)
 
 console.log(doc)
 ```
@@ -575,22 +587,26 @@ Called with either an error or results.
 The below example shows how `run` can be used to transform a syntax tree.
 
 ```js
-var unified = require('unified')
-var references = require('remark-reference-links')
-var u = require('unist-builder')
+import {unified} from 'unified'
+import remarkReferenceLinks from 'remark-reference-links'
+import {u} from 'unist-builder'
 
-var tree = u('root', [
+const tree = u('root', [
   u('paragraph', [
     u('link', {href: 'https://example.com'}, [u('text', 'Example Domain')])
   ])
 ])
 
 unified()
-  .use(references)
-  .run(tree, function (err, tree) {
-    if (err) throw err
-    console.log(tree)
-  })
+  .use(remarkReferenceLinks)
+  .run(tree)
+  .then(
+    (changedTree) => console.log(changedTree),
+    (error) => {
+      // Handle your error here!
+      throw error
+    }
+  )
 ```
 
 Yields:
@@ -666,26 +682,25 @@ The below example shows how `process` can be used to process a file, whether
 transformers are asynchronous or not, with promises.
 
 ```js
-var unified = require('unified')
-var markdown = require('remark-parse')
-var remark2rehype = require('remark-rehype')
-var doc = require('rehype-document')
-var format = require('rehype-format')
-var html = require('rehype-stringify')
+import {unified} from 'unified'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+import rehypeDocument from 'rehype-document'
+import rehypeFormat from 'rehype-format'
+import rehypeStringify from 'rehype-stringify'
 
 unified()
-  .use(markdown)
-  .use(remark2rehype)
-  .use(doc, {title: '👋🌍'})
-  .use(format)
-  .use(html)
+  .use(remarkParse)
+  .use(remarkRehype)
+  .use(rehypeDocument, {title: '👋🌍'})
+  .use(rehypeFormat)
+  .use(rehypeStringify)
   .process('# Hello world!')
   .then(
-    function (file) {
-      console.log(String(file))
-    },
-    function (err) {
-      console.error(String(err))
+    (file) => console.log(String(file)),
+    (error) => {
+      // Handle your error here!
+      throw error
     }
   )
 ```
@@ -722,20 +737,27 @@ The below example shows how `process` can be used to process a file, whether
 transformers are asynchronous or not, with a callback.
 
 ```js
-var unified = require('unified')
-var parse = require('remark-parse')
-var stringify = require('remark-stringify')
-var github = require('remark-github')
-var report = require('vfile-reporter')
+import {unified} from 'unified'
+import remarkParse from 'remark-parse'
+import remarkGithub from 'remark-github'
+import remarkStringify from 'remark-stringify'
+import {reporter} from 'vfile-reporter'
 
 unified()
-  .use(parse)
-  .use(github)
-  .use(stringify)
-  .process('@wooorm', function (err, file) {
-    console.error(report(err || file))
-    console.log(String(file))
-  })
+  .use(remarkParse)
+  .use(remarkGithub)
+  .use(remarkStringify)
+  .process('@unifiedjs')
+  .then(
+    (file) => {
+      console.error(reporter(file))
+      console.log(String(file))
+    },
+    (error) => {
+      // Handle your error here!
+      throw error
+    }
+  )
 ```
 
 Yields:
@@ -745,7 +767,7 @@ no issues found
 ```
 
 ```markdown
-[**@wooorm**](https://github.com/wooorm)
+[**@unifiedjs**](https://github.com/unifiedjs)
 ```
 
 ### `processor.processSync(file|value)`
@@ -787,19 +809,19 @@ The below example shows how `processSync` can be used to process a file, if all
 transformers are synchronous.
 
 ```js
-var unified = require('unified')
-var markdown = require('remark-parse')
-var remark2rehype = require('remark-rehype')
-var doc = require('rehype-document')
-var format = require('rehype-format')
-var html = require('rehype-stringify')
+import {unified} from 'unified'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+import rehypeDocument from 'rehype-document'
+import rehypeFormat from 'rehype-format'
+import rehypeStringify from 'rehype-stringify'
 
-var processor = unified()
-  .use(markdown)
-  .use(remark2rehype)
-  .use(doc, {title: '👋🌍'})
-  .use(format)
-  .use(html)
+const processor = unified()
+  .use(remarkParse)
+  .use(remarkRehype)
+  .use(rehypeDocument, {title: '👋🌍'})
+  .use(rehypeFormat)
+  .use(rehypeStringify)
 
 console.log(processor.processSync('# Hello world!').toString())
 ```
@@ -860,17 +882,17 @@ Call the processor first to create a new unfrozen processor.
 The following example show how to get and set information:
 
 ```js
-var unified = require('unified')
+import {unified} from 'unified'
 
-var processor = unified().data('alpha', 'bravo')
+const processor = unified().data('alpha', 'bravo')
 
 processor.data('alpha') // => 'bravo'
 
-processor.data() // {alpha: 'bravo'}
+processor.data() // => {alpha: 'bravo'}
 
 processor.data({charlie: 'delta'})
 
-processor.data() // {charlie: 'delta'}
+processor.data() // => {charlie: 'delta'}
 ```
 
 ### `processor.freeze()`
@@ -896,22 +918,22 @@ The following example, `index.js`, shows how rehype prevents extensions to
 itself:
 
 ```js
-var unified = require('unified')
-var parse = require('rehype-parse')
-var stringify = require('rehype-stringify')
+import {unified} from 'unified'
+import remarkParse from 'rehype-parse'
+import remarkStringify from 'rehype-stringify'
 
-module.exports = unified().use(parse).use(stringify).freeze()
+export const rehype = unified().use(remarkParse).use(remarkStringify).freeze()
 ```
 
 The below example, `a.js`, shows how that processor can be used and configured.
 
 ```js
-var rehype = require('rehype')
-var format = require('rehype-format')
+import {rehype} from 'rehype'
+import rehypeFormat from 'rehype-format'
 // …
 
 rehype()
-  .use(format)
+  .use(rehypeFormat)
   // …
 ```
 
@@ -922,27 +944,27 @@ error is thrown.
 **This is invalid**:
 
 ```js
-var rehype = require('rehype')
-var format = require('rehype-format')
+import {rehype} from 'rehype'
+import rehypeFormat from 'rehype-format'
 // …
 
 rehype
-  .use(format)
+  .use(rehypeFormat)
   // …
 ```
 
 Yields:
 
 ```txt
-~/node_modules/unified/index.js:440
+~/node_modules/unified/index.js:426
     throw new Error(
     ^
 
 Error: Cannot call `use` on a frozen processor.
-Create a new processor first, by invoking it: use `processor()` instead of `processor`.
-    at assertUnfrozen (~/node_modules/unified/index.js:440:11)
-    at Function.use (~/node_modules/unified/index.js:172:5)
-    at Object.<anonymous> (~/b.js:6:4)
+Create a new processor first, by calling it: use `processor()` instead of `processor`.
+    at assertUnfrozen (~/node_modules/unified/index.js:426:11)
+    at Function.use (~/node_modules/unified/index.js:165:5)
+    at ~/b.js:6:4
 ```
 
 ## `Plugin`
@@ -962,20 +984,18 @@ They materialize as [`attacher`][attacher]s.
 `move.js`:
 
 ```js
-module.exports = move
+export function move(options = {}) {
+  const {extname} = options
 
-function move(options) {
-  var expected = (options || {}).extname
-
-  if (!expected) {
+  if (!extname) {
     throw new Error('Missing `extname` in options')
   }
 
   return transformer
 
   function transformer(tree, file) {
-    if (file.extname && file.extname !== expected) {
-      file.extname = expected
+    if (file.extname && file.extname !== extname) {
+      file.extname = extname
     }
   }
 }
@@ -990,25 +1010,30 @@ function move(options) {
 `index.js`:
 
 ```js
-var unified = require('unified')
-var parse = require('remark-parse')
-var remark2rehype = require('remark-rehype')
-var stringify = require('rehype-stringify')
-var vfile = require('to-vfile')
-var report = require('vfile-reporter')
-var move = require('./move')
+import {unified} from 'unified'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+import rehypeStringify from 'rehype-stringify'
+import {toVFile} from 'to-vfile'
+import {reporter} from 'vfile-reporter'
+import {move} from './move.js'
 
 unified()
-  .use(parse)
-  .use(remark2rehype)
+  .use(remarkParse)
+  .use(remarkRehype)
   .use(move, {extname: '.html'})
-  .use(stringify)
-  .process(vfile.readSync('index.md'), function (err, file) {
-    console.error(report(err || file))
-    if (file) {
-      vfile.writeSync(file) // Written to `index.html`.
+  .use(rehypeStringify)
+  .process(toVFile.readSync('index.md'))
+  .then(
+    (file) => {
+      console.error(reporter(file))
+      toVFile.writeSync(file) // Written to `index.html`.
+    },
+    (error) => {
+      // Handle your error here!
+      throw error
     }
-  })
+  )
 ```
 
 Yields:
@@ -1017,7 +1042,7 @@ Yields:
 index.md: no issues found
 ```
 
-`index.html`:
+…and in `index.html`:
 
 ```html
 <h1>Hello, world!</h1>
@@ -1101,18 +1126,25 @@ They can contain [*plugins*][plugin] and settings.
 `preset.js`:
 
 ```js
-exports.settings = {bullet: '*', emphasis: '*', fences: true}
+import remarkPresetLintRecommended from 'remark-preset-lint-recommended'
+import remarkPresetLintConsistent from 'remark-preset-lint-consistent'
+import remarkCommentConfig from 'remark-comment-config'
+import remarkToc from 'remark-toc'
+import remarkLicense from 'remark-license'
 
-exports.plugins = [
-  require('remark-preset-lint-recommended'),
-  require('remark-preset-lint-consistent'),
-  require('remark-comment-config'),
-  [require('remark-toc'), {maxDepth: 3, tight: true}],
-  require('remark-license')
-]
+export const preset = {
+  settings: {bullet: '*', emphasis: '*', fences: true},
+  plugins: [
+    remarkPresetLintRecommended,
+    remarkPresetLintConsistent,
+    remarkCommentConfig,
+    [remarkToc, {maxDepth: 3, tight: true}],
+    remarkLicense
+  ]
+}
 ```
 
-`readme.md`:
+`example.md`:
 
 ```markdown
 # Hello, world!
@@ -1129,29 +1161,33 @@ _Emphasis_ and **importance**.
 `index.js`:
 
 ```js
-var remark = require('remark')
-var vfile = require('to-vfile')
-var report = require('vfile-reporter')
-var preset = require('./preset')
+import {remark} from 'remark'
+import {toVFile} from 'to-vfile'
+import {reporter} from 'vfile-reporter'
+import {preset} from './preset.js'
 
 remark()
   .use(preset)
-  .process(vfile.readSync('readme.md'), function (err, file) {
-    console.error(report(err || file))
-
-    if (file) {
-      vfile.writeSync(file)
+  .process(toVFile.readSync('example.md'))
+  .then(
+    (file) => {
+      console.error(reporter(file))
+      toVFile.writeSync(file)
+    },
+    (error) => {
+      // Handle your error here!
+      throw error
     }
-  })
+  )
 ```
 
 Yields:
 
 ```txt
-readme.md: no issues found
+example.md: no issues found
 ```
 
-`readme.md` now contains:
+`example.md` now contains:
 
 ```markdown
 # Hello, world!
