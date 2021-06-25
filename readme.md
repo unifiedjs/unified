@@ -1329,7 +1329,7 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 
 [vfile-value]: https://github.com/vfile/vfile#vfilevalue
 
-[vfile-utilities]: https://github.com/vfile/vfile#related-tools
+[vfile-utilities]: https://github.com/vfile/vfile#list-of-utilities
 
 [node]: https://github.com/syntax-tree/unist#node
 
@@ -1377,11 +1377,11 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 
 [contribute]: #contribute
 
-[rehype-react]: https://github.com/rhysd/rehype-react
+[rehype-react]: https://github.com/rehypejs/rehype-react
 
 [trough]: https://github.com/wooorm/trough#function-fninput-next
 
-[promise]: https://developer.mozilla.org/Web/JavaScript/Reference/Global_Objects/Promise
+[promise]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
 
 [remark-plugins]: https://github.com/remarkjs/remark/blob/HEAD/doc/plugins.md#list-of-plugins
 
