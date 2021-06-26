@@ -1,10 +1,17 @@
 import {Node} from 'unist'
-import unified = require('unified')
-import {Processor, Plugin, RunCallback, ProcessCallback} from 'unified'
-import vfile = require('vfile')
+import {
+  unified,
+  Processor,
+  Plugin,
+  RunCallback,
+  ProcessCallback,
+  Attacher,
+  ParserFunction,
+  CompilerFunction
+} from 'unified'
 import {VFile} from 'vfile'
 
-let fileValue: vfile.VFile
+let fileValue: VFile
 let nodeValue: Node
 let stringValue: string
 
@@ -40,8 +47,8 @@ const pluginWithTwoSettings = (
   settings?: ExamplePluginSettings
 ) => {}
 
-interface ParserPlugin extends unified.Attacher {
-  Parser: unified.ParserFunction
+interface ParserPlugin extends Attacher {
+  Parser: ParserFunction
 }
 
 const parserPlugin: ParserPlugin = (() => {
@@ -50,8 +57,8 @@ const parserPlugin: ParserPlugin = (() => {
   return parser
 })()
 
-interface CompilerPlugin extends unified.Attacher {
-  Compiler: unified.CompilerFunction
+interface CompilerPlugin extends Attacher {
+  Compiler: CompilerFunction
 }
 
 const compilerPlugin: CompilerPlugin = (() => {
@@ -226,7 +233,7 @@ processor.use({
 /**
  * `processor.parse`
  */
-nodeValue = processor.parse(vfile())
+nodeValue = processor.parse(new VFile())
 processor.parse('random string')
 processor.parse(Buffer.from('random buffer'))
 
@@ -276,37 +283,37 @@ processor.Compiler = class CustomCompiler {
 processor.run(nodeValue).then((transFormedNode) => {
   nodeValue = transFormedNode
 })
-processor.run(nodeValue, vfile())
+processor.run(nodeValue, new VFile())
 const runCallback: RunCallback = (error, node, file) => {}
 processor.run(nodeValue, runCallback)
 // $ExpectError
 processor.run(nodeValue, runCallback).then(() => {})
 // $ExpectError
-processor.run(nodeValue, vfile(), runCallback).then(() => {})
+processor.run(nodeValue, new VFile(), runCallback).then(() => {})
 
 /**
  * `processor.runSync`
  */
 nodeValue = processor.runSync(nodeValue)
-processor.runSync(nodeValue, vfile())
+processor.runSync(nodeValue, new VFile())
 
 /**
  * `processor.process`
  */
-processor.process(vfile()).then((file) => {
+processor.process(new VFile()).then((file) => {
   fileValue = file
 })
 processor.process('random string')
 processor.process(Buffer.from('random buffer'))
 const processCallback: ProcessCallback = (error, node) => {}
-processor.process(vfile(), processCallback)
+processor.process(new VFile(), processCallback)
 // $ExpectError
-processor.process(vfile(), processCallback).then(() => {})
+processor.process(new VFile(), processCallback).then(() => {})
 
 /**
  * `processor.processSync`
  */
-fileValue = processor.processSync(vfile())
+fileValue = processor.processSync(new VFile())
 processor.processSync('random string')
 processor.processSync(Buffer.from('random buffer'))
 
