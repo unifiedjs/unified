@@ -286,6 +286,9 @@ processor.run(nodeValue).then((transFormedNode) => {
 processor.run(nodeValue, new VFile())
 const runCallback: RunCallback = (error, node, file) => {}
 processor.run(nodeValue, runCallback)
+processor.run(nodeValue, (error: Error | null, node: Node, file: VFile) => {})
+processor.run(nodeValue, (error: Error | null, node: Node) => {})
+processor.run(nodeValue, (error: Error | null) => {})
 // $ExpectError
 processor.run(nodeValue, runCallback).then(() => {})
 // $ExpectError
