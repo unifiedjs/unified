@@ -127,7 +127,7 @@ function base() {
   }
 
   // Data management.
-  // Getter / setter for processor-specific informtion.
+  // Getter / setter for processor-specific information.
   function data(key, value) {
     if (typeof key === 'string') {
       // Set `key`.
