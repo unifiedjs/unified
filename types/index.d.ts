@@ -313,10 +313,10 @@ export type Attacher<S extends any[] = [Settings?], P = Settings> = (
 export type Transformer = (
   node: Node,
   file: VFile,
-  next?: (
+  next: (
     error: Error | null,
-    tree: Node,
-    file: VFile
+    tree?: Node,
+    file?: VFile
   ) => Record<string, unknown>
 ) => Error | Node | Promise<Node> | void | Promise<void>
 

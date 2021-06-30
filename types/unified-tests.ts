@@ -144,6 +144,30 @@ processor.use(transformerPlugin, typedSetting)
 // $ExpectError
 processor.use(transformerPlugin, settings)
 
+processor.use(
+  () =>
+    (
+      tree: Node,
+      file: VFile,
+      next: (error: Error | null, tree: Node, file: VFile) => {}
+    ) => {}
+)
+processor.use(
+  () =>
+    (
+      tree: Node,
+      file: VFile,
+      next: (error: Error | null, tree: Node) => {}
+    ) => {}
+)
+processor.use(
+  () => (tree: Node, file: VFile, next: (error: Error | null) => {}) => {}
+)
+processor.use(
+  // $ExpectError
+  () => (tree: Node, file: VFile, next: () => {}) => {}
+)
+
 processor.use(pluginWithTwoSettings)
 processor.use(pluginWithTwoSettings).use(pluginWithTwoSettings)
 processor.use(pluginWithTwoSettings, processor, typedSetting)
