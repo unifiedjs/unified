@@ -59,6 +59,7 @@
     "vfile": "^4.0.0"
   },
   "devDependencies": {
+    "vfile5": "npm:vfile@5",
     "browserify": "^17.0.0",
     "c8": "^7.0.0",
     "dtslint": "^4.0.0",

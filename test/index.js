@@ -9,6 +9,7 @@ require('./parse.js')
 require('./run.js')
 require('./stringify.js')
 require('./process.js')
+require('./vfile-5.js')
 
 var asyncfunctions = false
 

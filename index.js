@@ -43,6 +43,10 @@ function pipelineStringify(p, ctx) {
   if (result === undefined || result === null) {
     // Empty.
   } else if (typeof result === 'string' || buffer(result)) {
+    if ('value' in ctx.file) {
+      ctx.file.value = result
+    }
+
     ctx.file.contents = result
   } else {
     ctx.file.result = result
