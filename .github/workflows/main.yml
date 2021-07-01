@@ -20,5 +20,5 @@ jobs:
           - ubuntu-latest
           - windows-latest
         node:
-          - lts/dubnium
+          - lts/erbium
           - node
