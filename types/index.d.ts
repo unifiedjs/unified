@@ -354,9 +354,9 @@ export interface Compiler {
   /**
    * Transform an AST node/tree into text
    *
-   * @returns Compiled text
+   * @returns Compiled text (for `file.value`) or something else (for `file.result`)
    */
-  compile(): string
+  compile(): unknown
 }
 
 /**
@@ -370,9 +370,9 @@ export type CompilerConstructor = new (node: Node, file: VFile) => Compiler
  *
  * @param node Node/tree to be stringified
  * @param file File associated with node
- * @returns Compiled text
+ * @returns Compiled text (for `file.value`) or something else (for `file.result`)
  */
-export type CompilerFunction = (node: Node, file: VFile) => string
+export type CompilerFunction = (node: Node, file: VFile) => unknown
 
 /**
  * Access results from transforms
