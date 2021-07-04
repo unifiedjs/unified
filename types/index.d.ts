@@ -17,7 +17,7 @@ export interface Processor<P = Settings> extends FrozenProcessor<P> {
    * @typeParam S Plugin settings
    * @returns The processor on which use is called
    */
-  use<S extends any[] = [Settings?]>(
+  use<S extends any[] = [(Settings | boolean)?]>(
     plugin: Plugin<S, P>,
     ...settings: S
   ): Processor<P>
@@ -221,7 +221,10 @@ export interface FrozenProcessor<P = Settings> {
  * @typeParam P Processor settings
  * @returns Optional Transformer.
  */
-export type Plugin<S extends any[] = [Settings?], P = Settings> = Attacher<S, P>
+export type Plugin<
+  S extends any[] = [(Settings | boolean)?],
+  P = Settings
+> = Attacher<S, P>
 
 /**
  * Configuration passed to a Plugin or Processor
@@ -256,10 +259,10 @@ export interface ProcessorSettings<P = Settings> {
  * @typeParam S Plugin settings
  * @typeParam P Processor settings
  */
-export type PluginTuple<S extends any[] = [Settings?], P = Settings> = [
-  Plugin<S, P>,
-  ...S
-]
+export type PluginTuple<
+  S extends any[] = [(Settings | boolean)?],
+  P = Settings
+> = [Plugin<S, P>, ...S]
 
 /**
  * A union of the different ways to add plugins to unified
