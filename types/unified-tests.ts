@@ -77,6 +77,12 @@ processor.use([
   [plugin, settings],
   [plugin, settings]
 ])
+processor.use(plugin, true)
+processor.use(plugin, false)
+processor.use([
+  [plugin, true],
+  [plugin, false]
+])
 
 processor.use(parserPlugin)
 processor.use(parserPlugin).use(parserPlugin)
