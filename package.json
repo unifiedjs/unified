@@ -38,6 +38,7 @@
   ],
   "sideEffects": false,
   "type": "module",
+  "main": "index.js",
   "types": "types/index.d.ts",
   "files": [
     "types/index.d.ts",
