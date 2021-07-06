@@ -173,6 +173,9 @@ processor.use(
   // $ExpectError
   () => (tree: Node, file: VFile, next: () => {}) => {}
 )
+processor.use(() => (tree: Node, file: VFile, next: () => void) => {
+  next()
+})
 
 processor.use(pluginWithTwoSettings)
 processor.use(pluginWithTwoSettings).use(pluginWithTwoSettings)
