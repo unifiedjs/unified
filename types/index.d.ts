@@ -36,7 +36,7 @@ export interface Processor<P = Settings> extends FrozenProcessor<P> {
    * @typeParam S Plugin settings
    */
   use<S extends any[] = [Settings?]>(
-    pluginTuple: PluginTuple<S, P>
+    pluginTuple: PluginTuple<S, P> | [Plugin<S, P>, boolean]
   ): Processor<P>
 
   /**

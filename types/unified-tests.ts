@@ -79,6 +79,8 @@ processor.use([
 ])
 processor.use(plugin, true)
 processor.use(plugin, false)
+processor.use([plugin, true])
+processor.use([plugin, false])
 processor.use([
   [plugin, true],
   [plugin, false]
@@ -124,6 +126,14 @@ processor.use([typedPlugin, typedSetting])
 processor.use([typedPlugin, typedSetting, settings])
 // $ExpectError
 processor.use([typedPlugin, settings])
+processor.use(typedPlugin, true)
+processor.use(typedPlugin, false)
+processor.use([typedPlugin, true])
+processor.use([typedPlugin, false])
+processor.use([
+  [typedPlugin, true],
+  [typedPlugin, false]
+])
 
 processor.use(implicitlyTypedPlugin)
 processor.use(implicitlyTypedPlugin).use(implicitlyTypedPlugin)
