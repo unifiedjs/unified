@@ -211,6 +211,7 @@ The semantics of nodes and format of syntax trees is defined by other projects.
 
 There are several [*utilities*][unist-utilities] for working with nodes.
 
+*   [**esast**][esast] — JS
 *   [**hast**][hast] — HTML
 *   [**mdast**][mdast] — Markdown
 *   [**nlcst**][nlcst] — Natural language
@@ -1296,6 +1297,8 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 [remark]: https://github.com/remarkjs/remark
 
 [retext]: https://github.com/retextjs/retext
+
+[esast]: https://github.com/syntax-tree/esast
 
 [hast]: https://github.com/syntax-tree/hast
 
