@@ -165,7 +165,7 @@ processor.use(
     (
       tree: Node,
       file: VFile,
-      next: (error: Error | null, tree: Node, file: VFile) => {}
+      next: (error: Error | null, tree: Node, file: VFile) => void
     ) => {}
 )
 processor.use(
@@ -173,16 +173,19 @@ processor.use(
     (
       tree: Node,
       file: VFile,
-      next: (error: Error | null, tree: Node) => {}
+      next: (error: Error | null, tree: Node) => void
     ) => {}
 )
 processor.use(
-  () => (tree: Node, file: VFile, next: (error: Error | null) => {}) => {}
+  () => (tree: Node, file: VFile, next: (error: Error | null) => void) => {}
 )
 processor.use(
   // $ExpectError
   () => (tree: Node, file: VFile, next: () => {}) => {}
 )
+processor.use(() => (tree: Node, file: VFile, next: () => void) => {
+  next()
+})
 
 processor.use(pluginWithTwoSettings)
 processor.use(pluginWithTwoSettings).use(pluginWithTwoSettings)
