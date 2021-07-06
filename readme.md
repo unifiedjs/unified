@@ -89,10 +89,6 @@ Node 12+ is needed to use it and it must be `import`ed instead of `require`d.
 npm install unified
 ```
 
-This package comes with types.
-If you’re using TypeScript, make sure to also install
-[`@types/unist`][ts-unist].
-
 ## Use
 
 ```js
@@ -1283,8 +1279,6 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 [author]: https://wooorm.com
 
 [npm]: https://docs.npmjs.com/cli/install
-
-[ts-unist]: https://www.npmjs.com/package/@types/unist
 
 [site]: https://unifiedjs.com
 
