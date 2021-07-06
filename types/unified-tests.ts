@@ -155,7 +155,7 @@ processor.use(
     (
       tree: Node,
       file: VFile,
-      next: (error: Error | null, tree: Node, file: VFile) => {}
+      next: (error: Error | null, tree: Node, file: VFile) => void
     ) => {}
 )
 processor.use(
@@ -163,11 +163,11 @@ processor.use(
     (
       tree: Node,
       file: VFile,
-      next: (error: Error | null, tree: Node) => {}
+      next: (error: Error | null, tree: Node) => void
     ) => {}
 )
 processor.use(
-  () => (tree: Node, file: VFile, next: (error: Error | null) => {}) => {}
+  () => (tree: Node, file: VFile, next: (error: Error | null) => void) => {}
 )
 processor.use(
   // $ExpectError
