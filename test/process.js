@@ -1,6 +1,13 @@
+/**
+ * @typedef {import('..').YieldingTransformer} YieldingTransformer
+ * @typedef {import('..').Parser} Parser
+ * @typedef {import('..').Compiler} Compiler
+ * @typedef {import('unist').Literal} Literal
+ * @typedef {import('unist').Node} Node
+ */
+
 import test from 'tape'
 import {VFile} from 'vfile'
-import {NoopCompiler, NoopParser} from './util/noop.js'
 import {SimpleCompiler, SimpleParser} from './util/simple.js'
 import {unified} from '../index.js'
 
@@ -12,7 +19,7 @@ test('process(file, done)', (t) => {
 
   t.throws(
     () => {
-      unified().process()
+      unified().process('')
     },
     /Cannot `process` without `Parser`/,
     'should throw without `Parser`'
@@ -21,8 +28,8 @@ test('process(file, done)', (t) => {
   t.throws(
     () => {
       const processor = unified()
-      processor.Parser = NoopParser
-      processor.process()
+      processor.Parser = SimpleParser
+      processor.process('')
     },
     /Cannot `process` without `Compiler`/,
     'should throw without `Compiler`'
@@ -30,59 +37,50 @@ test('process(file, done)', (t) => {
 
   unified()
     .use(function () {
-      this.Parser = Parser
-      Parser.prototype.parse = parse
-
-      function Parser(doc, file) {
-        t.equal(typeof doc, 'string', 'should pass `doc` to `Parser`')
-        t.equal(file, givenFile, 'should pass `file` to `Parser`')
-      }
-
-      function parse() {
-        return givenNode
-      }
+      Object.assign(this, {
+        /** @type {Parser} */
+        Parser(doc, file) {
+          t.equal(typeof doc, 'string', 'should pass `doc` to `Parser`')
+          t.equal(file, givenFile, 'should pass `file` to `Parser`')
+          return givenNode
+        }
+      })
     })
     .use(() => {
-      return transformer
-      function transformer(tree, file) {
+      /** @type {YieldingTransformer} */
+      return function (tree, file) {
         t.equal(tree, givenNode, 'should pass `tree` to transformers')
         t.equal(file, givenFile, 'should pass `file` to transformers')
       }
     })
     .use(function () {
-      this.Compiler = Compiler
-      Compiler.prototype.compile = compile
-
-      function Compiler(tree, file) {
-        t.equal(tree, givenNode, 'should pass `tree` to `Compiler`')
-        t.equal(file, givenFile, 'should pass `file` to `Compiler`')
-      }
-
-      function compile() {
-        return 'charlie'
-      }
+      Object.assign(this, {
+        /** @type {Compiler} */
+        Compiler(tree, file) {
+          t.equal(tree, givenNode, 'should pass `tree` to `Compiler`')
+          t.equal(file, givenFile, 'should pass `file` to `Compiler`')
+          return 'charlie'
+        }
+      })
     })
     .process(givenFile, (error, file) => {
       t.error(error, 'shouldn’t fail')
 
       t.equal(
-        file.toString(),
+        String(file),
         'charlie',
         'should store the result of `compile()` on `file`'
       )
     })
 
   t.throws(() => {
-    unified().use(plugin).process(givenFile, cb)
-
-    function cb() {
-      throw new Error('Alfred')
-    }
-
-    function plugin() {
-      this.Parser = SimpleParser
-      this.Compiler = SimpleCompiler
-    }
+    unified()
+      .use(function () {
+        Object.assign(this, {Parser: SimpleParser, Compiler: SimpleCompiler})
+      })
+      .process(givenFile, () => {
+        throw new Error('Alfred')
+      })
   }, /^Error: Alfred$/)
 })
 
@@ -94,37 +92,31 @@ test('process(file)', (t) => {
 
   unified()
     .use(function () {
-      this.Parser = Parser
-      Parser.prototype.parse = parse
-
-      function Parser(doc, file) {
-        t.equal(typeof doc, 'string', 'should pass `doc` to `Parser`')
-        t.equal(file, givenFile, 'should pass `file` to `Parser`')
-      }
-
-      function parse() {
-        return givenNode
-      }
+      Object.assign(this, {
+        /** @type {Parser} */
+        Parser(doc, file) {
+          t.equal(typeof doc, 'string', 'should pass `doc` to `Parser`')
+          t.equal(file, givenFile, 'should pass `file` to `Parser`')
+          return givenNode
+        }
+      })
     })
     .use(() => {
-      return transformer
-      function transformer(tree, file) {
+      /** @type {YieldingTransformer} */
+      return function (tree, file) {
         t.equal(tree, givenNode, 'should pass `tree` to transformers')
         t.equal(file, givenFile, 'should pass `file` to transformers')
       }
     })
     .use(function () {
-      this.Compiler = Compiler
-      Compiler.prototype.compile = compile
-
-      function Compiler(tree, file) {
-        t.equal(tree, givenNode, 'should pass `tree` to `Compiler`')
-        t.equal(file, givenFile, 'should pass `file` to `Compiler`')
-      }
-
-      function compile() {
-        return 'charlie'
-      }
+      Object.assign(this, {
+        /** @type {Compiler} */
+        Compiler(tree, file) {
+          t.equal(tree, givenNode, 'should pass `tree` to `Compiler`')
+          t.equal(file, givenFile, 'should pass `file` to `Compiler`')
+          return 'charlie'
+        }
+      })
     })
     .process(givenFile)
     .then(
@@ -142,7 +134,7 @@ test('processSync(file)', (t) => {
 
   t.throws(
     () => {
-      unified().processSync()
+      unified().processSync('')
     },
     /Cannot `processSync` without `Parser`/,
     'should throw without `Parser`'
@@ -151,8 +143,8 @@ test('processSync(file)', (t) => {
   t.throws(
     () => {
       const processor = unified()
-      processor.Parser = NoopParser
-      processor.processSync()
+      processor.Parser = SimpleParser
+      processor.processSync('')
     },
     /Cannot `processSync` without `Compiler`/,
     'should throw without `Compiler`'
@@ -160,23 +152,14 @@ test('processSync(file)', (t) => {
 
   t.throws(
     () => {
-      unified().use(parse).use(plugin).use(compile).processSync('delta')
-
-      function parse() {
-        this.Parser = SimpleParser
-      }
-
-      function compile() {
-        this.Compiler = NoopCompiler
-      }
-
-      function plugin() {
-        return transformer
-      }
-
-      function transformer() {
-        return new Error('bravo')
-      }
+      unified()
+        .use(function () {
+          Object.assign(this, {Parser: SimpleParser, Compiler: SimpleCompiler})
+          return function () {
+            return new Error('bravo')
+          }
+        })
+        .processSync('delta')
     },
     /Error: bravo/,
     'should throw error from `processSync`'
@@ -185,16 +168,12 @@ test('processSync(file)', (t) => {
   t.equal(
     unified()
       .use(function () {
-        this.Parser = SimpleParser
-      })
-      .use(() => {
-        return transformer
-        function transformer(node) {
-          node.value = 'alpha'
+        Object.assign(this, {Parser: SimpleParser, Compiler: SimpleCompiler})
+        /** @type {YieldingTransformer} */
+        return function (node) {
+          const text = /** @type {Literal} */ (node)
+          text.value = 'alpha'
         }
-      })
-      .use(function () {
-        this.Compiler = SimpleCompiler
       })
       .processSync('delta')
       .toString(),
@@ -209,8 +188,12 @@ test('compilers', (t) => {
   t.equal(
     unified()
       .use(function () {
-        this.Parser = SimpleParser
-        this.Compiler = string
+        Object.assign(this, {
+          Parser: SimpleParser,
+          Compiler() {
+            return 'bravo'
+          }
+        })
       })
       .processSync('alpha').value,
     'bravo',
@@ -220,8 +203,12 @@ test('compilers', (t) => {
   t.deepEqual(
     unified()
       .use(function () {
-        this.Parser = SimpleParser
-        this.Compiler = buffer
+        Object.assign(this, {
+          Parser: SimpleParser,
+          Compiler() {
+            return Buffer.from('bravo')
+          }
+        })
       })
       .processSync('alpha').value,
     Buffer.from('bravo'),
@@ -231,8 +218,12 @@ test('compilers', (t) => {
   t.deepEqual(
     unified()
       .use(function () {
-        this.Parser = SimpleParser
-        this.Compiler = nullish
+        Object.assign(this, {
+          Parser: SimpleParser,
+          Compiler() {
+            return null
+          }
+        })
       })
       .processSync('alpha').value,
     'alpha',
@@ -242,8 +233,19 @@ test('compilers', (t) => {
   t.deepEqual(
     unified()
       .use(function () {
-        this.Parser = SimpleParser
-        this.Compiler = nonText
+        Object.assign(this, {
+          Parser: SimpleParser,
+          Compiler() {
+            // Somewhat like a React node.
+            return {
+              _owner: null,
+              type: 'p',
+              ref: null,
+              key: 'h-1',
+              props: {children: ['bravo']}
+            }
+          }
+        })
       })
       .processSync('alpha').result,
     {
@@ -255,27 +257,4 @@ test('compilers', (t) => {
     },
     'should compile non-text'
   )
-
-  function nullish() {
-    return null
-  }
-
-  function string() {
-    return 'bravo'
-  }
-
-  function buffer() {
-    return Buffer.from('bravo')
-  }
-
-  function nonText() {
-    // Somewhat like a React node.
-    return {
-      _owner: null,
-      type: 'p',
-      ref: null,
-      key: 'h-1',
-      props: {children: ['bravo']}
-    }
-  }
 })

@@ -1,15 +1,23 @@
+/**
+ * @typedef {import('..').Plugin} Plugin
+ */
+
 import test from 'tape'
 import {SimpleCompiler, SimpleParser} from './util/simple.js'
 import {unified} from '../index.js'
 
 test('freeze()', (t) => {
-  const frozen = unified().use(config).freeze()
+  const frozen = unified()
+    .use(function () {
+      // Note: TS has a bug so setting `this.Parser` and such doesn’t work,
+      // but assigning is fine.
+      Object.assign(this, {
+        Parser: SimpleParser,
+        Compiler: SimpleCompiler
+      })
+    })
+    .freeze()
   const unfrozen = frozen()
-
-  function config() {
-    this.Parser = SimpleParser
-    this.Compiler = SimpleCompiler
-  }
 
   t.doesNotThrow(() => {
     unfrozen.data()
@@ -25,6 +33,7 @@ test('freeze()', (t) => {
 
   t.throws(
     () => {
+      // @ts-expect-error: runtime.
       frozen.use()
     },
     /Cannot call `use` on a frozen processor/,
@@ -60,17 +69,16 @@ test('freeze()', (t) => {
 
     let index = 0
     const processor = unified()
-      .use(plugin)
+      .use(() => {
+        t.pass('Expected: ' + String(index++))
+      })
       .use({plugins: [freezingPlugin]})
       .use({plugins: [freezingPlugin]})
       .freeze()
 
     processor().freeze()
 
-    function plugin() {
-      t.pass('Expected: ' + String(index++))
-    }
-
+    /** @type {Plugin} */
     function freezingPlugin() {
       this.freeze()
     }

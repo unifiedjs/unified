@@ -1,3 +1,8 @@
+/**
+ * @typedef {import('unist').Node} Node
+ * @typedef {import('vfile').VFile} VFile
+ */
+
 import test from 'tape'
 import {unified} from '../index.js'
 
@@ -40,7 +45,7 @@ test('parse(file)', (t) => {
   t.equal(
     processor.parse('charlie'),
     givenNode,
-    'should return the result `parser` returns if it’s not a constructor'
+    'should return the result `Parser` returns if it’s not a constructor'
   )
 
   processor.Parser = (doc, file) => {
@@ -55,23 +60,28 @@ test('parse(file)', (t) => {
     'should return the result `parser` returns if it’s an arrow function'
   )
 
-  class ESParser {
+  processor.Parser = class ESParser {
+    /**
+     * @param {string} doc
+     * @param {VFile} file
+     */
     constructor(doc, file) {
       t.equal(typeof doc, 'string', 'should pass a document')
       t.ok('message' in file, 'should pass a file')
     }
 
+    /** @returns {Node} */
     parse() {
       t.equal(arguments.length, 0, 'should not pass anything to `parse`')
       return givenNode
     }
   }
 
-  processor.Parser = ESParser
-
   t.equal(
     processor.parse('charlie'),
     givenNode,
     'should return the result `Parser#parse` returns on an ES class'
   )
+
+  t.end()
 })

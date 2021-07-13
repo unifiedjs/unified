@@ -2,11 +2,13 @@ import test from 'tape'
 import {unified} from '../index.js'
 
 test('unified()', (t) => {
+  /** @type {number} */
   let count
 
   t.throws(
     () => {
-      unified.use(Function.prototype)
+      // @ts-expect-error: runtime.
+      unified.use(() => {})
     },
     /Cannot call `use` on a frozen processor/,
     'should be frozen'
