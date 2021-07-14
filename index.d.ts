@@ -398,20 +398,18 @@ export type Attacher<S extends any[] = any[]> = Plugin<S>
  * Transformers modify the syntax tree or metadata of a file.
  * A transformer is a function that is called each time a file is passed
  * through the transform phase.
- */
-export type Transformer = YieldingTransformer | CallingTransformer
-
-/**
- * Transformers modify the syntax tree or metadata of a file.
- * A transformer is a function that is called each time a file is passed
- * through the transform phase.
- * If an error occurs (either because it’s thrown, returned, or rejected),
- * the process stops.
+ * If an error occurs (either because it’s thrown, returned, rejected, or passed
+ * to `next`), the process stops.
  *
  * @param node
  *   Tree to be transformed.
  * @param file
  *   File associated with node.
+ * @param next
+ *   Callback that you must call when done.
+ *   Note: this is given if you accept three parameters in your transformer.
+ *   If you accept up to two parameters, it’s not given, and you can return
+ *   a promise.
  * @returns
  *   Any of the following:
  *
@@ -423,33 +421,14 @@ export type Transformer = YieldingTransformer | CallingTransformer
  *   * `Promise` — If a promise is returned, the function is asynchronous, and
  *      must be resolved (optionally with a `Node`) or rejected (optionally with
  *      an `Error`).
- */
-type YieldingTransformer = (
-  node: Node,
-  file: VFile
-) => Promise<Node | undefined> | Node | Error | undefined | void
-
-/**
- * Transformers modify the syntax tree or metadata of a file.
- * A transformer is a function that is called each time a file is passed
- * through the transform phase.
- * If an error occurs (either because it’s thrown or passed to `next`), the
- * process stops.
  *
- * @param node
- *   Tree to be transformed.
- * @param file
- *   File associated with node.
- * @param next
- *   Callback you must call when done.
- * @returns
- *   Nothing.
+ *   If you accept a `next` callback, nothing should be returned.
  */
-type CallingTransformer = (
+type Transformer = (
   node: Node,
   file: VFile,
   next: TransformCallback
-) => void
+) => Promise<Node | undefined> | Node | Error | undefined | void
 
 /**
  * Callback you must call when a transformer is done.

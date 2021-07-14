@@ -33,7 +33,7 @@ test('freeze()', (t) => {
 
   t.throws(
     () => {
-      // @ts-expect-error: runtime.
+      // @ts-expect-error: `use` does not exist on frozen processors.
       frozen.use()
     },
     /Cannot call `use` on a frozen processor/,

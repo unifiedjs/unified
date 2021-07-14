@@ -139,33 +139,22 @@ unified().use(function () {
 // Plugins returning a transformer.
 
 unified()
-  .use(() => (tree: Node, file: VFile) => {
-    // Looks useless but ensures transformers can be returned
+  .use(() => (tree, file, next) => {
     expectType<Node>(tree)
     expectType<VFile>(file)
+    expectType<TransformCallback>(next)
+    setImmediate(next)
+  })
+  .use(() => async (tree, file) => {
+    expectType<Node>(tree)
+    expectType<VFile>(file)
+    return {type: 'x'}
   })
   .use(() => () => ({type: 'x'}))
   .use(() => () => undefined)
   .use(() => () => {
     /* Empty */
   })
-  .use(() => async () => ({type: 'x'}))
   .use(() => () => {
     throw new Error('x')
   })
-
-unified().use(() => {
-  return (tree, file, next) => {
-    // Looks useless but ensures transformers can be returned
-    expectType<Node>(tree)
-    expectType<VFile>(file)
-    expectType<TransformCallback>(next)
-    setImmediate(next)
-  }
-})
-
-unified().use(() => (tree: Node, file: VFile) => {
-  // Looks useless but ensures transformers can be returned
-  expectType<Node>(tree)
-  expectType<VFile>(file)
-})

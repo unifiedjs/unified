@@ -1,7 +1,7 @@
 /**
+ * @typedef {import('unist').Literal} Literal
  * @typedef {import('../..').Parser} Parser
  * @typedef {import('../..').Compiler} Compiler
- * @typedef {import('unist').Literal} Literal
  */
 
 /** @type {Parser} */

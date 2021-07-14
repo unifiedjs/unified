@@ -1,8 +1,3 @@
-/**
- * @typedef {import('..').YieldingTransformer} YieldingTransformer
- * @typedef {import('..').Preset} Preset
- */
-
 import test from 'tape'
 import {unified} from '../index.js'
 
@@ -272,7 +267,6 @@ test('use(plugin[, options])', (t) => {
 
     processor
       .use(() => {
-        /** @type {YieldingTransformer} */
         return function (node, file) {
           t.equal(node, givenNode, 'should attach a transformer (#1)')
           t.ok('message' in file, 'should attach a transformer (#2)')

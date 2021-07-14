@@ -1,7 +1,3 @@
-/**
- * @typedef {import('..').YieldingTransformer} YieldingTransformer
- */
-
 import test from 'tape'
 import {VFile} from 'vfile'
 import {unified} from '../index.js'
@@ -15,7 +11,6 @@ test('async function transformer () {}', (t) => {
 
   unified()
     .use(() => {
-      /** @type {YieldingTransformer} */
       return async function (tree, file) {
         t.equal(tree, givenNode, 'passes correct tree to an async function')
         t.equal(file, givenFile, 'passes correct file to an async function')

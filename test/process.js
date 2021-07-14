@@ -1,9 +1,8 @@
 /**
- * @typedef {import('..').YieldingTransformer} YieldingTransformer
- * @typedef {import('..').Parser} Parser
- * @typedef {import('..').Compiler} Compiler
  * @typedef {import('unist').Literal} Literal
  * @typedef {import('unist').Node} Node
+ * @typedef {import('..').Parser} Parser
+ * @typedef {import('..').Compiler} Compiler
  */
 
 import test from 'tape'
@@ -47,7 +46,6 @@ test('process(file, done)', (t) => {
       })
     })
     .use(() => {
-      /** @type {YieldingTransformer} */
       return function (tree, file) {
         t.equal(tree, givenNode, 'should pass `tree` to transformers')
         t.equal(file, givenFile, 'should pass `file` to transformers')
@@ -102,7 +100,6 @@ test('process(file)', (t) => {
       })
     })
     .use(() => {
-      /** @type {YieldingTransformer} */
       return function (tree, file) {
         t.equal(tree, givenNode, 'should pass `tree` to transformers')
         t.equal(file, givenFile, 'should pass `file` to transformers')
@@ -169,7 +166,6 @@ test('processSync(file)', (t) => {
     unified()
       .use(function () {
         Object.assign(this, {Parser: SimpleParser, Compiler: SimpleCompiler})
-        /** @type {YieldingTransformer} */
         return function (node) {
           const text = /** @type {Literal} */ (node)
           text.value = 'alpha'

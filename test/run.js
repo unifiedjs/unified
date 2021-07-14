@@ -1,7 +1,3 @@
-/**
- * @typedef {import('..').YieldingTransformer} YieldingTransformer
- */
-
 import test from 'tape'
 import {VFile} from 'vfile'
 import {unified} from '../index.js'
@@ -44,11 +40,7 @@ test('run(node[, file], done)', (t) => {
     })
 
   unified()
-    .use(() => {
-      return function () {
-        return otherNode
-      }
-    })
+    .use(() => () => otherNode)
     .run(givenNode, (error, tree) => {
       t.error(error, 'should’t fail')
 
@@ -461,7 +453,7 @@ test('runSync(node[, file])', (t) => {
 
   t.throws(
     () => {
-      // @ts-expect-error: runtime.
+      // @ts-expect-error: `node` is required.
       unified().runSync()
     },
     /Expected node, got `undefined`/,
@@ -470,7 +462,6 @@ test('runSync(node[, file])', (t) => {
 
   unified()
     .use(() => {
-      /** @type {YieldingTransformer} */
       return function (tree, file) {
         t.equal(tree, givenNode, 'passes given tree to transformers')
         t.equal(file, givenFile, 'passes given file to transformers')
@@ -480,7 +471,6 @@ test('runSync(node[, file])', (t) => {
 
   unified()
     .use(() => {
-      /** @type {YieldingTransformer} */
       return function (_, file) {
         t.equal(
           file.toString(),
