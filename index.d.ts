@@ -24,7 +24,7 @@ export interface Processor extends FrozenProcessor {
   /**
    * Configure the processor to use a plugin.
    *
-   * @typeParam S
+   * @typeParam PluginParameters
    *   Plugin settings.
    * @param plugin
    *   Plugin (function) to use.
@@ -39,15 +39,15 @@ export interface Processor extends FrozenProcessor {
    * @returns
    *   Current processor.
    */
-  use<S extends any[] = any[]>(
-    plugin: Plugin<S>,
-    ...settings: S | [boolean]
+  use<PluginParameters extends any[] = any[]>(
+    plugin: Plugin<PluginParameters>,
+    ...settings: PluginParameters | [boolean]
   ): Processor
 
   /**
    * Configure the processor with a tuple of a plugin and setting(s).
    *
-   * @typeParam S
+   * @typeParam PluginParameters
    *   Plugin settings.
    * @param tuple
    *   A tuple where the first item is a plugin (function) to use and other
@@ -59,8 +59,8 @@ export interface Processor extends FrozenProcessor {
    * @returns
    *   Current processor.
    */
-  use<S extends any[] = any[]>(
-    tuple: PluginTuple<S> | [Plugin<S>, boolean]
+  use<PluginParameters extends any[] = any[]>(
+    tuple: PluginTuple<PluginParameters> | [Plugin<PluginParameters>, boolean]
   ): Processor
 
   /**
@@ -325,7 +325,7 @@ export interface FrozenProcessor {
  * (at `this.Parser` or `this.Compiler`) or by specifying how the syntax tree
  * is handled (by returning a `Transformer`).
  *
- * @typeParam S
+ * @typeParam PluginParameters
  *   Plugin settings.
  * @this
  *   The current processor.
@@ -347,9 +347,9 @@ export interface FrozenProcessor {
  *   Plugins can return a `Transformer` to specify how the syntax tree is
  *   handled.
  */
-export type Plugin<S extends any[] = any[]> = (
+export type Plugin<PluginParameters extends any[] = any[]> = (
   this: Processor,
-  ...settings: S
+  ...settings: PluginParameters
 ) => Transformer | void
 
 /**
@@ -367,20 +367,23 @@ export interface Preset {
  * Plugins are deduped based on identity: passing a function in twice will
  * cause it to run only once.
  *
- * @typeParam S
+ * @typeParam PluginParameters
  *   Plugin settings.
  */
-export type PluginTuple<S extends any[] = any[]> = [Plugin<S>, ...S]
+export type PluginTuple<PluginParameters extends any[] = any[]> = [
+  Plugin<PluginParameters>,
+  ...PluginParameters
+]
 
 /**
  * A union of the different ways to add plugins and settings.
  *
- * @typeParam S
+ * @typeParam PluginParameters
  *   Plugin settings.
  */
-export type Pluggable<S extends any[] = any[]> =
-  | PluginTuple<S>
-  | Plugin<S>
+export type Pluggable<PluginParameters extends any[] = any[]> =
+  | PluginTuple<PluginParameters>
+  | Plugin<PluginParameters>
   | Preset
 
 /**
@@ -392,7 +395,8 @@ export type PluggableList = Pluggable[]
  * @deprecated
  *   Please use `Plugin`.
  */
-export type Attacher<S extends any[] = any[]> = Plugin<S>
+export type Attacher<PluginParameters extends any[] = any[]> =
+  Plugin<PluginParameters>
 
 /**
  * Transformers modify the syntax tree or metadata of a file.
