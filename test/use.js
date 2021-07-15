@@ -4,8 +4,11 @@ import {unified} from '../index.js'
 test('use(plugin[, options])', (t) => {
   t.test('should ignore missing values', (t) => {
     const processor = unified()
+    // @ts-expect-error: runtime feature.
     t.equal(processor.use(), processor, 'missing')
+    // @ts-expect-error: runtime feature.
     t.equal(processor.use(null), processor, '`null`')
+    // @ts-expect-error: runtime feature.
     t.equal(processor.use(undefined), processor, '`undefined`')
     t.end()
   })
@@ -13,6 +16,7 @@ test('use(plugin[, options])', (t) => {
   t.test('should throw when given invalid values', (t) => {
     t.throws(
       () => {
+        // @ts-expect-error: runtime.
         unified().use(false)
       },
       /^TypeError: Expected usable value, not `false`$/,
@@ -21,6 +25,7 @@ test('use(plugin[, options])', (t) => {
 
     t.throws(
       () => {
+        // @ts-expect-error: runtime.
         unified().use(true)
       },
       /^TypeError: Expected usable value, not `true`$/,
@@ -29,6 +34,7 @@ test('use(plugin[, options])', (t) => {
 
     t.throws(
       () => {
+        // @ts-expect-error: runtime.
         unified().use('alfred')
       },
       /^TypeError: Expected usable value, not `alfred`$/,
@@ -96,6 +102,7 @@ test('use(plugin[, options])', (t) => {
     processor
       .use([
         [
+          /** @param {unknown} options */
           function (options) {
             t.equal(
               options,
@@ -121,6 +128,7 @@ test('use(plugin[, options])', (t) => {
   t.test('should throw when given invalid values in lists', (t) => {
     t.throws(
       () => {
+        // @ts-expect-error: runtime.
         unified().use([false])
       },
       /^TypeError: Expected usable value, not `false`$/,
@@ -129,6 +137,7 @@ test('use(plugin[, options])', (t) => {
 
     t.throws(
       () => {
+        // @ts-expect-error: runtime.
         unified().use([true])
       },
       /^TypeError: Expected usable value, not `true`$/,
@@ -137,6 +146,7 @@ test('use(plugin[, options])', (t) => {
 
     t.throws(
       () => {
+        // @ts-expect-error: runtime.
         unified().use(['alfred'])
       },
       /^TypeError: Expected usable value, not `alfred`$/,
@@ -157,10 +167,12 @@ test('use(plugin[, options])', (t) => {
     unified().use(change, [1, 2, 3]).use(change, rightOptions).freeze()
     unified().use(merge, leftOptions).use(merge, rightOptions).freeze()
 
+    /** @param {unknown} [options] */
     function change(options) {
       t.deepEqual(options, {foo: false, qux: true}, 'should reconfigure (set)')
     }
 
+    /** @param {Record<string, boolean>} options */
     function merge(options) {
       t.deepEqual(
         options,
@@ -178,6 +190,7 @@ test('use(plugin[, options])', (t) => {
     unified().use(plugin, [1, 2, 3]).use(plugin, 'that').freeze()
     unified().use(plugin, {foo: 'bar'}).use(plugin, 'that').freeze()
 
+    /** @param {unknown} [options] */
     function plugin(options) {
       t.equal(options, 'that', 'should reconfigure')
     }
@@ -191,6 +204,7 @@ test('use(plugin[, options])', (t) => {
     unified().use(plugin, {foo: 'true'}).use(plugin, [4, 5, 6]).freeze()
     unified().use(plugin, 'foo').use(plugin, [4, 5, 6]).freeze()
 
+    /** @param {unknown} [options] */
     function plugin(options) {
       t.deepEqual(options, [4, 5, 6], 'should reconfigure')
     }
@@ -239,6 +253,7 @@ test('use(plugin[, options])', (t) => {
       ])
       .freeze()
 
+    /** @param {unknown} [options] */
     function plugin(options) {
       t.deepEqual(options, {foo: true}, 'should reconfigure')
     }
@@ -276,6 +291,7 @@ test('use(plugin[, options])', (t) => {
 test('use(preset)', (t) => {
   t.throws(
     () => {
+      // @ts-expect-error: runtime.
       unified().use({plugins: false})
     },
     /^TypeError: Expected a list of plugins, not `false`$/,
@@ -284,6 +300,7 @@ test('use(preset)', (t) => {
 
   t.throws(
     () => {
+      // @ts-expect-error: runtime.
       unified().use({plugins: {foo: true}})
     },
     /^TypeError: Expected a list of plugins, not `\[object Object]`$/,
@@ -394,10 +411,16 @@ test('use(preset)', (t) => {
     t.equal(processor.attachers.length, 2, '1')
     t.equal(otherProcessor.attachers.length, 2, '2')
 
+    /**
+     * @param {unknown} options
+     */
     function plugin1(options) {
       t.equal(options, one, 'a')
     }
 
+    /**
+     * @param {unknown} options
+     */
     function plugin2(options) {
       t.equal(options, two, 'b')
     }
@@ -406,10 +429,10 @@ test('use(preset)', (t) => {
   t.test('should support nested presets', (t) => {
     const one = {}
     const two = {}
-    const p1 = {plugins: [[plugin1, one]]}
-    const p2 = {plugins: [[plugin2, two]]}
     const processor = unified()
-      .use({plugins: [p1, p2]})
+      .use({
+        plugins: [{plugins: [[plugin1, one]]}, {plugins: [[plugin2, two]]}]
+      })
       .freeze()
     const otherProcessor = processor().freeze()
 
@@ -417,10 +440,12 @@ test('use(preset)', (t) => {
     t.equal(processor.attachers.length, 2, '1')
     t.equal(otherProcessor.attachers.length, 2, '2')
 
+    /** @param {unknown} [options] */
     function plugin1(options) {
       t.equal(options, one, 'a')
     }
 
+    /** @param {unknown} [options] */
     function plugin2(options) {
       t.equal(options, two, 'b')
     }

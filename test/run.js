@@ -15,20 +15,19 @@ test('run(node[, file], done)', (t) => {
     t.equal(file, givenFile, 'passes given file to `done`')
   })
 
-  unified().run(givenNode, null, (error, _, file) => {
+  unified().run(givenNode, undefined, (error, _, file) => {
     t.error(error, 'should’t fail')
-    t.equal(file.toString(), '', 'passes file to `done` if not given')
+    t.equal(String(file), '', 'passes file to `done` if not given')
   })
 
   unified().run(givenNode, (error, _, file) => {
     t.error(error, 'should’t fail')
-    t.equal(file.toString(), '', 'passes file to `done` if omitted')
+    t.equal(String(file), '', 'passes file to `done` if omitted')
   })
 
   unified()
     .use(() => {
-      return transformer
-      function transformer() {
+      return function () {
         return new Error('charlie')
       }
     })
@@ -41,12 +40,7 @@ test('run(node[, file], done)', (t) => {
     })
 
   unified()
-    .use(() => {
-      return transformer
-      function transformer() {
-        return otherNode
-      }
-    })
+    .use(() => () => otherNode)
     .run(givenNode, (error, tree) => {
       t.error(error, 'should’t fail')
 
@@ -59,8 +53,7 @@ test('run(node[, file], done)', (t) => {
 
   unified()
     .use(() => {
-      return transformer
-      function transformer(_, _1, next) {
+      return function (_, _1, next) {
         next(new Error('delta'))
       }
     })
@@ -74,8 +67,7 @@ test('run(node[, file], done)', (t) => {
 
   unified()
     .use(() => {
-      return transformer
-      function transformer(_, _1, next) {
+      return function (_, _1, next) {
         next()
         next(new Error('delta'))
       }
@@ -89,8 +81,7 @@ test('run(node[, file], done)', (t) => {
 
   unified()
     .use(() => {
-      return transformer
-      function transformer(_, _1, next) {
+      return function (_, _1, next) {
         next(null, otherNode)
       }
     })
@@ -106,13 +97,10 @@ test('run(node[, file], done)', (t) => {
 
   unified()
     .use(() => {
-      return transformer
-      function transformer() {
-        return new Promise(executor)
-      }
-
-      function executor(_, reject) {
-        reject(new Error('delta'))
+      return function () {
+        return new Promise((_, reject) => {
+          reject(new Error('delta'))
+        })
       }
     })
     .run(givenNode, (error) => {
@@ -125,13 +113,10 @@ test('run(node[, file], done)', (t) => {
 
   unified()
     .use(() => {
-      return transformer
-      function transformer() {
-        return new Promise(executor)
-      }
-
-      function executor(resolve) {
-        resolve(otherNode)
+      return function () {
+        return new Promise((resolve) => {
+          resolve(otherNode)
+        })
       }
     })
     .run(givenNode, (error, tree) => {
@@ -146,8 +131,7 @@ test('run(node[, file], done)', (t) => {
 
   unified()
     .use(() => {
-      return transformer
-      function transformer(_, _1, next) {
+      return function (_, _1, next) {
         setImmediate(tick)
         function tick() {
           next(null, otherNode)
@@ -166,8 +150,7 @@ test('run(node[, file], done)', (t) => {
 
   unified()
     .use(() => {
-      return transformer
-      function transformer(_, _1, next) {
+      return function (_, _1, next) {
         setImmediate(tick)
         function tick() {
           next(new Error('echo'))
@@ -184,8 +167,7 @@ test('run(node[, file], done)', (t) => {
 
   unified()
     .use(() => {
-      return transformer
-      function transformer(_, _1, next) {
+      return function (_, _1, next) {
         setImmediate(tick)
         function tick() {
           next()
@@ -220,7 +202,7 @@ test('run(node[, file])', (t) => {
     )
 
   unified()
-    .run(givenNode, null)
+    .run(givenNode, undefined)
     .then(
       (tree) => {
         t.equal(tree, givenNode, 'should work if `file` is not given')
@@ -243,8 +225,7 @@ test('run(node[, file])', (t) => {
 
   unified()
     .use(() => {
-      return transformer
-      function transformer() {
+      return function () {
         return new Error('charlie')
       }
     })
@@ -255,7 +236,7 @@ test('run(node[, file])', (t) => {
           'should reject, not resolve, when an error is passed to `done` from a sync transformer'
         )
       },
-      (error) => {
+      (/** @type {Error} */ error) => {
         t.equal(
           String(error),
           'Error: charlie',
@@ -266,8 +247,7 @@ test('run(node[, file])', (t) => {
 
   unified()
     .use(() => {
-      return transformer
-      function transformer() {
+      return function () {
         return otherNode
       }
     })
@@ -289,8 +269,7 @@ test('run(node[, file])', (t) => {
 
   unified()
     .use(() => {
-      return transformer
-      function transformer(_, _1, next) {
+      return function (_, _1, next) {
         next(new Error('delta'))
       }
     })
@@ -301,7 +280,7 @@ test('run(node[, file])', (t) => {
           'should reject, not resolve, if an error is given to a sync transformer’s `next`'
         )
       },
-      (error) => {
+      (/** @type {Error} */ error) => {
         t.equal(
           String(error),
           'Error: delta',
@@ -312,8 +291,7 @@ test('run(node[, file])', (t) => {
 
   unified()
     .use(() => {
-      return transformer
-      function transformer(_, _1, next) {
+      return function (_, _1, next) {
         next()
         next(new Error('delta'))
       }
@@ -334,8 +312,7 @@ test('run(node[, file])', (t) => {
 
   unified()
     .use(() => {
-      return transformer
-      function transformer(_, _1, next) {
+      return function (_, _1, next) {
         next(null, otherNode)
       }
     })
@@ -357,13 +334,10 @@ test('run(node[, file])', (t) => {
 
   unified()
     .use(() => {
-      return transformer
-      function transformer() {
-        return new Promise(executor)
-      }
-
-      function executor(_, reject) {
-        reject(new Error('delta'))
+      return function () {
+        return new Promise((_, reject) => {
+          reject(new Error('delta'))
+        })
       }
     })
     .run(givenNode)
@@ -382,13 +356,10 @@ test('run(node[, file])', (t) => {
 
   unified()
     .use(() => {
-      return transformer
-      function transformer() {
-        return new Promise(executor)
-      }
-
-      function executor(resolve) {
-        resolve(otherNode)
+      return function () {
+        return new Promise((resolve) => {
+          resolve(otherNode)
+        })
       }
     })
     .run(givenNode)
@@ -407,12 +378,10 @@ test('run(node[, file])', (t) => {
 
   unified()
     .use(() => {
-      return transformer
-      function transformer(_, _1, next) {
-        setImmediate(tick)
-        function tick() {
+      return function (_, _1, next) {
+        setImmediate(() => {
           next(null, otherNode)
-        }
+        })
       }
     })
     .run(givenNode)
@@ -431,12 +400,10 @@ test('run(node[, file])', (t) => {
 
   unified()
     .use(() => {
-      return transformer
-      function transformer(_, _1, next) {
-        setImmediate(tick)
-        function tick() {
+      return function (_, _1, next) {
+        setImmediate(() => {
           next(new Error('echo'))
-        }
+        })
       }
     })
     .run(givenNode)
@@ -455,13 +422,11 @@ test('run(node[, file])', (t) => {
 
   unified()
     .use(() => {
-      return transformer
-      function transformer(_, _1, next) {
-        setImmediate(tick)
-        function tick() {
+      return function (_, _1, next) {
+        setImmediate(() => {
           next()
           next(new Error('echo'))
-        }
+        })
       }
     })
     .run(givenNode)
@@ -488,6 +453,7 @@ test('runSync(node[, file])', (t) => {
 
   t.throws(
     () => {
+      // @ts-expect-error: `node` is required.
       unified().runSync()
     },
     /Expected node, got `undefined`/,
@@ -496,8 +462,7 @@ test('runSync(node[, file])', (t) => {
 
   unified()
     .use(() => {
-      return transformer
-      function transformer(tree, file) {
+      return function (tree, file) {
         t.equal(tree, givenNode, 'passes given tree to transformers')
         t.equal(file, givenFile, 'passes given file to transformers')
       }
@@ -506,8 +471,7 @@ test('runSync(node[, file])', (t) => {
 
   unified()
     .use(() => {
-      return transformer
-      function transformer(_, file) {
+      return function (_, file) {
         t.equal(
           file.toString(),
           '',
@@ -519,15 +483,13 @@ test('runSync(node[, file])', (t) => {
 
   t.throws(
     () => {
-      unified().use(plugin).runSync(givenNode)
-
-      function plugin() {
-        return transformer
-      }
-
-      function transformer() {
-        return new Error('charlie')
-      }
+      unified()
+        .use(() => {
+          return function () {
+            return new Error('charlie')
+          }
+        })
+        .runSync(givenNode)
     },
     /charlie/,
     'should throw an error returned from a sync transformer'
@@ -536,8 +498,7 @@ test('runSync(node[, file])', (t) => {
   t.equal(
     unified()
       .use(() => {
-        return transformer
-        function transformer() {
+        return function () {
           return otherNode
         }
       })
@@ -548,15 +509,13 @@ test('runSync(node[, file])', (t) => {
 
   t.throws(
     () => {
-      unified().use(plugin).runSync(givenNode)
-
-      function plugin() {
-        return transformer
-      }
-
-      function transformer(_, _1, next) {
-        next(new Error('delta'))
-      }
+      unified()
+        .use(() => {
+          return function (_, _1, next) {
+            next(new Error('delta'))
+          }
+        })
+        .runSync(givenNode)
     },
     /delta/,
     'should throw an error if given to a sync transformer’s `next`'
@@ -565,8 +524,7 @@ test('runSync(node[, file])', (t) => {
   t.equal(
     unified()
       .use(() => {
-        return transformer
-        function transformer(_, _1, next) {
+        return function (_, _1, next) {
           next(null, otherNode)
         }
       })
@@ -577,19 +535,15 @@ test('runSync(node[, file])', (t) => {
 
   t.throws(
     () => {
-      unified().use(plugin).runSync(givenNode)
-
-      function plugin() {
-        return transformer
-      }
-
-      function transformer() {
-        return new Promise(executor)
-      }
-
-      function executor(_, reject) {
-        reject(new Error('delta'))
-      }
+      unified()
+        .use(() => {
+          return function () {
+            return new Promise((_, reject) => {
+              reject(new Error('delta'))
+            })
+          }
+        })
+        .runSync(givenNode)
     },
     /`runSync` finished async. Use `run` instead/,
     'should not support a promise returning transformer rejecting in `runSync`'
@@ -599,13 +553,10 @@ test('runSync(node[, file])', (t) => {
     () => {
       unified()
         .use(() => {
-          return transformer
-          function transformer() {
-            return new Promise(executor)
-          }
-
-          function executor(resolve) {
-            resolve(otherNode)
+          return function () {
+            return new Promise((resolve) => {
+              resolve(otherNode)
+            })
           }
         })
         .runSync(givenNode)
@@ -622,18 +573,15 @@ test('runSync(node[, file])', (t) => {
 
   t.throws(
     () => {
-      unified().use(plugin).runSync(givenNode)
-
-      function plugin() {
-        return transformer
-      }
-
-      function transformer(_, _1, next) {
-        setImmediate(tick)
-        function tick() {
-          next(null, otherNode)
-        }
-      }
+      unified()
+        .use(() => {
+          return function (_, _1, next) {
+            setImmediate(() => {
+              next(null, otherNode)
+            })
+          }
+        })
+        .runSync(givenNode)
     },
     /`runSync` finished async. Use `run` instead/,
     'should throw an error if an asynchroneous transformer is used but no `done` is given'

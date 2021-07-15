@@ -39,9 +39,9 @@
   "sideEffects": false,
   "type": "module",
   "main": "index.js",
-  "types": "types/index.d.ts",
+  "types": "index.d.ts",
   "files": [
-    "types/index.d.ts",
+    "lib/",
     "index.d.ts",
     "index.js"
   ],
@@ -55,20 +55,25 @@
     "vfile": "^5.0.0"
   },
   "devDependencies": {
+    "@types/extend": "^3.0.0",
+    "@types/tape": "^4.0.0",
     "c8": "^7.0.0",
-    "dtslint": "^4.0.0",
     "prettier": "^2.0.0",
     "remark-cli": "^9.0.0",
     "remark-preset-wooorm": "^8.0.0",
+    "rimraf": "^3.0.0",
     "tape": "^5.0.0",
+    "tsd": "^0.17.0",
+    "type-coverage": "^2.0.0",
+    "typescript": "^4.0.0",
     "xo": "^0.39.0"
   },
   "scripts": {
+    "build": "rimraf \"test/**/*.d.ts\" && tsc && tsd && type-coverage",
     "format": "remark . -qfo && prettier . -w --loglevel warn && xo --fix",
     "test-api": "node --unhandled-rejections=strict --conditions development test/index.js",
     "test-coverage": "c8 --check-coverage --branches 100 --functions 100 --lines 100 --statements 100 --reporter lcov node --unhandled-rejections=strict --conditions development test/index.js",
-    "test-types": "dtslint types",
-    "test": "npm run format && npm run test-coverage && npm run test-types"
+    "test": "npm run build && npm run format && npm run test-coverage"
   },
   "prettier": {
     "tabWidth": 2,
@@ -80,6 +85,9 @@
   },
   "xo": {
     "prettier": true,
+    "rules": {
+      "promise/param-names": "off"
+    },
     "ignores": [
       "types/"
     ]
@@ -88,5 +96,11 @@
     "plugins": [
       "preset-wooorm"
     ]
+  },
+  "typeCoverage": {
+    "atLeast": 100,
+    "detail": true,
+    "strict": true,
+    "ignoreCatch": true
   }
 }

@@ -1,6 +1,9 @@
+/**
+ * @typedef {import('unist').Node} Node
+ */
+
 import test from 'tape'
 import {VFile} from 'vfile'
-import {NoopCompiler} from './util/noop.js'
 import {unified} from '../index.js'
 
 test('stringify(node[, file])', (t) => {
@@ -8,11 +11,11 @@ test('stringify(node[, file])', (t) => {
   const givenFile = new VFile('charlie')
   const givenNode = {type: 'delta'}
 
-  t.plan(16)
+  t.plan(15)
 
   t.throws(
     () => {
-      processor.stringify('')
+      processor.stringify({type: 'x'})
     },
     /Cannot `stringify` without `Compiler`/,
     'should throw without `Compiler`'
@@ -23,6 +26,8 @@ test('stringify(node[, file])', (t) => {
     t.ok('message' in file, 'should pass a file')
   }
 
+  // `prototype`s are objects.
+  // type-coverage:ignore-next-line
   processor.Compiler.prototype.compile = function () {
     t.equal(arguments.length, 0, 'should not pass anything to `compile`')
     return 'echo'
@@ -58,17 +63,11 @@ test('stringify(node[, file])', (t) => {
     'should return the result `compiler` returns if it’s an arrow function'
   )
 
-  processor.Compiler = NoopCompiler
-
-  t.throws(
-    () => {
-      processor.stringify()
-    },
-    /Expected node, got `undefined`/,
-    'should throw without node'
-  )
-
-  class ESCompiler {
+  processor.Compiler = class ESCompiler {
+    /**
+     * @param {Node} node
+     * @param {VFile} file
+     */
     constructor(node, file) {
       t.equal(node, givenNode, 'should pass a node')
       t.ok('message' in file, 'should pass a file')
@@ -79,8 +78,6 @@ test('stringify(node[, file])', (t) => {
       return 'echo'
     }
   }
-
-  processor.Compiler = ESCompiler
 
   t.equal(
     processor.stringify(givenNode, givenFile),
