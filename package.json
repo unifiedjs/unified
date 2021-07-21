@@ -1,6 +1,6 @@
 {
   "name": "unified",
-  "version": "10.0.0",
+  "version": "10.0.1",
   "description": "Interface for parsing, inspecting, transforming, and serializing content through syntax trees",
   "license": "MIT",
   "keywords": [
