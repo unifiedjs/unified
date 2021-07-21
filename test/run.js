@@ -26,11 +26,12 @@ test('run(node[, file], done)', (t) => {
   })
 
   unified()
-    .use(() => {
-      return function () {
-        return new Error('charlie')
-      }
-    })
+    .use(
+      () =>
+        function () {
+          return new Error('charlie')
+        }
+    )
     .run(givenNode, (error) => {
       t.equal(
         String(error),
@@ -52,11 +53,12 @@ test('run(node[, file], done)', (t) => {
     })
 
   unified()
-    .use(() => {
-      return function (_, _1, next) {
-        next(new Error('delta'))
-      }
-    })
+    .use(
+      () =>
+        function (_, _1, next) {
+          next(new Error('delta'))
+        }
+    )
     .run(givenNode, (error) => {
       t.equal(
         String(error),
@@ -66,12 +68,13 @@ test('run(node[, file], done)', (t) => {
     })
 
   unified()
-    .use(() => {
-      return function (_, _1, next) {
-        next()
-        next(new Error('delta'))
-      }
-    })
+    .use(
+      () =>
+        function (_, _1, next) {
+          next()
+          next(new Error('delta'))
+        }
+    )
     .run(givenNode, (error) => {
       t.error(
         error,
@@ -80,11 +83,12 @@ test('run(node[, file], done)', (t) => {
     })
 
   unified()
-    .use(() => {
-      return function (_, _1, next) {
-        next(null, otherNode)
-      }
-    })
+    .use(
+      () =>
+        function (_, _1, next) {
+          next(null, otherNode)
+        }
+    )
     .run(givenNode, (error, tree) => {
       t.error(error, 'should’t fail')
 
@@ -96,13 +100,14 @@ test('run(node[, file], done)', (t) => {
     })
 
   unified()
-    .use(() => {
-      return function () {
-        return new Promise((_, reject) => {
-          reject(new Error('delta'))
-        })
-      }
-    })
+    .use(
+      () =>
+        function () {
+          return new Promise((_, reject) => {
+            reject(new Error('delta'))
+          })
+        }
+    )
     .run(givenNode, (error) => {
       t.equal(
         String(error),
@@ -112,13 +117,14 @@ test('run(node[, file], done)', (t) => {
     })
 
   unified()
-    .use(() => {
-      return function () {
-        return new Promise((resolve) => {
-          resolve(otherNode)
-        })
-      }
-    })
+    .use(
+      () =>
+        function () {
+          return new Promise((resolve) => {
+            resolve(otherNode)
+          })
+        }
+    )
     .run(givenNode, (error, tree) => {
       t.error(error, 'should’t fail')
 
@@ -130,14 +136,15 @@ test('run(node[, file], done)', (t) => {
     })
 
   unified()
-    .use(() => {
-      return function (_, _1, next) {
-        setImmediate(tick)
-        function tick() {
-          next(null, otherNode)
+    .use(
+      () =>
+        function (_, _1, next) {
+          setImmediate(tick)
+          function tick() {
+            next(null, otherNode)
+          }
         }
-      }
-    })
+    )
     .run(givenNode, (error, tree) => {
       t.error(error, 'should’t fail')
 
@@ -149,14 +156,15 @@ test('run(node[, file], done)', (t) => {
     })
 
   unified()
-    .use(() => {
-      return function (_, _1, next) {
-        setImmediate(tick)
-        function tick() {
-          next(new Error('echo'))
+    .use(
+      () =>
+        function (_, _1, next) {
+          setImmediate(tick)
+          function tick() {
+            next(new Error('echo'))
+          }
         }
-      }
-    })
+    )
     .run(givenNode, (error) => {
       t.equal(
         String(error),
@@ -166,15 +174,16 @@ test('run(node[, file], done)', (t) => {
     })
 
   unified()
-    .use(() => {
-      return function (_, _1, next) {
-        setImmediate(tick)
-        function tick() {
-          next()
-          next(new Error('echo'))
+    .use(
+      () =>
+        function (_, _1, next) {
+          setImmediate(tick)
+          function tick() {
+            next()
+            next(new Error('echo'))
+          }
         }
-      }
-    })
+    )
     .run(givenNode, (error) => {
       t.error(
         error,
@@ -224,11 +233,12 @@ test('run(node[, file])', (t) => {
     )
 
   unified()
-    .use(() => {
-      return function () {
-        return new Error('charlie')
-      }
-    })
+    .use(
+      () =>
+        function () {
+          return new Error('charlie')
+        }
+    )
     .run(givenNode)
     .then(
       () => {
@@ -246,11 +256,12 @@ test('run(node[, file])', (t) => {
     )
 
   unified()
-    .use(() => {
-      return function () {
-        return otherNode
-      }
-    })
+    .use(
+      () =>
+        function () {
+          return otherNode
+        }
+    )
     .run(givenNode)
     .then(
       (tree) => {
@@ -268,11 +279,12 @@ test('run(node[, file])', (t) => {
     )
 
   unified()
-    .use(() => {
-      return function (_, _1, next) {
-        next(new Error('delta'))
-      }
-    })
+    .use(
+      () =>
+        function (_, _1, next) {
+          next(new Error('delta'))
+        }
+    )
     .run(givenNode)
     .then(
       () => {
@@ -290,12 +302,13 @@ test('run(node[, file])', (t) => {
     )
 
   unified()
-    .use(() => {
-      return function (_, _1, next) {
-        next()
-        next(new Error('delta'))
-      }
-    })
+    .use(
+      () =>
+        function (_, _1, next) {
+          next()
+          next(new Error('delta'))
+        }
+    )
     .run(givenNode)
     .then(
       () => {
@@ -311,11 +324,12 @@ test('run(node[, file])', (t) => {
     )
 
   unified()
-    .use(() => {
-      return function (_, _1, next) {
-        next(null, otherNode)
-      }
-    })
+    .use(
+      () =>
+        function (_, _1, next) {
+          next(null, otherNode)
+        }
+    )
     .run(givenNode)
     .then(
       (tree) => {
@@ -333,13 +347,14 @@ test('run(node[, file])', (t) => {
     )
 
   unified()
-    .use(() => {
-      return function () {
-        return new Promise((_, reject) => {
-          reject(new Error('delta'))
-        })
-      }
-    })
+    .use(
+      () =>
+        function () {
+          return new Promise((_, reject) => {
+            reject(new Error('delta'))
+          })
+        }
+    )
     .run(givenNode)
     .then(
       () => {
@@ -355,13 +370,14 @@ test('run(node[, file])', (t) => {
     )
 
   unified()
-    .use(() => {
-      return function () {
-        return new Promise((resolve) => {
-          resolve(otherNode)
-        })
-      }
-    })
+    .use(
+      () =>
+        function () {
+          return new Promise((resolve) => {
+            resolve(otherNode)
+          })
+        }
+    )
     .run(givenNode)
     .then(
       () => {
@@ -377,13 +393,14 @@ test('run(node[, file])', (t) => {
     )
 
   unified()
-    .use(() => {
-      return function (_, _1, next) {
-        setImmediate(() => {
-          next(null, otherNode)
-        })
-      }
-    })
+    .use(
+      () =>
+        function (_, _1, next) {
+          setImmediate(() => {
+            next(null, otherNode)
+          })
+        }
+    )
     .run(givenNode)
     .then(
       () => {
@@ -399,13 +416,14 @@ test('run(node[, file])', (t) => {
     )
 
   unified()
-    .use(() => {
-      return function (_, _1, next) {
-        setImmediate(() => {
-          next(new Error('echo'))
-        })
-      }
-    })
+    .use(
+      () =>
+        function (_, _1, next) {
+          setImmediate(() => {
+            next(new Error('echo'))
+          })
+        }
+    )
     .run(givenNode)
     .then(
       () => {
@@ -421,14 +439,15 @@ test('run(node[, file])', (t) => {
     )
 
   unified()
-    .use(() => {
-      return function (_, _1, next) {
-        setImmediate(() => {
-          next()
-          next(new Error('echo'))
-        })
-      }
-    })
+    .use(
+      () =>
+        function (_, _1, next) {
+          setImmediate(() => {
+            next()
+            next(new Error('echo'))
+          })
+        }
+    )
     .run(givenNode)
     .then(
       () => {
@@ -461,34 +480,37 @@ test('runSync(node[, file])', (t) => {
   )
 
   unified()
-    .use(() => {
-      return function (tree, file) {
-        t.equal(tree, givenNode, 'passes given tree to transformers')
-        t.equal(file, givenFile, 'passes given file to transformers')
-      }
-    })
+    .use(
+      () =>
+        function (tree, file) {
+          t.equal(tree, givenNode, 'passes given tree to transformers')
+          t.equal(file, givenFile, 'passes given file to transformers')
+        }
+    )
     .runSync(givenNode, givenFile)
 
   unified()
-    .use(() => {
-      return function (_, file) {
-        t.equal(
-          file.toString(),
-          '',
-          'passes files to transformers if not given'
-        )
-      }
-    })
+    .use(
+      () =>
+        function (_, file) {
+          t.equal(
+            file.toString(),
+            '',
+            'passes files to transformers if not given'
+          )
+        }
+    )
     .runSync(givenNode)
 
   t.throws(
     () => {
       unified()
-        .use(() => {
-          return function () {
-            return new Error('charlie')
-          }
-        })
+        .use(
+          () =>
+            function () {
+              return new Error('charlie')
+            }
+        )
         .runSync(givenNode)
     },
     /charlie/,
@@ -497,11 +519,12 @@ test('runSync(node[, file])', (t) => {
 
   t.equal(
     unified()
-      .use(() => {
-        return function () {
-          return otherNode
-        }
-      })
+      .use(
+        () =>
+          function () {
+            return otherNode
+          }
+      )
       .runSync(givenNode),
     otherNode,
     'should return a new tree when returned from a sync transformer'
@@ -510,11 +533,12 @@ test('runSync(node[, file])', (t) => {
   t.throws(
     () => {
       unified()
-        .use(() => {
-          return function (_, _1, next) {
-            next(new Error('delta'))
-          }
-        })
+        .use(
+          () =>
+            function (_, _1, next) {
+              next(new Error('delta'))
+            }
+        )
         .runSync(givenNode)
     },
     /delta/,
@@ -523,11 +547,12 @@ test('runSync(node[, file])', (t) => {
 
   t.equal(
     unified()
-      .use(() => {
-        return function (_, _1, next) {
-          next(null, otherNode)
-        }
-      })
+      .use(
+        () =>
+          function (_, _1, next) {
+            next(null, otherNode)
+          }
+      )
       .runSync(givenNode),
     otherNode,
     'should return a new tree if given to a sync transformer’s `next`'
@@ -536,13 +561,14 @@ test('runSync(node[, file])', (t) => {
   t.throws(
     () => {
       unified()
-        .use(() => {
-          return function () {
-            return new Promise((_, reject) => {
-              reject(new Error('delta'))
-            })
-          }
-        })
+        .use(
+          () =>
+            function () {
+              return new Promise((_, reject) => {
+                reject(new Error('delta'))
+              })
+            }
+        )
         .runSync(givenNode)
     },
     /`runSync` finished async. Use `run` instead/,
@@ -552,13 +578,14 @@ test('runSync(node[, file])', (t) => {
   t.throws(
     () => {
       unified()
-        .use(() => {
-          return function () {
-            return new Promise((resolve) => {
-              resolve(otherNode)
-            })
-          }
-        })
+        .use(
+          () =>
+            function () {
+              return new Promise((resolve) => {
+                resolve(otherNode)
+              })
+            }
+        )
         .runSync(givenNode)
     },
     /`runSync` finished async. Use `run` instead/,
@@ -574,13 +601,14 @@ test('runSync(node[, file])', (t) => {
   t.throws(
     () => {
       unified()
-        .use(() => {
-          return function (_, _1, next) {
-            setImmediate(() => {
-              next(null, otherNode)
-            })
-          }
-        })
+        .use(
+          () =>
+            function (_, _1, next) {
+              setImmediate(() => {
+                next(null, otherNode)
+              })
+            }
+        )
         .runSync(givenNode)
     },
     /`runSync` finished async. Use `run` instead/,

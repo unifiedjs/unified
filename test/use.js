@@ -266,14 +266,15 @@ test('use(plugin[, options])', (t) => {
     t.plan(3)
 
     processor
-      .use(() => {
-        return function (node, file) {
-          t.equal(node, givenNode, 'should attach a transformer (#1)')
-          t.ok('message' in file, 'should attach a transformer (#2)')
+      .use(
+        () =>
+          function (node, file) {
+            t.equal(node, givenNode, 'should attach a transformer (#1)')
+            t.ok('message' in file, 'should attach a transformer (#2)')
 
-          throw new Error('Alpha bravo charlie')
-        }
-      })
+            throw new Error('Alpha bravo charlie')
+          }
+      )
       .freeze()
 
     t.throws(

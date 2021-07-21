@@ -7,8 +7,8 @@
 
 import test from 'tape'
 import {VFile} from 'vfile'
-import {SimpleCompiler, SimpleParser} from './util/simple.js'
 import {unified} from '../index.js'
+import {SimpleCompiler, SimpleParser} from './util/simple.js'
 
 test('process(file, done)', (t) => {
   const givenFile = new VFile('alpha')
@@ -45,12 +45,13 @@ test('process(file, done)', (t) => {
         }
       })
     })
-    .use(() => {
-      return function (tree, file) {
-        t.equal(tree, givenNode, 'should pass `tree` to transformers')
-        t.equal(file, givenFile, 'should pass `file` to transformers')
-      }
-    })
+    .use(
+      () =>
+        function (tree, file) {
+          t.equal(tree, givenNode, 'should pass `tree` to transformers')
+          t.equal(file, givenFile, 'should pass `file` to transformers')
+        }
+    )
     .use(function () {
       Object.assign(this, {
         /** @type {Compiler} */
@@ -99,12 +100,13 @@ test('process(file)', (t) => {
         }
       })
     })
-    .use(() => {
-      return function (tree, file) {
-        t.equal(tree, givenNode, 'should pass `tree` to transformers')
-        t.equal(file, givenFile, 'should pass `file` to transformers')
-      }
-    })
+    .use(
+      () =>
+        function (tree, file) {
+          t.equal(tree, givenNode, 'should pass `tree` to transformers')
+          t.equal(file, givenFile, 'should pass `file` to transformers')
+        }
+    )
     .use(function () {
       Object.assign(this, {
         /** @type {Compiler} */

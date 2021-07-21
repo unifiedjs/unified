@@ -3,8 +3,8 @@
  */
 
 import test from 'tape'
-import {SimpleCompiler, SimpleParser} from './util/simple.js'
 import {unified} from '../index.js'
+import {SimpleCompiler, SimpleParser} from './util/simple.js'
 
 test('freeze()', (t) => {
   const frozen = unified()
