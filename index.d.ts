@@ -432,7 +432,7 @@ type Transformer = (
   node: Node,
   file: VFile,
   next: TransformCallback
-) => Promise<Node | undefined> | Node | Error | undefined | void
+) => Promise<Node | undefined | void> | Node | Error | undefined | void
 
 /**
  * Callback you must call when a transformer is done.

@@ -11,6 +11,14 @@ test('async function transformer () {}', (t) => {
 
   unified()
     .use(() => {
+      return async function () {}
+    })
+    .use(() => {
+      return async function () {
+        return undefined
+      }
+    })
+    .use(() => {
       return async function (tree, file) {
         t.equal(tree, givenNode, 'passes correct tree to an async function')
         t.equal(file, givenFile, 'passes correct file to an async function')
