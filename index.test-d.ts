@@ -1,5 +1,5 @@
 import {expectType, expectError} from 'tsd'
-import {Node} from 'unist'
+import {Node, Parent, Literal} from 'unist'
 import {VFile} from 'vfile'
 import {
   unified,
@@ -158,3 +158,55 @@ unified()
   .use(() => () => {
     throw new Error('x')
   })
+
+// Plugins bound to a certain node.
+
+// A small subset of mdast.
+interface Root extends Parent {
+  type: 'root'
+  children: Flow[]
+}
+
+type Flow = Paragraph
+
+interface Paragraph extends Parent {
+  type: 'paragraph'
+  children: Phrasing[]
+}
+
+type Phrasing = Text
+
+interface Text extends Literal {
+  type: 'text'
+  value: string
+}
+
+const explicitPluginWithTree: Plugin<void[], Root> = () => (tree, file) => {
+  expectType<Root>(tree)
+  expectType<VFile>(file)
+}
+
+unified().use(explicitPluginWithTree)
+
+unified().use([explicitPluginWithTree])
+
+unified().use({plugins: [explicitPluginWithTree], settings: {}})
+
+unified().use(() => (tree: Root) => {
+  expectType<Root>(tree)
+})
+
+unified().use([
+  () => (tree: Root) => {
+    expectType<Root>(tree)
+  }
+])
+
+unified().use({
+  plugins: [
+    () => (tree: Root) => {
+      expectType<Root>(tree)
+    }
+  ],
+  settings: {}
+})
