@@ -162,51 +162,107 @@ unified()
 // Plugins bound to a certain node.
 
 // A small subset of mdast.
-interface Root extends Parent {
+interface MdastRoot extends Parent {
   type: 'root'
-  children: Flow[]
+  children: MdastFlow[]
 }
 
-type Flow = Paragraph
+type MdastFlow = MdastParagraph
 
-interface Paragraph extends Parent {
+interface MdastParagraph extends Parent {
   type: 'paragraph'
-  children: Phrasing[]
+  children: MdastPhrasing[]
 }
 
-type Phrasing = Text
+type MdastPhrasing = MdastText
 
-interface Text extends Literal {
+interface MdastText extends Literal {
   type: 'text'
   value: string
 }
 
-const explicitPluginWithTree: Plugin<void[], Root> = () => (tree, file) => {
-  expectType<Root>(tree)
-  expectType<VFile>(file)
+// A small subset of hast.
+interface HastRoot extends Parent {
+  type: 'root'
+  children: HastChild[]
 }
 
-unified().use(explicitPluginWithTree)
+type HastChild = HastElement | HastText
 
-unified().use([explicitPluginWithTree])
+interface HastElement extends Parent {
+  type: 'element'
+  tagName: string
+  properties: Record<string, unknown>
+  children: HastChild[]
+}
 
-unified().use({plugins: [explicitPluginWithTree], settings: {}})
+interface HastText extends Literal {
+  type: 'text'
+  value: string
+}
 
-unified().use(() => (tree: Root) => {
-  expectType<Root>(tree)
+const explicitPluginWithInputTree: Plugin<void[], MdastRoot> =
+  () => (tree, file) => {
+    expectType<MdastRoot>(tree)
+    expectType<VFile>(file)
+  }
+
+const explicitPluginWithTrees: Plugin<void[], MdastRoot, HastRoot> =
+  () => (tree, file) => {
+    expectType<MdastRoot>(tree)
+    expectType<VFile>(file)
+    return {
+      type: 'root',
+      children: [
+        {
+          type: 'element',
+          tagName: 'a',
+          properties: {},
+          children: [{type: 'text', value: 'a'}]
+        }
+      ]
+    }
+  }
+
+unified().use(explicitPluginWithInputTree)
+unified().use([explicitPluginWithInputTree])
+unified().use({plugins: [explicitPluginWithInputTree], settings: {}})
+unified().use(() => (tree: MdastRoot) => {
+  expectType<MdastRoot>(tree)
 })
-
 unified().use([
-  () => (tree: Root) => {
-    expectType<Root>(tree)
+  () => (tree: MdastRoot) => {
+    expectType<MdastRoot>(tree)
   }
 ])
-
 unified().use({
   plugins: [
-    () => (tree: Root) => {
-      expectType<Root>(tree)
+    () => (tree: MdastRoot) => {
+      expectType<MdastRoot>(tree)
     }
+  ],
+  settings: {}
+})
+
+unified().use(explicitPluginWithTrees)
+unified().use([explicitPluginWithTrees])
+unified().use({plugins: [explicitPluginWithTrees], settings: {}})
+unified().use(() => (_: MdastRoot) => ({
+  type: 'root',
+  children: [{type: 'text', value: 'a'}]
+}))
+unified().use([
+  () => (_: MdastRoot) => ({
+    type: 'root',
+    children: [{type: 'text', value: 'a'}]
+  })
+])
+unified().use({
+  plugins: [
+    () => (_: MdastRoot) => ({
+      type: 'root',
+      children: [{type: 'text', value: 'a'}]
+    })
   ],
   settings: {}
 })

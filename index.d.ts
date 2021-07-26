@@ -26,8 +26,10 @@ export interface Processor extends FrozenProcessor {
    *
    * @typeParam PluginParameters
    *   Plugin settings.
-   * @typeParam Tree
+   * @typeParam InputTree
    *   Node that is processed by the plugin.
+   * @typeParam OutputTree
+   *   Node that is yielded by the plugin.
    * @param plugin
    *   Plugin (function) to use.
    *   Plugins are deduped based on identity: passing a function in twice will
@@ -41,8 +43,12 @@ export interface Processor extends FrozenProcessor {
    * @returns
    *   Current processor.
    */
-  use<PluginParameters extends any[] = any[], Tree extends Node = Node>(
-    plugin: Plugin<PluginParameters, Tree>,
+  use<
+    PluginParameters extends any[] = any[],
+    InputTree extends Node = Node,
+    OutputTree extends Node = InputTree
+  >(
+    plugin: Plugin<PluginParameters, InputTree, OutputTree>,
     ...settings: PluginParameters | [boolean]
   ): Processor
 
@@ -51,8 +57,10 @@ export interface Processor extends FrozenProcessor {
    *
    * @typeParam PluginParameters
    *   Plugin settings.
-   * @typeParam Tree
+   * @typeParam InputTree
    *   Node that is processed by the plugin.
+   * @typeParam OutputTree
+   *   Node that is yielded by the plugin.
    * @param tuple
    *   A tuple where the first item is a plugin (function) to use and other
    *   items are options.
@@ -63,10 +71,14 @@ export interface Processor extends FrozenProcessor {
    * @returns
    *   Current processor.
    */
-  use<PluginParameters extends any[] = any[], Tree extends Node = Node>(
+  use<
+    PluginParameters extends any[] = any[],
+    InputTree extends Node = Node,
+    OutputTree extends Node = InputTree
+  >(
     tuple:
-      | PluginTuple<PluginParameters, Tree>
-      | [Plugin<PluginParameters, Tree>, boolean]
+      | PluginTuple<PluginParameters, InputTree, OutputTree>
+      | [Plugin<PluginParameters, InputTree, OutputTree>, boolean]
   ): Processor
 
   /**
@@ -333,8 +345,10 @@ export interface FrozenProcessor {
  *
  * @typeParam PluginParameters
  *   Plugin settings.
- * @typeParam Tree
+ * @typeParam InputTree
  *   Node that is processed by the plugin.
+ * @typeParam OutputTree
+ *   Node that is yielded by the plugin.
  * @this
  *   The current processor.
  *   Plugins can configure the processor by interacting with `this.Parser` or
@@ -357,8 +371,12 @@ export interface FrozenProcessor {
  */
 export type Plugin<
   PluginParameters extends any[] = any[],
-  Tree extends Node = Node
-> = (this: Processor, ...settings: PluginParameters) => Transformer<Tree> | void
+  InputTree extends Node = Node,
+  OutputTree extends Node = InputTree
+> = (
+  this: Processor,
+  ...settings: PluginParameters
+) => Transformer<InputTree, OutputTree> | void
 
 /**
  * Presets provide a sharable way to configure processors with multiple plugins
@@ -377,13 +395,16 @@ export interface Preset {
  *
  * @typeParam PluginParameters
  *   Plugin settings.
- * @typeParam Tree
+ * @typeParam InputTree
  *   Node that is processed by the plugin.
+ * @typeParam OutputTree
+ *   Node that is yielded by the plugin.
  */
 export type PluginTuple<
   PluginParameters extends any[] = any[],
-  Tree extends Node = Node
-> = [Plugin<PluginParameters, Tree>, ...PluginParameters]
+  InputTree extends Node = Node,
+  OutputTree extends Node = InputTree
+> = [Plugin<PluginParameters, InputTree, OutputTree>, ...PluginParameters]
 
 /**
  * A union of the different ways to add plugins and settings.
@@ -392,8 +413,8 @@ export type PluginTuple<
  *   Plugin settings.
  */
 export type Pluggable<PluginParameters extends any[] = any[]> =
-  | PluginTuple<PluginParameters, any>
-  | Plugin<PluginParameters, any>
+  | PluginTuple<PluginParameters, any, any>
+  | Plugin<PluginParameters, any, any>
   | Preset
 
 /**
@@ -407,6 +428,7 @@ export type PluggableList = Pluggable[]
  */
 export type Attacher<PluginParameters extends any[] = any[]> = Plugin<
   PluginParameters,
+  any,
   any
 >
 
@@ -417,8 +439,10 @@ export type Attacher<PluginParameters extends any[] = any[]> = Plugin<
  * If an error occurs (either because it’s thrown, returned, rejected, or passed
  * to `next`), the process stops.
  *
- * @typeParam Tree
+ * @typeParam InputTree
  *   Node that is processed by the plugin.
+ * @typeParam OutputTree
+ *   Node that is yielded by the plugin.
  * @param node
  *   Tree to be transformed.
  * @param file
@@ -442,15 +466,25 @@ export type Attacher<PluginParameters extends any[] = any[]> = Plugin<
  *
  *   If you accept a `next` callback, nothing should be returned.
  */
-export type Transformer<Tree extends Node = Node> = (
-  node: Tree,
+export type Transformer<
+  InputTree extends Node = Node,
+  OutputTree extends Node = Node
+> = (
+  node: InputTree,
   file: VFile,
-  next: TransformCallback
-) => Promise<Node | undefined | void> | Node | Error | undefined | void
+  next: TransformCallback<OutputTree>
+) =>
+  | Promise<OutputTree | undefined | void>
+  | OutputTree
+  | Error
+  | undefined
+  | void
 
 /**
  * Callback you must call when a transformer is done.
  *
+ * @typeParam Tree
+ *   Node that is yielded by the plugin.
  * @param error
  *   Pass an error to stop the process.
  * @param node
@@ -460,9 +494,9 @@ export type Transformer<Tree extends Node = Node> = (
  * @returns
  *   Nothing.
  */
-export type TransformCallback = (
+export type TransformCallback<Tree extends Node = Node> = (
   error?: Error | null | undefined,
-  node?: Node | undefined,
+  node?: Tree | undefined,
   file?: VFile | undefined
 ) => void
 
