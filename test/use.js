@@ -262,19 +262,19 @@ test('use(plugin[, options])', (t) => {
   t.test('should attach transformers', (t) => {
     const processor = unified()
     const givenNode = {type: 'test'}
+    const condition = true
 
     t.plan(3)
 
     processor
-      .use(
-        () =>
-          function (node, file) {
-            t.equal(node, givenNode, 'should attach a transformer (#1)')
-            t.ok('message' in file, 'should attach a transformer (#2)')
+      .use(() => (node, file) => {
+        t.equal(node, givenNode, 'should attach a transformer (#1)')
+        t.ok('message' in file, 'should attach a transformer (#2)')
 
-            throw new Error('Alpha bravo charlie')
-          }
-      )
+        if (condition) {
+          throw new Error('Alpha bravo charlie')
+        }
+      })
       .freeze()
 
     t.throws(
