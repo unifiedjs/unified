@@ -25,11 +25,7 @@ type VFileWithOutput<Result> = Result extends Uint8Array // Buffer.
   : VFile
 
 // Get the right most non-void thing.
-type Specific<Fallback, Left = void, Right = void> = Right extends void
-  ? Left extends void
-    ? Fallback
-    : Left
-  : Right
+type Specific<Left = void, Right = void> = Right extends void ? Left : Right
 
 // Create a processor based on the input/output of a plugin.
 type UsePlugin<
@@ -45,8 +41,8 @@ type UsePlugin<
       // defines a parser, so set `ParseTree`.
       Processor<
         Output,
-        Specific<Node, Output, CurrentTree>,
-        Specific<void, Output, CompileTree>,
+        Specific<Output, CurrentTree>,
+        Specific<Output, CompileTree>,
         CompileResult
       >
     : Input extends Node
@@ -65,8 +61,8 @@ type UsePlugin<
   ? // If `Input` is `Node` and `Output` is not a `Node`, then this plugin
     // defines a compiler, so set `CompileTree` and `CompileResult`
     Processor<
-      Specific<void, Input, ParseTree>,
-      Specific<Node, Input, CurrentTree>,
+      Specific<Input, ParseTree>,
+      Specific<Input, CurrentTree>,
       Input,
       Output
     >
