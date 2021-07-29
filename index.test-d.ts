@@ -337,14 +337,14 @@ const rehypeReact: Plugin<void[], HastRoot, ReactNode> = () => {
 // configures a parser.
 expectType<MdastRoot>(unified().use(remarkParse).parse(''))
 expectType<HastRoot>(unified().use(rehypeParse).parse(''))
-expectType<Node>(unified().parse(''))
+expectType<Node>(unified().parse('')) // No parser.
 
 // If a plugin is defined with a node as input and a non-node as output, it
 // configures a compiler.
 expectType<string>(unified().use(remarkStringify).stringify(someMdast))
 expectType<string>(unified().use(rehypeStringify).stringify(someHast))
 expectType<Buffer>(unified().use(rehypeStringifyBuffer).stringify(someHast))
-expectType<string>(unified().stringify(someHast))
+expectType<unknown>(unified().stringify(someHast)) // No compiler.
 expectType<ReactNode>(unified().use(rehypeReact).stringify(someHast))
 expectError(unified().use(remarkStringify).stringify(someHast))
 expectError(unified().use(rehypeStringify).stringify(someMdast))
@@ -362,22 +362,26 @@ expectType<VFile & {result: ReactNode}>(
 expectType<MdastRoot>(unified().use(remarkParse).runSync(someMdast))
 expectError(unified().use(remarkParse).runSync(someHast))
 
-// A compiler plugin defines the output of `.run`:
-expectType<HastRoot>(unified().use(rehypeStringify).runSync(someMdast))
+// A compiler plugin defines the input/output of `.run`:
+expectError(unified().use(rehypeStringify).runSync(someMdast))
+// As a parser and a compiler are set, it can be assumed that the input of `run`
+// is the result of the parser, and the output is the input of the compiler.
 expectType<HastRoot>(
   unified().use(remarkParse).use(rehypeStringify).runSync(someMdast)
 )
+// Probably hast expected.
+expectError(unified().use(rehypeStringify).runSync(someMdast))
 
 unified()
   .use(rehypeStringify)
-  .run(someMdast)
+  .run(someHast)
   .then((thing) => {
     expectType<HastRoot>(thing)
   })
 
 unified()
   .use(rehypeStringify)
-  .run(someMdast, (error, thing) => {
+  .run(someHast, (error, thing) => {
     expectType<Error | null | undefined>(error)
     expectType<HastRoot | undefined>(thing)
   })
@@ -458,5 +462,13 @@ unified()
   .use(explicitRemarkPlugin)
   .use(explicitRehypePlugin)
   .use(explicitRemarkPlugin)
+
+expectType<HastRoot>(
+  unified()
+    .use(explicitRemarkPlugin)
+    .use(remarkRehype)
+    .use(explicitRehypePlugin)
+    .runSync(someMdast)
+)
 
 /* eslint-enable @typescript-eslint/no-floating-promises */
