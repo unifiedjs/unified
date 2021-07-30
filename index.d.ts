@@ -389,7 +389,7 @@ export interface FrozenProcessor<
   process(file: VFileCompatible): Promise<VFileWithOutput<CompileResult>>
 
   /**
-   * Process a file, synchroneously.
+   * Process a file, synchronously.
    * Throws when asynchronous transforms are configured.
    *
    * This performs all phases of the processor:
@@ -846,7 +846,7 @@ export type RunCallback<Tree extends Node = Node> = (
  * @typeParam File
  *   The file that the callback receives.
  * @param error
- *   Error passed when unsuccesful.
+ *   Error passed when unsuccessful.
  * @param file
  *   File passed when successful.
  * @returns
