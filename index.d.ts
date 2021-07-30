@@ -16,16 +16,104 @@
 import {Node} from 'unist'
 import {VFile, VFileCompatible} from 'vfile'
 
+/* eslint-disable @typescript-eslint/ban-types */
+
+type VFileWithOutput<Result> = Result extends Uint8Array // Buffer.
+  ? VFile
+  : Result extends object // Custom result type
+  ? VFile & {result: Result}
+  : VFile
+
+// Get the right most non-void thing.
+type Specific<Left = void, Right = void> = Right extends void ? Left : Right
+
+// Create a processor based on the input/output of a plugin.
+type UsePlugin<
+  ParseTree extends Node | void = void,
+  CurrentTree extends Node | void = void,
+  CompileTree extends Node | void = void,
+  CompileResult = void,
+  Input = void,
+  Output = void
+> = Output extends Node
+  ? Input extends string
+    ? // If `Input` is `string` and `Output` is `Node`, then this plugin
+      // defines a parser, so set `ParseTree`.
+      Processor<
+        Output,
+        Specific<Output, CurrentTree>,
+        Specific<Output, CompileTree>,
+        CompileResult
+      >
+    : Input extends Node
+    ? // If `Input` is `Node` and `Output` is `Node`, then this plugin defines a
+      // transformer, its output defines the input of the next, so set
+      // `CurrentTree`.
+      Processor<
+        Specific<Input, ParseTree>,
+        Output,
+        Specific<CompileTree, Output>,
+        CompileResult
+      >
+    : // Else, `Input` is something else and `Output` is `Node`:
+      never
+  : Input extends Node
+  ? // If `Input` is `Node` and `Output` is not a `Node`, then this plugin
+    // defines a compiler, so set `CompileTree` and `CompileResult`
+    Processor<
+      Specific<Input, ParseTree>,
+      Specific<Input, CurrentTree>,
+      Input,
+      Output
+    >
+  : // Else, `Input` is not a `Node` and `Output` is not a `Node`.
+    // Maybe it’s untyped, or the plugin throws an error (`never`), so lets
+    // just keep it as it was.
+    Processor<ParseTree, CurrentTree, CompileTree, CompileResult>
+
+/* eslint-enable @typescript-eslint/ban-types */
+
 /**
  * Processor allows plugins to be chained together to transform content.
  * The chain of plugins defines how content flows through it.
+ *
+ * @typeParam ParseTree
+ *   The node that the parser yields (and `run` receives).
+ * @typeParam CurrentTree
+ *   The node that the last attached plugin yields.
+ * @typeParam CompileTree
+ *   The node that the compiler receives (and `run` yields).
+ * @typeParam CompileResult
+ *   The thing that the compiler yields.
  */
-export interface Processor extends FrozenProcessor {
+export interface Processor<
+  ParseTree extends Node | void = void,
+  CurrentTree extends Node | void = void,
+  CompileTree extends Node | void = void,
+  CompileResult = void
+> extends FrozenProcessor<ParseTree, CurrentTree, CompileTree, CompileResult> {
   /**
    * Configure the processor to use a plugin.
    *
    * @typeParam PluginParameters
    *   Plugin settings.
+   * @typeParam Input
+   *   Value that is accepted by the plugin.
+   *
+   *   *   If the plugin returns a transformer, then this should be the node
+   *       type that the transformer expects.
+   *   *   If the plugin sets a parser, then this should be `string`.
+   *   *   If the plugin sets a compiler, then this should be the node type that
+   *       the compiler expects.
+   * @typeParam Output
+   *   Value that the plugin yields.
+   *
+   *   *   If the plugin returns a transformer, then this should be the node
+   *       type that the transformer yields, and defaults to `Input`.
+   *   *   If the plugin sets a parser, then this should be the node type that
+   *       the parser yields.
+   *   *   If the plugin sets a compiler, then this should be the result that
+   *       the compiler yields (`string`, `Buffer`, or something else).
    * @param plugin
    *   Plugin (function) to use.
    *   Plugins are deduped based on identity: passing a function in twice will
@@ -39,16 +127,44 @@ export interface Processor extends FrozenProcessor {
    * @returns
    *   Current processor.
    */
-  use<PluginParameters extends any[] = any[]>(
-    plugin: Plugin<PluginParameters>,
+  use<
+    PluginParameters extends any[] = any[],
+    Input = Specific<Node, CurrentTree>,
+    Output = Input
+  >(
+    plugin: Plugin<PluginParameters, Input, Output>,
     ...settings: PluginParameters | [boolean]
-  ): Processor
+  ): UsePlugin<
+    ParseTree,
+    CurrentTree,
+    CompileTree,
+    CompileResult,
+    Input,
+    Output
+  >
 
   /**
    * Configure the processor with a tuple of a plugin and setting(s).
    *
    * @typeParam PluginParameters
    *   Plugin settings.
+   * @typeParam Input
+   *   Value that is accepted by the plugin.
+   *
+   *   *   If the plugin returns a transformer, then this should be the node
+   *       type that the transformer expects.
+   *   *   If the plugin sets a parser, then this should be `string`.
+   *   *   If the plugin sets a compiler, then this should be the node type that
+   *       the compiler expects.
+   * @typeParam Output
+   *   Value that the plugin yields.
+   *
+   *   *   If the plugin returns a transformer, then this should be the node
+   *       type that the transformer yields, and defaults to `Input`.
+   *   *   If the plugin sets a parser, then this should be the node type that
+   *       the parser yields.
+   *   *   If the plugin sets a compiler, then this should be the result that
+   *       the compiler yields (`string`, `Buffer`, or something else).
    * @param tuple
    *   A tuple where the first item is a plugin (function) to use and other
    *   items are options.
@@ -59,9 +175,22 @@ export interface Processor extends FrozenProcessor {
    * @returns
    *   Current processor.
    */
-  use<PluginParameters extends any[] = any[]>(
-    tuple: PluginTuple<PluginParameters> | [Plugin<PluginParameters>, boolean]
-  ): Processor
+  use<
+    PluginParameters extends any[] = any[],
+    Input = Specific<Node, CurrentTree>,
+    Output = Input
+  >(
+    tuple:
+      | PluginTuple<PluginParameters, Input, Output>
+      | [Plugin<PluginParameters, Input, Output>, boolean]
+  ): UsePlugin<
+    ParseTree,
+    CurrentTree,
+    CompileTree,
+    CompileResult,
+    Input,
+    Output
+  >
 
   /**
    * Configure the processor with a preset or list of plugins and presets.
@@ -73,7 +202,9 @@ export interface Processor extends FrozenProcessor {
    * @returns
    *   Current processor.
    */
-  use(presetOrList: Preset | PluggableList): Processor
+  use(
+    presetOrList: Preset | PluggableList
+  ): Processor<ParseTree, CurrentTree, CompileTree, CompileResult>
 }
 
 /**
@@ -82,7 +213,12 @@ export interface Processor extends FrozenProcessor {
  * A frozen processor can be created by calling `.freeze()` on a processor.
  * An unfrozen processor can be created by calling a processor.
  */
-export interface FrozenProcessor {
+export interface FrozenProcessor<
+  ParseTree extends Node | void = void,
+  CurrentTree extends Node | void = void,
+  CompileTree extends Node | void = void,
+  CompileResult = void
+> {
   /**
    * Clone current processor
    *
@@ -92,7 +228,7 @@ export interface FrozenProcessor {
    *   But when the descendant processor is configured it does not affect the
    *   ancestral processor.
    */
-  (): Processor
+  (): Processor<ParseTree, CurrentTree, CompileTree, CompileResult>
 
   /**
    * Internal list of configured plugins.
@@ -101,8 +237,10 @@ export interface FrozenProcessor {
    */
   attachers: Array<[Plugin, ...unknown[]]>
 
-  Parser?: Parser | undefined
-  Compiler?: Compiler | undefined
+  Parser?: Parser<Specific<Node, ParseTree>> | undefined
+  Compiler?:
+    | Compiler<Specific<Node, CompileTree>, Specific<unknown, CompileResult>>
+    | undefined
 
   /**
    * Parse a file.
@@ -113,7 +251,7 @@ export interface FrozenProcessor {
    * @returns
    *   Resulting tree.
    */
-  parse(file?: VFileCompatible | undefined): Node
+  parse(file?: VFileCompatible | undefined): Specific<Node, ParseTree>
 
   /**
    * Compile a file.
@@ -127,7 +265,10 @@ export interface FrozenProcessor {
    *   This depends on which plugins you use: typically text, but could for
    *   example be a React node.
    */
-  stringify(node: Node, file?: VFileCompatible | undefined): unknown
+  stringify(
+    node: Specific<Node, CompileTree>,
+    file?: VFileCompatible | undefined
+  ): CompileTree extends Node ? CompileResult : unknown
 
   /**
    * Run transforms on the given tree.
@@ -139,7 +280,10 @@ export interface FrozenProcessor {
    * @returns
    *   Nothing.
    */
-  run(node: Node, callback: RunCallback): void
+  run(
+    node: Specific<Node, ParseTree>,
+    callback: RunCallback<Specific<Node, CompileTree>>
+  ): void
 
   /**
    * Run transforms on the given node.
@@ -155,9 +299,9 @@ export interface FrozenProcessor {
    *   Nothing.
    */
   run(
-    node: Node,
+    node: Specific<Node, ParseTree>,
     file: VFileCompatible | undefined,
-    callback: RunCallback
+    callback: RunCallback<Specific<Node, CompileTree>>
   ): void
 
   /**
@@ -171,10 +315,13 @@ export interface FrozenProcessor {
    * @returns
    *   Promise that resolves to the resulting tree.
    */
-  run(node: Node, file?: VFileCompatible | undefined): Promise<Node>
+  run(
+    node: Specific<Node, CompileTree>,
+    file?: VFileCompatible | undefined
+  ): Promise<Specific<Node, CompileTree>>
 
   /**
-   * Run transforms on the given node, synchroneously.
+   * Run transforms on the given node, synchronously.
    * Throws when asynchronous transforms are configured.
    *
    * @param node
@@ -185,7 +332,10 @@ export interface FrozenProcessor {
    * @returns
    *   Resulting tree.
    */
-  runSync(node: Node, file?: VFileCompatible | undefined): Node
+  runSync(
+    node: Specific<Node, ParseTree>,
+    file?: VFileCompatible | undefined
+  ): Specific<Node, CompileTree>
 
   /**
    * Process a file.
@@ -210,7 +360,10 @@ export interface FrozenProcessor {
    * @returns
    *   Nothing.
    */
-  process(file: VFileCompatible | undefined, callback: ProcessCallback): void
+  process(
+    file: VFileCompatible | undefined,
+    callback: ProcessCallback<VFileWithOutput<CompileResult>>
+  ): void
 
   /**
    * Process a file.
@@ -233,10 +386,10 @@ export interface FrozenProcessor {
    * @returns
    *   Promise that resolves to the resulting `VFile`.
    */
-  process(file: VFileCompatible): Promise<VFile>
+  process(file: VFileCompatible): Promise<VFileWithOutput<CompileResult>>
 
   /**
-   * Process a file, synchroneously.
+   * Process a file, synchronously.
    * Throws when asynchronous transforms are configured.
    *
    * This performs all phases of the processor:
@@ -257,7 +410,9 @@ export interface FrozenProcessor {
    * @returns
    *   Resulting file.
    */
-  processSync(file?: VFileCompatible | undefined): VFile
+  processSync(
+    file?: VFileCompatible | undefined
+  ): VFileWithOutput<CompileResult>
 
   /**
    * Get an in-memory key-value store accessible to all phases of the process.
@@ -275,7 +430,9 @@ export interface FrozenProcessor {
    * @returns
    *   Current processor.
    */
-  data(data: Record<string, unknown>): Processor
+  data(
+    data: Record<string, unknown>
+  ): Processor<ParseTree, CurrentTree, CompileTree, CompileResult>
 
   /**
    * Get an in-memory value by key.
@@ -297,7 +454,10 @@ export interface FrozenProcessor {
    * @returns
    *   Current processor.
    */
-  data(key: string, value: unknown): Processor
+  data(
+    key: string,
+    value: unknown
+  ): Processor<ParseTree, CurrentTree, CompileTree, CompileResult>
 
   /**
    * Freeze a processor.
@@ -315,7 +475,7 @@ export interface FrozenProcessor {
    * @returns
    *   Frozen processor.
    */
-  freeze(): FrozenProcessor
+  freeze(): FrozenProcessor<ParseTree, CurrentTree, CompileTree, CompileResult>
 }
 
 /**
@@ -327,6 +487,23 @@ export interface FrozenProcessor {
  *
  * @typeParam PluginParameters
  *   Plugin settings.
+ * @typeParam Input
+ *   Value that is accepted by the plugin.
+ *
+ *   *   If the plugin returns a transformer, then this should be the node
+ *       type that the transformer expects.
+ *   *   If the plugin sets a parser, then this should be `string`.
+ *   *   If the plugin sets a compiler, then this should be the node type that
+ *       the compiler expects.
+ * @typeParam Output
+ *   Value that the plugin yields.
+ *
+ *   *   If the plugin returns a transformer, then this should be the node
+ *       type that the transformer yields, and defaults to `Input`.
+ *   *   If the plugin sets a parser, then this should be the node type that
+ *       the parser yields.
+ *   *   If the plugin sets a compiler, then this should be the result that
+ *       the compiler yields (`string`, `Buffer`, or something else).
  * @this
  *   The current processor.
  *   Plugins can configure the processor by interacting with `this.Parser` or
@@ -347,10 +524,29 @@ export interface FrozenProcessor {
  *   Plugins can return a `Transformer` to specify how the syntax tree is
  *   handled.
  */
-export type Plugin<PluginParameters extends any[] = any[]> = (
-  this: Processor,
+export type Plugin<
+  PluginParameters extends any[] = any[],
+  Input = Node,
+  Output = Input
+> = (
+  this: Input extends Node
+    ? Output extends Node
+      ? // This is a transform, so define `Input` as the current tree.
+        Processor<void, Input>
+      : // Compiler.
+        Processor<void, Input, Input, Output>
+    : Output extends Node
+    ? // Parser.
+      Processor<Output, Output>
+    : // No clue.
+      Processor,
   ...settings: PluginParameters
-) => Transformer | void
+) => // If both `Input` and `Output` are `Node`, expect an optional `Transformer`.
+Input extends Node
+  ? Output extends Node
+    ? Transformer<Input, Output> | void
+    : void
+  : void
 
 /**
  * Presets provide a sharable way to configure processors with multiple plugins
@@ -369,11 +565,29 @@ export interface Preset {
  *
  * @typeParam PluginParameters
  *   Plugin settings.
+ * @typeParam Input
+ *   Value that is accepted by the plugin.
+ *
+ *   *   If the plugin returns a transformer, then this should be the node
+ *       type that the transformer expects.
+ *   *   If the plugin sets a parser, then this should be `string`.
+ *   *   If the plugin sets a compiler, then this should be the node type that
+ *       the compiler expects.
+ * @typeParam Output
+ *   Value that the plugin yields.
+ *
+ *   *   If the plugin returns a transformer, then this should be the node
+ *       type that the transformer yields, and defaults to `Input`.
+ *   *   If the plugin sets a parser, then this should be the node type that
+ *       the parser yields.
+ *   *   If the plugin sets a compiler, then this should be the result that
+ *       the compiler yields (`string`, `Buffer`, or something else).
  */
-export type PluginTuple<PluginParameters extends any[] = any[]> = [
-  Plugin<PluginParameters>,
-  ...PluginParameters
-]
+export type PluginTuple<
+  PluginParameters extends any[] = any[],
+  Input = Node,
+  Output = Input
+> = [Plugin<PluginParameters, Input, Output>, ...PluginParameters]
 
 /**
  * A union of the different ways to add plugins and settings.
@@ -382,8 +596,8 @@ export type PluginTuple<PluginParameters extends any[] = any[]> = [
  *   Plugin settings.
  */
 export type Pluggable<PluginParameters extends any[] = any[]> =
-  | PluginTuple<PluginParameters>
-  | Plugin<PluginParameters>
+  | PluginTuple<PluginParameters, any, any>
+  | Plugin<PluginParameters, any, any>
   | Preset
 
 /**
@@ -395,8 +609,11 @@ export type PluggableList = Pluggable[]
  * @deprecated
  *   Please use `Plugin`.
  */
-export type Attacher<PluginParameters extends any[] = any[]> =
-  Plugin<PluginParameters>
+export type Attacher<
+  PluginParameters extends any[] = any[],
+  Input = Node,
+  Output = Input
+> = Plugin<PluginParameters, Input, Output>
 
 /**
  * Transformers modify the syntax tree or metadata of a file.
@@ -405,6 +622,10 @@ export type Attacher<PluginParameters extends any[] = any[]> =
  * If an error occurs (either because it’s thrown, returned, rejected, or passed
  * to `next`), the process stops.
  *
+ * @typeParam Input
+ *   Node type that the transformer expects.
+ * @typeParam Output
+ *   Node type that the transformer yields.
  * @param node
  *   Tree to be transformed.
  * @param file
@@ -428,15 +649,20 @@ export type Attacher<PluginParameters extends any[] = any[]> =
  *
  *   If you accept a `next` callback, nothing should be returned.
  */
-type Transformer = (
-  node: Node,
+export type Transformer<
+  Input extends Node = Node,
+  Output extends Node = Input
+> = (
+  node: Input,
   file: VFile,
-  next: TransformCallback
-) => Promise<Node | undefined | void> | Node | Error | undefined | void
+  next: TransformCallback<Output>
+) => Promise<Output | undefined | void> | Output | Error | undefined | void
 
 /**
  * Callback you must call when a transformer is done.
  *
+ * @typeParam Tree
+ *   Node that the plugin yields.
  * @param error
  *   Pass an error to stop the process.
  * @param node
@@ -446,9 +672,9 @@ type Transformer = (
  * @returns
  *   Nothing.
  */
-export type TransformCallback = (
+export type TransformCallback<Tree extends Node = Node> = (
   error?: Error | null | undefined,
-  node?: Node | undefined,
+  node?: Tree | undefined,
   file?: VFile | undefined
 ) => void
 
@@ -464,13 +690,21 @@ export type TransformCallback = (
  * `prototype`), in which case it’s called with `new`.
  * Instances must have a parse method that is called without arguments and
  * must return a `Node`.
+ *
+ * @typeParam Tree
+ *   The node that the parser yields (and `run` receives).
  */
-export type Parser = ParserClass | ParserFunction
+export type Parser<Tree extends Node = Node> =
+  | ParserClass<Tree>
+  | ParserFunction<Tree>
 
 /**
  * A class to parse files.
+ *
+ * @typeParam Tree
+ *   The node that the parser yields.
  */
-export class ParserClass {
+export class ParserClass<Tree extends Node = Node> {
   prototype: {
     /**
      * Parse a file.
@@ -478,7 +712,7 @@ export class ParserClass {
      * @returns
      *   Parsed tree.
      */
-    parse(): Node
+    parse(): Tree
   }
 
   /**
@@ -497,6 +731,8 @@ export class ParserClass {
 /**
  * Normal function to parse a file.
  *
+ * @typeParam Tree
+ *   The node that the parser yields.
  * @param document
  *   Document to parse.
  * @param file
@@ -504,7 +740,10 @@ export class ParserClass {
  * @returns
  *   Node representing the given file.
  */
-export type ParserFunction = (document: string, file: VFile) => Node
+export type ParserFunction<Tree extends Node = Node> = (
+  document: string,
+  file: VFile
+) => Tree
 
 /**
  * Function handling the compilation of syntax tree to a text.
@@ -518,13 +757,25 @@ export type ParserFunction = (document: string, file: VFile) => Node
  * `prototype`), in which case it’s called with `new`.
  * Instances must have a `compile` method that is called without arguments
  * and must return a `string`.
+ *
+ * @typeParam Tree
+ *   The node that the compiler receives.
+ * @typeParam Result
+ *   The thing that the compiler yields.
  */
-export type Compiler = CompilerClass | CompilerFunction
+export type Compiler<Tree extends Node = Node, Result = unknown> =
+  | CompilerClass<Tree, Result>
+  | CompilerFunction<Tree, Result>
 
 /**
  * A class to compile trees.
+ *
+ * @typeParam Tree
+ *   The node that the compiler receives.
+ * @typeParam Result
+ *   The thing that the compiler yields.
  */
-export class CompilerClass {
+export class CompilerClass<Tree extends Node = Node, Result = unknown> {
   prototype: {
     /**
      * Compile a tree.
@@ -533,7 +784,7 @@ export class CompilerClass {
      *   New content: compiled text (`string` or `Buffer`, for `file.value`) or
      *   something else (for `file.result`).
      */
-    compile(): unknown
+    compile(): Result
   }
 
   /**
@@ -546,12 +797,16 @@ export class CompilerClass {
    * @returns
    *   Instance.
    */
-  constructor(tree: Node, file: VFile)
+  constructor(tree: Tree, file: VFile)
 }
 
 /**
  * Normal function to compile a tree.
  *
+ * @typeParam Tree
+ *   The node that the compiler receives.
+ * @typeParam Result
+ *   The thing that the compiler yields.
  * @param tree
  *   Tree to compile.
  * @param file
@@ -560,13 +815,18 @@ export class CompilerClass {
  *   New content: compiled text (`string` or `Buffer`, for `file.value`) or
  *   something else (for `file.result`).
  */
-export type CompilerFunction = (tree: Node, file: VFile) => unknown
+export type CompilerFunction<Tree extends Node = Node, Result = unknown> = (
+  tree: Tree,
+  file: VFile
+) => Result
 
 /**
  * Callback called when a done running.
  *
+ * @typeParam Tree
+ *   The tree that the callback receives.
  * @param error
- *   Error passed when unsuccesful.
+ *   Error passed when unsuccessful.
  * @param node
  *   Tree to transform.
  * @param file
@@ -574,25 +834,27 @@ export type CompilerFunction = (tree: Node, file: VFile) => unknown
  * @returns
  *   Nothing.
  */
-export type RunCallback = (
+export type RunCallback<Tree extends Node = Node> = (
   error?: Error | null | undefined,
-  node?: Node | undefined,
+  node?: Tree | undefined,
   file?: VFile | undefined
 ) => void
 
 /**
  * Callback called when a done processing.
  *
+ * @typeParam File
+ *   The file that the callback receives.
  * @param error
- *   Error passed when unsuccesful.
+ *   Error passed when unsuccessful.
  * @param file
  *   File passed when successful.
  * @returns
  *   Nothing.
  */
-export type ProcessCallback = (
+export type ProcessCallback<File extends VFile = VFile> = (
   error?: Error | null | undefined,
-  file?: VFile | undefined
+  file?: File | undefined
 ) => void
 
 /**

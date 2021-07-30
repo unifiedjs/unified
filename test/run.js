@@ -118,6 +118,8 @@ test('run(node[, file], done)', (t) => {
 
   unified()
     .use(
+      // Note: TS JS doesn’t understand the promise w/o explicit type.
+      /** @type {import('../index.js').Plugin<[]>} */
       () =>
         function () {
           return new Promise((resolve) => {
@@ -371,6 +373,8 @@ test('run(node[, file])', (t) => {
 
   unified()
     .use(
+      // Note: TS JS doesn’t understand the promise w/o explicit type.
+      /** @type {import('../index.js').Plugin<[]>} */
       () =>
         function () {
           return new Promise((resolve) => {
@@ -579,6 +583,8 @@ test('runSync(node[, file])', (t) => {
     () => {
       unified()
         .use(
+          // Note: TS JS doesn’t understand the promise w/o explicit type.
+          /** @type {import('../index.js').Plugin<[]>} */
           () =>
             function () {
               return new Promise((resolve) => {
