@@ -321,7 +321,7 @@ export interface FrozenProcessor<
   ): Promise<Specific<Node, CompileTree>>
 
   /**
-   * Run transforms on the given node, synchroneously.
+   * Run transforms on the given node, synchronously.
    * Throws when asynchronous transforms are configured.
    *
    * @param node
@@ -826,7 +826,7 @@ export type CompilerFunction<Tree extends Node = Node, Result = unknown> = (
  * @typeParam Tree
  *   The tree that the callback receives.
  * @param error
- *   Error passed when unsuccesful.
+ *   Error passed when unsuccessful.
  * @param node
  *   Tree to transform.
  * @param file
