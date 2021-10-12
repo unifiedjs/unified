@@ -1,3 +1,4 @@
+import process from 'node:process'
 import test from 'tape'
 import {VFile} from 'vfile'
 import {unified} from '../index.js'

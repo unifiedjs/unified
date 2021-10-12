@@ -5,6 +5,7 @@
  * @typedef {import('..').Compiler} Compiler
  */
 
+import {Buffer} from 'node:buffer'
 import test from 'tape'
 import {VFile} from 'vfile'
 import {unified} from '../index.js'

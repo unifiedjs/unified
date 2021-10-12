@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
+import type {Buffer} from 'node:buffer'
 import {expectType, expectError} from 'tsd'
-import {Node, Parent, Literal} from 'unist'
-import {VFile} from 'vfile'
+import type {Node, Parent, Literal} from 'unist'
+import type {VFile} from 'vfile'
 import {
   unified,
   Plugin,
