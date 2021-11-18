@@ -360,13 +360,19 @@ expectType<VFile & {result: ReactNode}>(
 )
 
 // A parser plugin defines the input of `.run`:
+expectType<Promise<MdastRoot>>(unified().use(remarkParse).run(someMdast))
 expectType<MdastRoot>(unified().use(remarkParse).runSync(someMdast))
+expectError(unified().use(remarkParse).run(someHast))
 expectError(unified().use(remarkParse).runSync(someHast))
 
 // A compiler plugin defines the input/output of `.run`:
+expectError(unified().use(rehypeStringify).run(someMdast))
 expectError(unified().use(rehypeStringify).runSync(someMdast))
 // As a parser and a compiler are set, it can be assumed that the input of `run`
 // is the result of the parser, and the output is the input of the compiler.
+expectType<Promise<HastRoot>>(
+  unified().use(remarkParse).use(rehypeStringify).run(someMdast)
+)
 expectType<HastRoot>(
   unified().use(remarkParse).use(rehypeStringify).runSync(someMdast)
 )

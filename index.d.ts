@@ -316,7 +316,7 @@ export interface FrozenProcessor<
    *   Promise that resolves to the resulting tree.
    */
   run(
-    node: Specific<Node, CompileTree>,
+    node: Specific<Node, ParseTree>,
     file?: VFileCompatible | undefined
   ): Promise<Specific<Node, CompileTree>>
 
