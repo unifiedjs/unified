@@ -81,10 +81,13 @@ Support this effort and give back by sponsoring on [OpenCollective][collective]!
   <a href="https://expo.io"><img src="https://avatars1.githubusercontent.com/u/12504344?s=128&v=4" width="64"></a>
 </td>
 <td width="10%" align="center">
+  <a href="https://boostnote.io">Boost Note</a><br><br>
+  <a href="https://boostnote.io"><img src="https://images.opencollective.com/boosthub/6318083/logo/128.png" width="64"></a>
+</td>
+<td width="10%" align="center">
   <a href="https://www.holloway.com">Holloway</a><br><br>
   <a href="https://www.holloway.com"><img src="https://avatars1.githubusercontent.com/u/35904294?s=128&v=4" width="64"></a>
 </td>
-<td width="10%"></td>
 <td width="10%"></td>
 <td width="10%"></td>
 <td width="10%"></td>
