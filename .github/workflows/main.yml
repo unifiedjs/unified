@@ -58,10 +58,6 @@ jobs:
           - node
         package:
           - unifiedjs/unified-engine
-          - unifiedjs/unified-args
-          - unifiedjs/unified-language-server
           - remarkjs/remark
           - rehypejs/rehype
           - retextjs/retext
-          - remarkjs/react-markdown
-          - mdx-js/mdx
