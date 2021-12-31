@@ -3,5 +3,7 @@ node_modules/
 .DS_Store
 lib/**/*.d.ts
 test/**/*.d.ts
+.stryker-tmp/
+reports/
 *.log
 yarn.lock

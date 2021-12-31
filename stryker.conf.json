@@ -1,0 +1,11 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "packageManager": "npm",
+  "reporters": ["html", "clear-text", "progress"],
+  "mutate": ["lib/index.js"],
+  "testRunner": "command",
+  "coverageAnalysis": "off",
+  "commandRunner": {"command": "npm run test-api"},
+  "timeoutFactor": 3,
+  "thresholds": {"break": 100}
+}
