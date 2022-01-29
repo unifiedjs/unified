@@ -21,7 +21,7 @@ jobs:
           - windows-latest
         node:
           - lts/erbium
-          - node
+          - lts/gallium
   canary:
     name: canary / ${{matrix.package}} / ${{matrix.node}} on ${{matrix.os}}
     runs-on: ${{matrix.os}}
@@ -55,7 +55,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - node
+          - lts/gallium
         package:
           - unifiedjs/unified-engine
           - remarkjs/remark
