@@ -56,13 +56,17 @@ Support this effort and give back by sponsoring on [OpenCollective][collective]!
   <a href="https://americanexpress.io"><img src="https://avatars1.githubusercontent.com/u/3853301?s=256&v=4" width="128"></a>
 </td>
 <td width="20%" align="center" rowspan="2" colspan="2">
-  <a href="https://www.gatsbyjs.org">Gatsby</a><br><br>
-  <a href="https://www.gatsbyjs.org"><img src="https://avatars1.githubusercontent.com/u/12551863?s=256&v=4" width="128"></a>
+  <a href="https://www.gitbook.com">GitBook</a><br><br>
+  <a href="https://www.gitbook.com"><img src="https://avatars1.githubusercontent.com/u/7111340?s=256&v=4" width="128"></a>
 </td>
 </tr>
 <tr valign="middle">
 </tr>
 <tr valign="middle">
+<td width="20%" align="center" rowspan="2" colspan="2">
+  <a href="https://www.gatsbyjs.org">Gatsby</a><br><br>
+  <a href="https://www.gatsbyjs.org"><img src="https://avatars1.githubusercontent.com/u/12551863?s=256&v=4" width="128"></a>
+</td>
 <td width="20%" align="center" rowspan="2" colspan="2">
   <a href="https://www.netlify.com">Netlify</a><br><br>
   <!--OC has a sharper image-->
@@ -89,11 +93,9 @@ Support this effort and give back by sponsoring on [OpenCollective][collective]!
   <a href="https://www.holloway.com"><img src="https://avatars1.githubusercontent.com/u/35904294?s=128&v=4" width="64"></a>
 </td>
 <td width="10%"></td>
-<td width="10%"></td>
-<td width="10%"></td>
 </tr>
 <tr valign="middle">
-<td width="100%" align="center" colspan="8">
+<td width="100%" align="center" colspan="6">
   <br>
   <a href="https://opencollective.com/unified"><strong>You?</strong></a>
   <br><br>
