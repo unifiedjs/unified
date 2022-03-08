@@ -16,7 +16,7 @@
 import {Node} from 'unist'
 import {VFile, VFileCompatible} from 'vfile'
 
-/* eslint-disable @typescript-eslint/ban-types, @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/naming-convention */
 
 type VFileWithOutput<Result> = Result extends Uint8Array // Buffer.
   ? VFile
@@ -71,7 +71,7 @@ type UsePlugin<
     // just keep it as it was.
     Processor<ParseTree, CurrentTree, CompileTree, CompileResult>
 
-/* eslint-enable @typescript-eslint/ban-types, @typescript-eslint/naming-convention */
+/* eslint-enable @typescript-eslint/naming-convention */
 
 /**
  * Processor allows plugins to be chained together to transform content.
