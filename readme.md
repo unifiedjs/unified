@@ -17,7 +17,7 @@ formats.
 
 **unified** enables new exciting projects like [Gatsby][] to pull in Markdown,
 [MDX][] to embed [JSX][], and [Prettier][] to format it.
-It’s used in about 500k projects on GitHub and has about 25m downloads each
+It’s used in about 700k projects on GitHub and has about 35m downloads each
 month on npm: you’re probably using it.
 Some notable users are [Node.js][], [Vercel][], [Netlify][], [GitHub][],
 [Mozilla][], [WordPress][], [Adobe][], [Facebook][], [Google][], and many more.
