@@ -279,8 +279,7 @@ with the [`data`][data] method.
 
 **unified** can integrate with the file system with [`unified-engine`][engine].
 CLI apps can be created with [`unified-args`][args], Gulp plugins with
-[`unified-engine-gulp`][gulp], and Atom Linters with
-[`unified-engine-atom`][atom].
+[`unified-engine-gulp`][gulp].
 
 [`unified-stream`][stream] provides a streaming interface.
 
@@ -1334,8 +1333,6 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 [args]: https://github.com/unifiedjs/unified-args
 
 [gulp]: https://github.com/unifiedjs/unified-engine-gulp
-
-[atom]: https://github.com/unifiedjs/unified-engine-atom
 
 [remark-rehype]: https://github.com/remarkjs/remark-rehype
 
