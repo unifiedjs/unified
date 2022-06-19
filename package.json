@@ -95,7 +95,11 @@
   },
   "remarkConfig": {
     "plugins": [
-      "preset-wooorm"
+      "preset-wooorm",
+      [
+        "remark-lint-no-html",
+        false
+      ]
     ]
   },
   "typeCoverage": {
