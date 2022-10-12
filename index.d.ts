@@ -13,8 +13,8 @@
 // Furthermore, this is places in the root of the project because types that
 // accept type parameters cannot be re-exported as such easily.
 
-import {Node} from 'unist'
-import {VFile, VFileCompatible} from 'vfile'
+import type {Node} from 'unist'
+import type {VFile, VFileCompatible} from 'vfile'
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
@@ -86,12 +86,12 @@ type UsePlugin<
  * @typeParam CompileResult
  *   The thing that the compiler yields.
  */
-export interface Processor<
+export type Processor<
   ParseTree extends Node | void = void,
   CurrentTree extends Node | void = void,
   CompileTree extends Node | void = void,
   CompileResult = void
-> extends FrozenProcessor<ParseTree, CurrentTree, CompileTree, CompileResult> {
+> = {
   /**
    * Configure the processor to use a plugin.
    *
@@ -205,7 +205,7 @@ export interface Processor<
   use(
     presetOrList: Preset | PluggableList
   ): Processor<ParseTree, CurrentTree, CompileTree, CompileResult>
-}
+} & FrozenProcessor<ParseTree, CurrentTree, CompileTree, CompileResult>
 
 /**
  * A frozen processor is just like a regular processor, except no additional
@@ -213,12 +213,12 @@ export interface Processor<
  * A frozen processor can be created by calling `.freeze()` on a processor.
  * An unfrozen processor can be created by calling a processor.
  */
-export interface FrozenProcessor<
+export type FrozenProcessor<
   ParseTree extends Node | void = void,
   CurrentTree extends Node | void = void,
   CompileTree extends Node | void = void,
   CompileResult = void
-> {
+> = {
   /**
    * Clone current processor
    *
@@ -552,7 +552,7 @@ Input extends Node
  * Presets provide a sharable way to configure processors with multiple plugins
  * and/or settings.
  */
-export interface Preset {
+export type Preset = {
   plugins?: PluggableList
   settings?: Record<string, unknown>
 }

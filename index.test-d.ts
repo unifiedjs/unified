@@ -4,18 +4,18 @@ import type {Buffer} from 'node:buffer'
 import {expectType, expectError} from 'tsd'
 import type {Node, Parent, Literal} from 'unist'
 import type {VFile} from 'vfile'
-import {
-  unified,
+import type {
   Plugin,
   Processor,
   FrozenProcessor,
   TransformCallback
 } from './index.js'
+import {unified} from './index.js'
 
 expectType<Processor>(unified())
 expectType<FrozenProcessor>(unified().freeze())
 
-interface ExamplePluginSettings {
+type ExamplePluginSettings = {
   example: string
 }
 
@@ -167,44 +167,44 @@ unified()
 // Plugins bound to a certain node.
 
 // A small subset of mdast.
-interface MdastRoot extends Parent {
+type MdastRoot = {
   type: 'root'
   children: MdastFlow[]
-}
+} & Parent
 
 type MdastFlow = MdastParagraph
 
-interface MdastParagraph extends Parent {
+type MdastParagraph = {
   type: 'paragraph'
   children: MdastPhrasing[]
-}
+} & Parent
 
 type MdastPhrasing = MdastText
 
-interface MdastText extends Literal {
+type MdastText = {
   type: 'text'
   value: string
-}
+} & Literal
 
 // A small subset of hast.
-interface HastRoot extends Parent {
+type HastRoot = {
   type: 'root'
   children: HastChild[]
-}
+} & Parent
 
 type HastChild = HastElement | HastText
 
-interface HastElement extends Parent {
+type HastElement = {
   type: 'element'
   tagName: string
   properties: Record<string, unknown>
   children: HastChild[]
-}
+} & Parent
 
-interface HastText extends Literal {
+type HastText = {
   type: 'text'
   value: string
-}
+} & Literal
 
 const explicitPluginWithInputTree: Plugin<void[], MdastRoot> =
   () => (tree, file) => {
@@ -273,7 +273,7 @@ unified().use({
 })
 
 // Input and output types.
-interface ReactNode {
+type ReactNode = {
   kind: string
 }
 
