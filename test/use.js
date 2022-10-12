@@ -308,11 +308,13 @@ test('use(preset)', (t) => {
     'should throw on invalid `plugins` (2)'
   )
 
-  t.test('should support empty presets', (t) => {
-    const processor = unified().use({}).freeze()
-    t.equal(processor.attachers.length, 0)
-    t.end()
-  })
+  t.throws(
+    () => {
+      unified().use({}).freeze()
+    },
+    /Expected usable value but received an empty preset/,
+    'should throw on empty presets'
+  )
 
   t.test('should support presets with empty plugins', (t) => {
     const processor = unified().use({plugins: []}).freeze()
