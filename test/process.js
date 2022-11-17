@@ -6,18 +6,17 @@
  */
 
 import {Buffer} from 'node:buffer'
-import test from 'tape'
+import assert from 'node:assert/strict'
+import test from 'node:test'
 import {VFile} from 'vfile'
 import {unified} from '../index.js'
 import {SimpleCompiler, SimpleParser} from './util/simple.js'
 
-test('process(file, done)', (t) => {
+test('process(file, done)', () => {
   const givenFile = new VFile('alpha')
   const givenNode = {type: 'bravo'}
 
-  t.plan(11)
-
-  t.throws(
+  assert.throws(
     () => {
       unified().process('')
     },
@@ -25,7 +24,7 @@ test('process(file, done)', (t) => {
     'should throw without `Parser`'
   )
 
-  t.throws(
+  assert.throws(
     () => {
       const processor = unified()
       processor.Parser = SimpleParser
@@ -40,8 +39,8 @@ test('process(file, done)', (t) => {
       Object.assign(this, {
         /** @type {Parser} */
         Parser(doc, file) {
-          t.equal(typeof doc, 'string', 'should pass `doc` to `Parser`')
-          t.equal(file, givenFile, 'should pass `file` to `Parser`')
+          assert.equal(typeof doc, 'string', 'should pass `doc` to `Parser`')
+          assert.equal(file, givenFile, 'should pass `file` to `Parser`')
           return givenNode
         }
       })
@@ -49,31 +48,31 @@ test('process(file, done)', (t) => {
     .use(
       () =>
         function (tree, file) {
-          t.equal(tree, givenNode, 'should pass `tree` to transformers')
-          t.equal(file, givenFile, 'should pass `file` to transformers')
+          assert.equal(tree, givenNode, 'should pass `tree` to transformers')
+          assert.equal(file, givenFile, 'should pass `file` to transformers')
         }
     )
     .use(function () {
       Object.assign(this, {
         /** @type {Compiler} */
         Compiler(tree, file) {
-          t.equal(tree, givenNode, 'should pass `tree` to `Compiler`')
-          t.equal(file, givenFile, 'should pass `file` to `Compiler`')
+          assert.equal(tree, givenNode, 'should pass `tree` to `Compiler`')
+          assert.equal(file, givenFile, 'should pass `file` to `Compiler`')
           return 'charlie'
         }
       })
     })
     .process(givenFile, (error, file) => {
-      t.error(error, 'shouldn’t fail')
+      assert.ifError(error)
 
-      t.equal(
+      assert.equal(
         String(file),
         'charlie',
         'should store the result of `compile()` on `file`'
       )
     })
 
-  t.throws(() => {
+  assert.throws(() => {
     unified()
       .use(function () {
         Object.assign(this, {Parser: SimpleParser, Compiler: SimpleCompiler})
@@ -84,19 +83,17 @@ test('process(file, done)', (t) => {
   }, /^Error: Alfred$/)
 })
 
-test('process(file)', (t) => {
+test('process(file)', () => {
   const givenFile = new VFile('alpha')
   const givenNode = {type: 'bravo'}
-
-  t.plan(7)
 
   unified()
     .use(function () {
       Object.assign(this, {
         /** @type {Parser} */
         Parser(doc, file) {
-          t.equal(typeof doc, 'string', 'should pass `doc` to `Parser`')
-          t.equal(file, givenFile, 'should pass `file` to `Parser`')
+          assert.equal(typeof doc, 'string', 'should pass `doc` to `Parser`')
+          assert.equal(file, givenFile, 'should pass `file` to `Parser`')
           return givenNode
         }
       })
@@ -104,16 +101,16 @@ test('process(file)', (t) => {
     .use(
       () =>
         function (tree, file) {
-          t.equal(tree, givenNode, 'should pass `tree` to transformers')
-          t.equal(file, givenFile, 'should pass `file` to transformers')
+          assert.equal(tree, givenNode, 'should pass `tree` to transformers')
+          assert.equal(file, givenFile, 'should pass `file` to transformers')
         }
     )
     .use(function () {
       Object.assign(this, {
         /** @type {Compiler} */
         Compiler(tree, file) {
-          t.equal(tree, givenNode, 'should pass `tree` to `Compiler`')
-          t.equal(file, givenFile, 'should pass `file` to `Compiler`')
+          assert.equal(tree, givenNode, 'should pass `tree` to `Compiler`')
+          assert.equal(file, givenFile, 'should pass `file` to `Compiler`')
           return 'charlie'
         }
       })
@@ -121,18 +118,16 @@ test('process(file)', (t) => {
     .process(givenFile)
     .then(
       (file) => {
-        t.equal(file.toString(), 'charlie', 'should resolve the file')
+        assert.equal(file.toString(), 'charlie', 'should resolve the file')
       },
       () => {
-        t.fail('should resolve, not reject, the file')
+        assert.fail('should resolve, not reject, the file')
       }
     )
 })
 
-test('processSync(file)', (t) => {
-  t.plan(4)
-
-  t.throws(
+test('processSync(file)', () => {
+  assert.throws(
     () => {
       unified().processSync('')
     },
@@ -140,7 +135,7 @@ test('processSync(file)', (t) => {
     'should throw without `Parser`'
   )
 
-  t.throws(
+  assert.throws(
     () => {
       const processor = unified()
       processor.Parser = SimpleParser
@@ -150,7 +145,7 @@ test('processSync(file)', (t) => {
     'should throw without `Compiler`'
   )
 
-  t.throws(
+  assert.throws(
     () => {
       unified()
         .use(function () {
@@ -165,7 +160,7 @@ test('processSync(file)', (t) => {
     'should throw error from `processSync`'
   )
 
-  t.equal(
+  assert.equal(
     unified()
       .use(function () {
         Object.assign(this, {Parser: SimpleParser, Compiler: SimpleCompiler})
@@ -181,10 +176,8 @@ test('processSync(file)', (t) => {
   )
 })
 
-test('compilers', (t) => {
-  t.plan(4)
-
-  t.equal(
+test('compilers', () => {
+  assert.equal(
     unified()
       .use(function () {
         Object.assign(this, {
@@ -199,7 +192,7 @@ test('compilers', (t) => {
     'should compile strings'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     unified()
       .use(function () {
         Object.assign(this, {
@@ -214,7 +207,7 @@ test('compilers', (t) => {
     'should compile buffers'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     unified()
       .use(function () {
         Object.assign(this, {
@@ -229,7 +222,7 @@ test('compilers', (t) => {
     'should compile null'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     unified()
       .use(function () {
         Object.assign(this, {

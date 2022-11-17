@@ -2,11 +2,12 @@
  * @typedef {import('../index.js').Plugin} Plugin
  */
 
-import test from 'tape'
+import assert from 'node:assert/strict'
+import test from 'node:test'
 import {unified} from '../index.js'
 import {SimpleCompiler, SimpleParser} from './util/simple.js'
 
-test('freeze()', (t) => {
+test('freeze()', async (t) => {
   const frozen = unified()
     .use(function () {
       // Note: TS has a bug so setting `this.Parser` and such doesn’t work,
@@ -19,11 +20,11 @@ test('freeze()', (t) => {
     .freeze()
   const unfrozen = frozen()
 
-  t.doesNotThrow(() => {
+  assert.doesNotThrow(() => {
     unfrozen.data()
   }, '`data` can be called on unfrozen interfaces')
 
-  t.throws(
+  assert.throws(
     () => {
       frozen.data('foo', 'bar')
     },
@@ -31,7 +32,7 @@ test('freeze()', (t) => {
     '`data` cannot be called on frozen interfaces'
   )
 
-  t.throws(
+  assert.throws(
     () => {
       // @ts-expect-error: `use` does not exist on frozen processors.
       frozen.use()
@@ -40,37 +41,35 @@ test('freeze()', (t) => {
     '`use` cannot be called on frozen interfaces'
   )
 
-  t.doesNotThrow(() => {
+  assert.doesNotThrow(() => {
     frozen.parse()
   }, '`parse` can be called on frozen interfaces')
 
-  t.doesNotThrow(() => {
+  assert.doesNotThrow(() => {
     frozen.stringify({type: 'foo'})
   }, '`stringify` can be called on frozen interfaces')
 
-  t.doesNotThrow(() => {
+  assert.doesNotThrow(() => {
     frozen.runSync({type: 'foo'})
   }, '`runSync` can be called on frozen interfaces')
 
-  t.doesNotThrow(() => {
+  assert.doesNotThrow(() => {
     frozen.run({type: 'foo'}, () => {})
   }, '`run` can be called on frozen interfaces')
 
-  t.doesNotThrow(() => {
+  assert.doesNotThrow(() => {
     frozen.processSync('')
   }, '`processSync` can be called on frozen interfaces')
 
-  t.doesNotThrow(() => {
+  assert.doesNotThrow(() => {
     frozen.process('', () => {})
   }, '`process` can be called on frozen interfaces')
 
-  t.test('should freeze once, even for nested calls', (t) => {
-    t.plan(2)
-
+  await t.test('should freeze once, even for nested calls', () => {
     let index = 0
     const processor = unified()
       .use(() => {
-        t.pass('Expected: ' + String(index++))
+        assert.ok(true, 'Expected: ' + String(index++))
       })
       .use({plugins: [freezingPlugin]})
       .use({plugins: [freezingPlugin]})
@@ -86,6 +85,4 @@ test('freeze()', (t) => {
       this.freeze()
     }
   })
-
-  t.end()
 })
