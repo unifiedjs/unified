@@ -78,7 +78,10 @@ test('freeze()', (t) => {
 
     processor().freeze()
 
-    /** @type {Plugin} */
+    /**
+     * @this {import('../index.js').Processor}
+     * @type {Plugin}
+     */
     function freezingPlugin() {
       this.freeze()
     }

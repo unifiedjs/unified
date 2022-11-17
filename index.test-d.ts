@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
-
 import type {Buffer} from 'node:buffer'
 import {expectType, expectError} from 'tsd'
 import type {Node, Parent, Literal} from 'unist'
@@ -379,12 +377,7 @@ expectType<HastRoot>(
 // Probably hast expected.
 expectError(unified().use(rehypeStringify).runSync(someMdast))
 
-unified()
-  .use(rehypeStringify)
-  .run(someHast)
-  .then((thing) => {
-    expectType<HastRoot>(thing)
-  })
+expectType<HastRoot>(await unified().use(rehypeStringify).run(someHast))
 
 unified()
   .use(rehypeStringify)
@@ -401,12 +394,9 @@ expectType<VFile & {result: ReactNode}>(
   unified().use(remarkParse).use(rehypeReact).processSync('')
 )
 
-unified()
-  .use(rehypeReact)
-  .process('')
-  .then((file) => {
-    expectType<VFile & {result: ReactNode}>(file)
-  })
+expectType<VFile & {result: ReactNode}>(
+  await unified().use(rehypeReact).process('')
+)
 
 unified()
   .use(rehypeReact)
@@ -477,5 +467,3 @@ expectType<HastRoot>(
     .use(explicitRehypePlugin)
     .runSync(someMdast)
 )
-
-/* eslint-enable @typescript-eslint/no-floating-promises */
