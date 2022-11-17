@@ -1,16 +1,17 @@
 {
-  "include": ["lib/**/*.js", "test/**/*.js"],
+  "include": ["**/**.js", "index.d.ts"],
+  "exclude": ["coverage", "node_modules"],
   "compilerOptions": {
-    "target": "ES2020",
-    "lib": ["ES2020"],
-    "module": "ES2020",
-    "moduleResolution": "node",
-    "allowJs": true,
     "checkJs": true,
     "declaration": true,
     "emitDeclarationOnly": true,
-    "allowSyntheticDefaultImports": true,
+    "exactOptionalPropertyTypes": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["es2020"],
+    "module": "node16",
+    "newLine": "lf",
     "skipLibCheck": true,
-    "strict": true
+    "strict": true,
+    "target": "es2020"
   }
 }

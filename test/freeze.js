@@ -1,5 +1,5 @@
 /**
- * @typedef {import('..').Plugin} Plugin
+ * @typedef {import('../index.js').Plugin} Plugin
  */
 
 import test from 'tape'
