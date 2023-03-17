@@ -47,6 +47,10 @@ test('process(file, done)', () => {
     })
     .use(
       () =>
+        /**
+         * @param {Node} tree
+         * @param {VFile} file
+         */
         function (tree, file) {
           assert.equal(tree, givenNode, 'should pass `tree` to transformers')
           assert.equal(file, givenFile, 'should pass `file` to transformers')
@@ -100,6 +104,10 @@ test('process(file)', () => {
     })
     .use(
       () =>
+        /**
+         * @param {Node} tree
+         * @param {VFile} file
+         */
         function (tree, file) {
           assert.equal(tree, givenNode, 'should pass `tree` to transformers')
           assert.equal(file, givenFile, 'should pass `file` to transformers')
