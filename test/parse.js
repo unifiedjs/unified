@@ -5,7 +5,7 @@
 
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import {unified} from '../index.js'
+import {unified} from 'unified'
 
 test('parse(file)', () => {
   const processor = unified()

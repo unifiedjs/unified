@@ -5,7 +5,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {VFile} from 'vfile'
-import {unified} from '../index.js'
+import {unified} from 'unified'
 
 test('stringify(node[, file])', () => {
   const processor = unified()
