@@ -64,7 +64,7 @@
     "tsd": "^0.24.0",
     "type-coverage": "^2.0.0",
     "typescript": "^5.0.0",
-    "xo": "^0.53.0"
+    "xo": "^0.54.0"
   },
   "scripts": {
     "prepack": "npm run build && npm run format",
