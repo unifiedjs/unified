@@ -1,24 +1,24 @@
 {
   "name": "unified",
   "version": "10.1.2",
-  "description": "Interface for parsing, inspecting, transforming, and serializing content through syntax trees",
+  "description": "parse, inspect, transform, and serialize content through syntax trees",
   "license": "MIT",
   "keywords": [
-    "unified",
-    "process",
-    "parse",
-    "transform",
-    "compile",
-    "stringify",
-    "serialize",
     "ast",
-    "cst",
-    "syntax",
-    "tree",
+    "compile",
     "content",
+    "cst",
+    "parse",
+    "process",
     "rehype",
+    "remark",
     "retext",
-    "remark"
+    "serialize",
+    "stringify",
+    "syntax",
+    "transform",
+    "tree",
+    "unified"
   ],
   "homepage": "https://unifiedjs.com",
   "repository": "unifiedjs/unified",
@@ -66,34 +66,24 @@
     "xo": "^0.55.0"
   },
   "scripts": {
-    "prepack": "npm run build && npm run format",
     "build": "tsc --build --clean && tsc --build && type-coverage",
-    "format": "remark . -qfo && prettier . -w --log-level warn && xo --fix",
+    "format": "remark . --frail --output --quiet && prettier . --log-level warn --write && xo --fix",
+    "prepack": "npm run build && npm run format",
+    "test": "npm run build && npm run format && npm run test-coverage",
     "test-api": "node --conditions development test/index.js",
-    "test-coverage": "c8 --check-coverage --100 --reporter lcov npm run test-api",
-    "test": "npm run build && npm run format && npm run test-coverage"
+    "test-coverage": "c8 --100 --check-coverage --reporter lcov npm run test-api"
   },
   "prettier": {
-    "tabWidth": 2,
-    "useTabs": false,
-    "singleQuote": true,
     "bracketSpacing": false,
+    "singleQuote": true,
     "semi": false,
-    "trailingComma": "none"
-  },
-  "xo": {
-    "prettier": true,
-    "rules": {
-      "@typescript-eslint/ban-types": "off",
-      "promise/param-names": "off"
-    },
-    "ignores": [
-      "types/"
-    ]
+    "tabWidth": 2,
+    "trailingComma": "none",
+    "useTabs": false
   },
   "remarkConfig": {
     "plugins": [
-      "preset-wooorm",
+      "remark-preset-wooorm",
       [
         "remark-lint-no-html",
         false
@@ -103,11 +93,24 @@
   "typeCoverage": {
     "atLeast": 100,
     "detail": true,
-    "strict": true,
+    "ignoreCatch": true,
     "#": "`type-coverage` currently barfs on inferring nodes in plugins, while TS gets it",
     "ignoreFiles": [
-      "test/**/*"
+      "test/**/*.js"
     ],
-    "ignoreCatch": true
+    "strict": true
+  },
+  "xo": {
+    "overrides": [
+      {
+        "files": [
+          "**/*.ts"
+        ],
+        "rules": {
+          "@typescript-eslint/ban-types": "off"
+        }
+      }
+    ],
+    "prettier": true
   }
 }
