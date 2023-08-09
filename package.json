@@ -56,20 +56,20 @@
   },
   "devDependencies": {
     "@types/extend": "^3.0.0",
-    "@types/node": "^18.0.0",
-    "c8": "^7.0.0",
-    "prettier": "^2.0.0",
+    "@types/node": "^20.0.0",
+    "c8": "^8.0.0",
+    "prettier": "^3.0.0",
     "remark-cli": "^11.0.0",
     "remark-preset-wooorm": "^9.0.0",
-    "tsd": "^0.24.0",
+    "tsd": "^0.28.0",
     "type-coverage": "^2.0.0",
     "typescript": "^5.0.0",
-    "xo": "^0.54.0"
+    "xo": "^0.55.0"
   },
   "scripts": {
     "prepack": "npm run build && npm run format",
     "build": "tsc --build --clean && tsc --build && type-coverage",
-    "format": "remark . -qfo && prettier . -w --loglevel warn && xo --fix",
+    "format": "remark . -qfo && prettier . -w --log-level warn && xo --fix",
     "test-api": "node --conditions development test/index.js",
     "test-coverage": "c8 --check-coverage --100 --reporter lcov npm run test-api",
     "test": "npm run build && npm run format && npm run test-coverage"
