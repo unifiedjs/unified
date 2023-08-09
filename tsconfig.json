@@ -1,8 +1,7 @@
 {
-  "include": ["**/**.js", "index.d.ts"],
-  "exclude": ["coverage", "node_modules"],
   "compilerOptions": {
     "checkJs": true,
+    "customConditions": ["development"],
     "declaration": true,
     "emitDeclarationOnly": true,
     "exactOptionalPropertyTypes": true,
@@ -10,5 +9,7 @@
     "module": "node16",
     "strict": true,
     "target": "es2020"
-  }
+  },
+  "exclude": ["coverage/", "node_modules/"],
+  "include": ["**/*.js", "index.d.ts"]
 }
