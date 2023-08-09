@@ -1,7 +1,3 @@
-/**
- * @typedef {import('unist').Node} Node
- */
-
 import process from 'node:process'
 import assert from 'node:assert/strict'
 import test from 'node:test'
@@ -553,10 +549,6 @@ test('runSync(node[, file])', async () => {
   unified()
     .use(
       () =>
-        /**
-         * @param {Node} tree
-         * @param {VFile} file
-         */
         function (tree, file) {
           assert.equal(tree, givenNode, 'passes given tree to transformers')
           assert.equal(file, givenFile, 'passes given file to transformers')
@@ -567,10 +559,6 @@ test('runSync(node[, file])', async () => {
   unified()
     .use(
       () =>
-        /**
-         * @param {Node} _
-         * @param {VFile} file
-         */
         function (_, file) {
           assert.equal(
             file.toString(),

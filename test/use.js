@@ -1,8 +1,3 @@
-/**
- * @typedef {import('unist').Node} Node
- * @typedef {import('vfile').VFile} VFile
- */
-
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {unified} from '../index.js'
@@ -259,10 +254,6 @@ test('use(plugin[, options])', async (t) => {
     processor
       .use(
         () =>
-          /**
-           * @param {Node} node
-           * @param {VFile} file
-           */
           function (node, file) {
             assert.equal(node, givenNode, 'should attach a transformer (#1)')
             assert.ok('message' in file, 'should attach a transformer (#2)')

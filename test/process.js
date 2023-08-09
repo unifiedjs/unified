@@ -1,6 +1,5 @@
 /**
  * @typedef {import('unist').Literal<string>} Literal
- * @typedef {import('unist').Node} Node
  * @typedef {import('../index.js').Parser} Parser
  * @typedef {import('../index.js').Compiler} Compiler
  */
@@ -47,10 +46,6 @@ test('process(file, done)', () => {
     })
     .use(
       () =>
-        /**
-         * @param {Node} tree
-         * @param {VFile} file
-         */
         function (tree, file) {
           assert.equal(tree, givenNode, 'should pass `tree` to transformers')
           assert.equal(file, givenFile, 'should pass `file` to transformers')
@@ -104,10 +99,6 @@ test('process(file)', () => {
     })
     .use(
       () =>
-        /**
-         * @param {Node} tree
-         * @param {VFile} file
-         */
         function (tree, file) {
           assert.equal(tree, givenNode, 'should pass `tree` to transformers')
           assert.equal(file, givenFile, 'should pass `file` to transformers')

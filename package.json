@@ -105,6 +105,10 @@
     "atLeast": 100,
     "detail": true,
     "strict": true,
+    "#": "`type-coverage` currently barfs on inferring nodes in plugins, while TS gets it",
+    "ignoreFiles": [
+      "test/**/*"
+    ],
     "ignoreCatch": true
   }
 }
