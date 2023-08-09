@@ -52,7 +52,7 @@
     "is-buffer": "^2.0.0",
     "is-plain-obj": "^4.0.0",
     "trough": "^2.0.0",
-    "vfile": "^5.0.0"
+    "vfile": "^6.0.0"
   },
   "devDependencies": {
     "@types/extend": "^3.0.0",
