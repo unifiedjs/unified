@@ -291,10 +291,13 @@ test('use(preset)', async (t) => {
     'should throw on invalid `plugins` (2)'
   )
 
-  await t.test('should support empty presets', () => {
-    const processor = unified().use({}).freeze()
-    assert.equal(processor.attachers.length, 0)
-  })
+  assert.throws(
+    () => {
+      unified().use({}).freeze()
+    },
+    /Expected usable value but received an empty preset/,
+    'should throw on empty presets'
+  )
 
   await t.test('should support presets with empty plugins', () => {
     const processor = unified().use({plugins: []}).freeze()
