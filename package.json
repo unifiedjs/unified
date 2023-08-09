@@ -46,16 +46,16 @@
   ],
   "dependencies": {
     "@types/unist": "^3.0.0",
+    "@ungap/structured-clone": "^1.0.0",
     "bail": "^2.0.0",
-    "extend": "^3.0.0",
     "is-buffer": "^2.0.0",
     "is-plain-obj": "^4.0.0",
     "trough": "^2.0.0",
     "vfile": "^6.0.0"
   },
   "devDependencies": {
-    "@types/extend": "^3.0.0",
     "@types/node": "^20.0.0",
+    "@types/ungap__structured-clone": "^0.3.0",
     "c8": "^8.0.0",
     "prettier": "^3.0.0",
     "remark-cli": "^11.0.0",
