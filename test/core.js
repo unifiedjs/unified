@@ -1,11 +1,12 @@
-import test from 'tape'
+import assert from 'node:assert/strict'
+import test from 'node:test'
 import {unified} from '../index.js'
 
-test('unified()', (t) => {
+test('unified()', () => {
   /** @type {number} */
   let count
 
-  t.throws(
+  assert.throws(
     () => {
       // @ts-expect-error: `use` does not exist on frozen processors.
       unified.use(() => {})
@@ -16,7 +17,7 @@ test('unified()', (t) => {
 
   const processor = unified()
 
-  t.equal(typeof processor, 'function', 'should return a function')
+  assert.equal(typeof processor, 'function', 'should return a function')
 
   processor.use(function () {
     count++
@@ -26,17 +27,15 @@ test('unified()', (t) => {
   count = 0
   const otherProcessor = processor().freeze()
 
-  t.equal(
+  assert.equal(
     count,
     1,
     'should create a new processor implementing the ancestral processor when called (#1)'
   )
 
-  t.equal(
+  assert.equal(
     otherProcessor.data('foo'),
     'bar',
     'should create a new processor implementing the ancestral processor when called (#2)'
   )
-
-  t.end()
 })

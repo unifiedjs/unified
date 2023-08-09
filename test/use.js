@@ -1,20 +1,20 @@
-import test from 'tape'
+import assert from 'node:assert/strict'
+import test from 'node:test'
 import {unified} from '../index.js'
 
-test('use(plugin[, options])', (t) => {
-  t.test('should ignore missing values', (t) => {
+test('use(plugin[, options])', async (t) => {
+  await t.test('should ignore missing values', () => {
     const processor = unified()
     // @ts-expect-error: runtime feature.
-    t.equal(processor.use(), processor, 'missing')
+    assert.equal(processor.use(), processor, 'missing')
     // @ts-expect-error: runtime feature.
-    t.equal(processor.use(null), processor, '`null`')
+    assert.equal(processor.use(null), processor, '`null`')
     // @ts-expect-error: runtime feature.
-    t.equal(processor.use(undefined), processor, '`undefined`')
-    t.end()
+    assert.equal(processor.use(undefined), processor, '`undefined`')
   })
 
-  t.test('should throw when given invalid values', (t) => {
-    t.throws(
+  await t.test('should throw when given invalid values', () => {
+    assert.throws(
       () => {
         // @ts-expect-error: runtime.
         unified().use(false)
@@ -23,7 +23,7 @@ test('use(plugin[, options])', (t) => {
       '`false`'
     )
 
-    t.throws(
+    assert.throws(
       () => {
         // @ts-expect-error: runtime.
         unified().use(true)
@@ -32,7 +32,7 @@ test('use(plugin[, options])', (t) => {
       '`true`'
     )
 
-    t.throws(
+    assert.throws(
       () => {
         // @ts-expect-error: runtime.
         unified().use('alfred')
@@ -40,71 +40,65 @@ test('use(plugin[, options])', (t) => {
       /^TypeError: Expected usable value, not `alfred`$/,
       '`string`'
     )
-
-    t.end()
   })
 
-  t.test('should support plugin and options', (t) => {
+  await t.test('should support plugin and options', () => {
     const processor = unified()
     const givenOptions = {}
 
-    t.plan(2)
-
     processor
       .use(function (options) {
-        t.equal(
+        assert.equal(
           this,
           processor,
           'should call a plugin with `processor` as the context'
         )
-        t.equal(options, givenOptions, 'should call a plugin with `options`')
+        assert.equal(
+          options,
+          givenOptions,
+          'should call a plugin with `options`'
+        )
       }, givenOptions)
       .freeze()
   })
 
-  t.test('should support a list of plugins', (t) => {
+  await t.test('should support a list of plugins', () => {
     const processor = unified()
-
-    t.plan(2)
 
     processor
       .use([
         function () {
-          t.equal(this, processor, 'should support a list of plugins (#1)')
+          assert.equal(this, processor, 'should support a list of plugins (#1)')
         },
         function () {
-          t.equal(this, processor, 'should support a list of plugins (#2)')
+          assert.equal(this, processor, 'should support a list of plugins (#2)')
         }
       ])
       .freeze()
   })
 
-  t.test('should support a list of one plugin', (t) => {
+  await t.test('should support a list of one plugin', () => {
     const processor = unified()
-
-    t.plan(1)
 
     processor
       .use([
         function () {
-          t.equal(this, processor, 'should support a list of plugins (#2)')
+          assert.equal(this, processor, 'should support a list of plugins (#2)')
         }
       ])
       .freeze()
   })
 
-  t.test('should support a list of plugins and arguments', (t) => {
+  await t.test('should support a list of plugins and arguments', () => {
     const processor = unified()
     const givenOptions = {}
-
-    t.plan(2)
 
     processor
       .use([
         [
           /** @param {unknown} options */
           function (options) {
-            t.equal(
+            assert.equal(
               options,
               givenOptions,
               'should support arguments with options'
@@ -114,7 +108,7 @@ test('use(plugin[, options])', (t) => {
         ],
         [
           function () {
-            t.equal(
+            assert.equal(
               this,
               processor,
               'should support a arguments without options'
@@ -125,8 +119,8 @@ test('use(plugin[, options])', (t) => {
       .freeze()
   })
 
-  t.test('should throw when given invalid values in lists', (t) => {
-    t.throws(
+  await t.test('should throw when given invalid values in lists', () => {
+    assert.throws(
       () => {
         // @ts-expect-error: runtime.
         unified().use([false])
@@ -135,7 +129,7 @@ test('use(plugin[, options])', (t) => {
       '`false`'
     )
 
-    t.throws(
+    assert.throws(
       () => {
         // @ts-expect-error: runtime.
         unified().use([true])
@@ -144,7 +138,7 @@ test('use(plugin[, options])', (t) => {
       '`true`'
     )
 
-    t.throws(
+    assert.throws(
       () => {
         // @ts-expect-error: runtime.
         unified().use(['alfred'])
@@ -152,15 +146,11 @@ test('use(plugin[, options])', (t) => {
       /^TypeError: Expected usable value, not `alfred`$/,
       '`string`'
     )
-
-    t.end()
   })
 
-  t.test('should reconfigure objects', (t) => {
+  await t.test('should reconfigure objects', () => {
     const leftOptions = {foo: true, bar: true}
     const rightOptions = {foo: false, qux: true}
-
-    t.plan(4)
 
     unified().use(change, 'this').use(change, rightOptions).freeze()
     unified().use(change).use(change, rightOptions).freeze()
@@ -169,12 +159,16 @@ test('use(plugin[, options])', (t) => {
 
     /** @param {unknown} [options] */
     function change(options) {
-      t.deepEqual(options, {foo: false, qux: true}, 'should reconfigure (set)')
+      assert.deepEqual(
+        options,
+        {foo: false, qux: true},
+        'should reconfigure (set)'
+      )
     }
 
     /** @param {Record<string, boolean>} options */
     function merge(options) {
-      t.deepEqual(
+      assert.deepEqual(
         options,
         {foo: false, bar: true, qux: true},
         'should reconfigure (merge)'
@@ -182,9 +176,7 @@ test('use(plugin[, options])', (t) => {
     }
   })
 
-  t.test('should reconfigure strings', (t) => {
-    t.plan(4)
-
+  await t.test('should reconfigure strings', () => {
     unified().use(plugin, 'this').use(plugin, 'that').freeze()
     unified().use(plugin).use(plugin, 'that').freeze()
     unified().use(plugin, [1, 2, 3]).use(plugin, 'that').freeze()
@@ -192,13 +184,11 @@ test('use(plugin[, options])', (t) => {
 
     /** @param {unknown} [options] */
     function plugin(options) {
-      t.equal(options, 'that', 'should reconfigure')
+      assert.equal(options, 'that', 'should reconfigure')
     }
   })
 
-  t.test('should reconfigure arrays', (t) => {
-    t.plan(4)
-
+  await t.test('should reconfigure arrays', () => {
     unified().use(plugin, [1, 2, 3]).use(plugin, [4, 5, 6]).freeze()
     unified().use(plugin).use(plugin, [4, 5, 6]).freeze()
     unified().use(plugin, {foo: 'true'}).use(plugin, [4, 5, 6]).freeze()
@@ -206,28 +196,25 @@ test('use(plugin[, options])', (t) => {
 
     /** @param {unknown} [options] */
     function plugin(options) {
-      t.deepEqual(options, [4, 5, 6], 'should reconfigure')
+      assert.deepEqual(options, [4, 5, 6], 'should reconfigure')
     }
   })
 
-  t.test('should reconfigure to turn off', (t) => {
+  await t.test('should reconfigure to turn off', () => {
     const processor = unified()
 
-    t.doesNotThrow(() => {
+    assert.doesNotThrow(() => {
       processor.use([[plugin], [plugin, false]]).freeze()
 
       function plugin() {
         throw new Error('Error')
       }
     })
-
-    t.end()
   })
 
-  t.test('should reconfigure to turn on (boolean)', (t) => {
+  await t.test('should reconfigure to turn on (boolean)', () => {
     const processor = unified()
-
-    t.plan(1)
+    let called = false
 
     processor
       .use([
@@ -236,15 +223,15 @@ test('use(plugin[, options])', (t) => {
       ])
       .freeze()
 
+    assert.ok(called, 'should reconfigure')
+
     function plugin() {
-      t.pass('should reconfigure')
+      called = true
     }
   })
 
-  t.test('should reconfigure to turn on (options)', (t) => {
+  await t.test('should reconfigure to turn on (options)', () => {
     const processor = unified()
-
-    t.plan(1)
 
     processor
       .use([
@@ -255,21 +242,19 @@ test('use(plugin[, options])', (t) => {
 
     /** @param {unknown} [options] */
     function plugin(options) {
-      t.deepEqual(options, {foo: true}, 'should reconfigure')
+      assert.deepEqual(options, {foo: true}, 'should reconfigure')
     }
   })
 
-  t.test('should attach transformers', (t) => {
+  await t.test('should attach transformers', () => {
     const processor = unified()
     const givenNode = {type: 'test'}
     const condition = true
 
-    t.plan(3)
-
     processor
       .use(() => (node, file) => {
-        t.equal(node, givenNode, 'should attach a transformer (#1)')
-        t.ok('message' in file, 'should attach a transformer (#2)')
+        assert.equal(node, givenNode, 'should attach a transformer (#1)')
+        assert.ok('message' in file, 'should attach a transformer (#2)')
 
         if (condition) {
           throw new Error('Alpha bravo charlie')
@@ -277,7 +262,7 @@ test('use(plugin[, options])', (t) => {
       })
       .freeze()
 
-    t.throws(
+    assert.throws(
       () => {
         processor.runSync(givenNode)
       },
@@ -285,12 +270,10 @@ test('use(plugin[, options])', (t) => {
       'should attach a transformer (#3)'
     )
   })
-
-  t.end()
 })
 
-test('use(preset)', (t) => {
-  t.throws(
+test('use(preset)', async (t) => {
+  assert.throws(
     () => {
       // @ts-expect-error: runtime.
       unified().use({plugins: false})
@@ -299,7 +282,7 @@ test('use(preset)', (t) => {
     'should throw on invalid `plugins` (1)'
   )
 
-  t.throws(
+  assert.throws(
     () => {
       // @ts-expect-error: runtime.
       unified().use({plugins: {foo: true}})
@@ -308,7 +291,7 @@ test('use(preset)', (t) => {
     'should throw on invalid `plugins` (2)'
   )
 
-  t.throws(
+  assert.throws(
     () => {
       unified().use({}).freeze()
     },
@@ -316,88 +299,86 @@ test('use(preset)', (t) => {
     'should throw on empty presets'
   )
 
-  t.test('should support presets with empty plugins', (t) => {
+  await t.test('should support presets with empty plugins', () => {
     const processor = unified().use({plugins: []}).freeze()
-    t.equal(processor.attachers.length, 0)
-    t.end()
+    assert.equal(processor.attachers.length, 0)
   })
 
-  t.test('should support presets with empty settings', (t) => {
+  await t.test('should support presets with empty settings', () => {
     const processor = unified().use({settings: {}}).freeze()
-    t.deepEqual(processor.data(), {settings: {}})
-    t.end()
+    assert.deepEqual(processor.data(), {settings: {}})
   })
 
-  t.test('should support presets with a plugin', (t) => {
-    t.plan(2)
-
+  await t.test('should support presets with a plugin', () => {
+    let called = false
     const processor = unified()
       .use({plugins: [plugin]})
       .freeze()
 
-    t.equal(processor.attachers.length, 1)
+    assert.equal(processor.attachers.length, 1)
+    assert.ok(called)
 
     function plugin() {
-      t.pass()
+      called = true
     }
   })
 
-  t.test('should support presets with plugins', (t) => {
+  await t.test('should support presets with plugins', () => {
+    let calls = 0
     const processor = unified()
       .use({plugins: [plugin1, plugin2]})
       .freeze()
 
-    t.plan(3)
-    t.equal(processor.attachers.length, 2)
+    assert.equal(processor.attachers.length, 2)
+    assert.equal(calls, 2)
 
     function plugin1() {
-      t.pass()
+      calls++
     }
 
     function plugin2() {
-      t.pass()
+      calls++
     }
   })
 
-  t.test('should support presets with settings', (t) => {
+  await t.test('should support presets with settings', () => {
     const processor = unified()
       .use({settings: {foo: true}})
       .freeze()
-    t.deepEqual(processor.data('settings'), {foo: true})
-    t.end()
+    assert.deepEqual(processor.data('settings'), {foo: true})
   })
 
-  t.test('should merge multiple presets with settings', (t) => {
+  await t.test('should merge multiple presets with settings', () => {
     const data = unified()
       .use({settings: {foo: true, bar: true}})
       .use({settings: {qux: true, foo: false}})
       .data()
 
-    t.deepEqual(data.settings, {foo: false, bar: true, qux: true})
-    t.end()
+    assert.deepEqual(data.settings, {foo: false, bar: true, qux: true})
   })
 
-  t.test('should support extending presets', (t) => {
+  await t.test('should support extending presets', () => {
+    let calls = 0
     const processor = unified()
       .use({settings: {alpha: true}, plugins: [plugin1, plugin2]})
       .freeze()
     const otherProcessor = processor().freeze()
 
-    t.plan(7)
-    t.equal(processor.attachers.length, 2, '1')
-    t.equal(otherProcessor.attachers.length, 2, '2')
-    t.deepEqual(otherProcessor.data('settings'), {alpha: true}, '3')
+    assert.equal(processor.attachers.length, 2, '1')
+    assert.equal(otherProcessor.attachers.length, 2, '2')
+    assert.deepEqual(otherProcessor.data('settings'), {alpha: true}, '3')
+    assert.equal(calls, 4)
 
     function plugin1() {
-      t.pass('a')
+      calls++
     }
 
     function plugin2() {
-      t.pass('b')
+      calls++
     }
   })
 
-  t.test('should support presets with plugins as a matrix', (t) => {
+  await t.test('should support presets with plugins as a matrix', () => {
     const one = {}
     const two = {}
     const processor = unified()
@@ -410,26 +391,25 @@ test('use(preset)', (t) => {
       .freeze()
     const otherProcessor = processor().freeze()
 
-    t.plan(6)
-    t.equal(processor.attachers.length, 2, '1')
-    t.equal(otherProcessor.attachers.length, 2, '2')
+    assert.equal(processor.attachers.length, 2, '1')
+    assert.equal(otherProcessor.attachers.length, 2, '2')
 
     /**
      * @param {unknown} options
      */
     function plugin1(options) {
-      t.equal(options, one, 'a')
+      assert.equal(options, one, 'a')
     }
 
     /**
      * @param {unknown} options
      */
     function plugin2(options) {
-      t.equal(options, two, 'b')
+      assert.equal(options, two, 'b')
     }
   })
 
-  t.test('should support nested presets', (t) => {
+  await t.test('should support nested presets', () => {
     const one = {}
     const two = {}
     const processor = unified()
@@ -439,20 +419,17 @@ test('use(preset)', (t) => {
       .freeze()
     const otherProcessor = processor().freeze()
 
-    t.plan(6)
-    t.equal(processor.attachers.length, 2, '1')
-    t.equal(otherProcessor.attachers.length, 2, '2')
+    assert.equal(processor.attachers.length, 2, '1')
+    assert.equal(otherProcessor.attachers.length, 2, '2')
 
     /** @param {unknown} [options] */
     function plugin1(options) {
-      t.equal(options, one, 'a')
+      assert.equal(options, one, 'a')
     }
 
     /** @param {unknown} [options] */
     function plugin2(options) {
-      t.equal(options, two, 'b')
+      assert.equal(options, two, 'b')
     }
   })
-
-  t.end()
 })

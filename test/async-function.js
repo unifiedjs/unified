@@ -2,16 +2,15 @@
  * @typedef {import('unist').Node} Node
  */
 
-import test from 'tape'
+import assert from 'node:assert/strict'
+import test from 'node:test'
 import {VFile} from 'vfile'
 import {unified} from '../index.js'
 
-test('async function transformer () {}', (t) => {
+test('async function transformer () {}', () => {
   const givenFile = new VFile('alpha')
   const givenNode = {type: 'bravo'}
   const modifiedNode = {type: 'charlie'}
-
-  t.plan(5)
 
   unified()
     .use(() => async function () {})
@@ -24,13 +23,13 @@ test('async function transformer () {}', (t) => {
         }
     )
     .use(() => async (tree, file) => {
-      t.equal(tree, givenNode, 'passes correct tree to an async function')
-      t.equal(file, givenFile, 'passes correct file to an async function')
+      assert.equal(tree, givenNode, 'passes correct tree to an async function')
+      assert.equal(file, givenFile, 'passes correct file to an async function')
       return modifiedNode
     })
     .run(givenNode, givenFile, (error, tree, file) => {
-      t.error(error, 'should’t fail')
-      t.equal(tree, modifiedNode, 'passes given tree to `done`')
-      t.equal(file, givenFile, 'passes given file to `done`')
+      assert.ifError(error)
+      assert.equal(tree, modifiedNode, 'passes given tree to `done`')
+      assert.equal(file, givenFile, 'passes given file to `done`')
     })
 })

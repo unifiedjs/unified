@@ -81,7 +81,7 @@ you need.
 ## Install
 
 This package is [ESM only][esm].
-In Node.js (version 12.20+, 14.14+, 16.0+, 18.0+), install with [npm][]:
+In Node.js (version 12.20+, 14.14+, or 16.0+), install with [npm][]:
 
 ```sh
 npm install unified
@@ -1289,7 +1289,7 @@ export function rehypeStringify(options) {}
 
 Projects maintained by the unified collective are compatible with all maintained
 versions of Node.js.
-As of now, that is Node.js 12.20+, 14.14+, 16.0+, and 18.0+.
+As of now, that is Node.js 12.20+, 14.14+, and 16.0+.
 Our projects sometimes work with older versions, but this is not guaranteed.
 
 ## Contribute
@@ -1361,10 +1361,13 @@ Support this effort and give back by sponsoring on [OpenCollective][collective]!
   <a href="https://boostnote.io"><img src="https://images.opencollective.com/boosthub/6318083/logo/128.png" width="64"></a>
 </td>
 <td width="10%" align="center">
+  <a href="https://markdown.space">Markdown Space</a><br><br>
+  <a href="https://markdown.space"><img src="https://images.opencollective.com/markdown-space/e1038ed/logo/128.png" width="64"></a>
+</td>
+<td width="10%" align="center">
   <a href="https://www.holloway.com">Holloway</a><br><br>
   <a href="https://www.holloway.com"><img src="https://avatars1.githubusercontent.com/u/35904294?s=128&v=4" width="64"></a>
 </td>
-<td width="10%"></td>
 </tr>
 <tr valign="middle">
 <td width="100%" align="center" colspan="6">
