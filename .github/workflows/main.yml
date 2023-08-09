@@ -42,7 +42,7 @@ jobs:
       fail-fast: false
       matrix:
         package:
-          - unifiedjs/unified-engine
-          - remarkjs/remark
           - rehypejs/rehype
+          - remarkjs/remark
           - retextjs/retext
+          - unifiedjs/unified-engine
