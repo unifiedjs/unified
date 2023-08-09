@@ -1,10 +1,10 @@
 /**
- * @typedef {import('../index.js').Plugin} Plugin
+ * @typedef {import('unified').Plugin} Plugin
  */
 
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import {unified} from '../index.js'
+import {unified} from 'unified'
 import {SimpleCompiler, SimpleParser} from './util/simple.js'
 
 test('freeze()', async (t) => {
@@ -78,7 +78,7 @@ test('freeze()', async (t) => {
     processor().freeze()
 
     /**
-     * @this {import('../index.js').Processor}
+     * @this {import('unified').Processor}
      * @type {Plugin}
      */
     function freezingPlugin() {

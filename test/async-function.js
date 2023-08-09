@@ -5,7 +5,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {VFile} from 'vfile'
-import {unified} from '../index.js'
+import {unified} from 'unified'
 
 test('async function transformer () {}', () => {
   const givenFile = new VFile('alpha')
@@ -16,7 +16,7 @@ test('async function transformer () {}', () => {
     .use(() => async function () {})
     .use(
       // Note: TS JS doesn’t understand the `Promise<undefined>` w/o explicit type.
-      /** @type {import('../index.js').Plugin<[]>} */
+      /** @type {import('unified').Plugin<[]>} */
       () =>
         async function () {
           return undefined

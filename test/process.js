@@ -1,14 +1,14 @@
 /**
  * @typedef {import('unist').Literal} Literal
- * @typedef {import('../index.js').Parser} Parser
- * @typedef {import('../index.js').Compiler} Compiler
+ * @typedef {import('unified').Parser} Parser
+ * @typedef {import('unified').Compiler} Compiler
  */
 
 import {Buffer} from 'node:buffer'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {VFile} from 'vfile'
-import {unified} from '../index.js'
+import {unified} from 'unified'
 import {SimpleCompiler, SimpleParser} from './util/simple.js'
 
 test('process(file, done)', () => {
