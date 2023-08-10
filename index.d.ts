@@ -16,16 +16,16 @@
 import type {Node} from 'unist'
 import type {VFile, VFileCompatible} from 'vfile'
 
-/* eslint-disable @typescript-eslint/naming-convention */
-
-type VFileWithOutput<Result> = Result extends Uint8Array // Buffer.
+type VFileWithOutput<Result> = Result extends Uint8Array
   ? VFile
   : Result extends object // Custom result type
   ? VFile & {result: Result}
   : VFile
 
 // Get the right most non-void thing.
-type Specific<Left = void, Right = void> = Right extends void ? Left : Right
+type Specific<Left = void, Right = void> = Right extends undefined | void
+  ? Left
+  : Right
 
 // Create a processor based on the input/output of a plugin.
 type UsePlugin<
@@ -70,8 +70,6 @@ type UsePlugin<
     // Maybe it’s untyped, or the plugin throws an error (`never`), so lets
     // just keep it as it was.
     Processor<ParseTree, CurrentTree, CompileTree, CompileResult>
-
-/* eslint-enable @typescript-eslint/naming-convention */
 
 /**
  * Processor allows plugins to be chained together to transform content.
@@ -203,7 +201,7 @@ export type Processor<
    *   Current processor.
    */
   use(
-    presetOrList: Preset | PluggableList
+    presetOrList: PluggableList | Preset
   ): Processor<ParseTree, CurrentTree, CompileTree, CompileResult>
 } & FrozenProcessor<ParseTree, CurrentTree, CompileTree, CompileResult>
 
@@ -238,6 +236,7 @@ export type FrozenProcessor<
   attachers: Array<[Plugin, ...unknown[]]>
 
   Parser?: Parser<Specific<Node, ParseTree>> | undefined
+
   Compiler?:
     | Compiler<Specific<Node, CompileTree>, Specific<unknown, CompileResult>>
     | undefined
@@ -656,7 +655,7 @@ export type Transformer<
   node: Input,
   file: VFile,
   next: TransformCallback<Output>
-) => Promise<Output | undefined | void> | Output | Error | undefined | void
+) => Promise<Output | undefined | void> | Error | Output | undefined | void
 
 /**
  * Callback you must call when a transformer is done.

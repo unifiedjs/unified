@@ -1,84 +1,90 @@
 /**
  * @typedef {import('unist').Node} Node
- * @typedef {import('vfile').VFile} VFile
  */
 
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {unified} from 'unified'
+import {VFile} from 'vfile'
 
-test('parse(file)', () => {
-  const processor = unified()
-  const givenNode = {type: 'delta'}
+test('`parse`', async function (t) {
+  const givenNode = {type: 'alpha'}
 
-  assert.throws(
-    () => {
-      processor.parse('')
-    },
-    /Cannot `parse` without `Parser`/,
-    'should throw without `Parser`'
-  )
+  await t.test('should throw without `Parser`', async function () {
+    assert.throws(function () {
+      unified().parse('')
+    }, /Cannot `parse` without `Parser`/)
+  })
 
-  processor.Parser = function (doc, file) {
-    assert.equal(typeof doc, 'string', 'should pass a document')
-    assert.ok('message' in file, 'should pass a file')
-  }
+  await t.test('should support a plain function', async function () {
+    const processor = unified()
 
-  processor.Parser.prototype.parse = function () {
-    assert.equal(arguments.length, 0, 'should not pass anything to `parse`')
-    return givenNode
-  }
-
-  assert.equal(
-    processor.parse('charlie'),
-    givenNode,
-    'should return the result `Parser#parse` returns'
-  )
-
-  processor.Parser = function (doc, file) {
-    assert.equal(typeof doc, 'string', 'should pass a document')
-    assert.ok('message' in file, 'should pass a file')
-    return givenNode
-  }
-
-  assert.equal(
-    processor.parse('charlie'),
-    givenNode,
-    'should return the result `Parser` returns if it’s not a constructor'
-  )
-
-  processor.Parser = (doc, file) => {
-    assert.equal(typeof doc, 'string', 'should pass a document')
-    assert.ok('message' in file, 'should pass a file')
-    return givenNode
-  }
-
-  assert.equal(
-    processor.parse('charlie'),
-    givenNode,
-    'should return the result `parser` returns if it’s an arrow function'
-  )
-
-  processor.Parser = class ESParser {
-    /**
-     * @param {string} doc
-     * @param {VFile} file
-     */
-    constructor(doc, file) {
-      assert.equal(typeof doc, 'string', 'should pass a document')
-      assert.ok('message' in file, 'should pass a file')
-    }
-
-    /** @returns {Node} */
-    parse() {
-      assert.equal(arguments.length, 0, 'should not pass anything to `parse`')
+    processor.Parser = function (doc, file) {
+      assert.equal(typeof doc, 'string')
+      assert.ok(file instanceof VFile)
+      assert.equal(arguments.length, 2)
       return givenNode
     }
-  }
 
-  assert.equal(
-    processor.parse('charlie'),
-    givenNode,
-    'should return the result `Parser#parse` returns on an ES class'
+    assert.equal(processor.parse('charlie'), givenNode)
+  })
+
+  await t.test('should support an arrow function', async function () {
+    const processor = unified()
+
+    // Note: arrow function intended (which doesn’t have a prototype).
+    processor.Parser = (doc, file) => {
+      assert.equal(typeof doc, 'string')
+      assert.ok(file instanceof VFile)
+      return givenNode
+    }
+
+    assert.equal(processor.parse('charlie'), givenNode)
+  })
+
+  await t.test('should support a class', async function () {
+    const processor = unified()
+
+    processor.Parser = class {
+      /**
+       * @param {string} doc
+       * @param {VFile} file
+       */
+      constructor(doc, file) {
+        assert.equal(typeof doc, 'string')
+        assert.ok(file instanceof VFile)
+        assert.equal(arguments.length, 2)
+      }
+
+      /**
+       * @returns {Node}
+       */
+      parse() {
+        assert.equal(arguments.length, 0)
+        return givenNode
+      }
+    }
+
+    assert.equal(processor.parse('charlie'), givenNode)
+  })
+
+  await t.test(
+    'should support a constructor w/ `parse` in prototype',
+    async function () {
+      const processor = unified()
+
+      processor.Parser = function (doc, file) {
+        assert.equal(typeof doc, 'string')
+        assert.ok(file instanceof VFile)
+        assert.equal(arguments.length, 2)
+      }
+
+      processor.Parser.prototype.parse = function () {
+        assert.equal(arguments.length, 0)
+        return givenNode
+      }
+
+      assert.equal(processor.parse('charlie'), givenNode)
+    }
   )
 })

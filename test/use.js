@@ -2,317 +2,253 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import {unified} from 'unified'
 
-test('use(plugin[, options])', async (t) => {
-  await t.test('should ignore missing values', () => {
+test('`use`', async function (t) {
+  const givenOptions = {alpha: 'bravo', charlie: true, delta: 1}
+  const otherOptions = {echo: [1, 2, 3], foxtrot: {golf: 1}}
+  const givenOptionsList = [1, 2, 3]
+  const otherOptionsList = [1, 4, 5]
+  const mergedOptions = {...givenOptions, ...otherOptions}
+
+  await t.test('should ignore no value', function () {
     const processor = unified()
-    // @ts-expect-error: runtime feature.
-    assert.equal(processor.use(), processor, 'missing')
-    // @ts-expect-error: runtime feature.
-    assert.equal(processor.use(null), processor, '`null`')
-    // @ts-expect-error: runtime feature.
-    assert.equal(processor.use(undefined), processor, '`undefined`')
+    // To do: investigate if we can enable it.
+    // @ts-expect-error: check how the runtime handles a missing value.
+    assert.equal(processor.use(), processor)
   })
 
-  await t.test('should throw when given invalid values', () => {
-    assert.throws(
-      () => {
-        // @ts-expect-error: runtime.
-        unified().use(false)
-      },
-      /^TypeError: Expected usable value, not `false`$/,
-      '`false`'
-    )
+  await t.test('should ignore `undefined`', function () {
+    const processor = unified()
+    // To do: investigate if we can enable it.
+    // @ts-expect-error: check how the runtime handles `undefined`.
+    assert.equal(processor.use(undefined), processor)
+  })
 
-    assert.throws(
-      () => {
-        // @ts-expect-error: runtime.
+  await t.test('should ignore `null`', function () {
+    const processor = unified()
+    // To do: investigate if we can enable it.
+    // @ts-expect-error: check how the runtime handles `null`.
+    assert.equal(processor.use(null), processor)
+  })
+
+  await t.test('should throw when given invalid values (`false`)', function () {
+    assert.throws(function () {
+      // @ts-expect-error: check how the runtime handles `false`.
+      unified().use(false)
+    }, /Expected usable value, not `false`/)
+  })
+
+  await t.test(
+    'should throw when given invalid values (`true`)',
+    async function () {
+      assert.throws(function () {
+        // @ts-expect-error: check how the runtime handles `true`.
         unified().use(true)
-      },
-      /^TypeError: Expected usable value, not `true`$/,
-      '`true`'
-    )
+      }, /Expected usable value, not `true`/)
+    }
+  )
 
-    assert.throws(
-      () => {
-        // @ts-expect-error: runtime.
+  await t.test(
+    'should throw when given invalid values (`string`)',
+    async function () {
+      assert.throws(function () {
+        // @ts-expect-error: check how the runtime handles `string`s.
         unified().use('alfred')
-      },
-      /^TypeError: Expected usable value, not `alfred`$/,
-      '`string`'
-    )
+      }, /Expected usable value, not `alfred`/)
+    }
+  )
+
+  await t.test('should support a plugin', function () {
+    const processor = unified()
+    let called = false
+
+    processor
+      .use(function () {
+        assert.equal(this, processor)
+        assert.equal(arguments.length, 0)
+        called = true
+      })
+      .freeze()
+
+    assert(called)
   })
 
-  await t.test('should support plugin and options', () => {
+  await t.test('should support a plugin w/ options', function () {
     const processor = unified()
-    const givenOptions = {}
+    let called = false
 
     processor
       .use(function (options) {
-        assert.equal(
-          this,
-          processor,
-          'should call a plugin with `processor` as the context'
-        )
-        assert.equal(
-          options,
-          givenOptions,
-          'should call a plugin with `options`'
-        )
+        assert.equal(this, processor)
+        assert.equal(options, givenOptions)
+        assert.equal(arguments.length, 1)
+        called = true
       }, givenOptions)
       .freeze()
+
+    assert(called)
   })
 
-  await t.test('should support a list of plugins', () => {
+  await t.test('should support a list of plugins', function () {
     const processor = unified()
+    let calls = 0
 
     processor
       .use([
         function () {
-          assert.equal(this, processor, 'should support a list of plugins (#1)')
+          assert.equal(this, processor)
+          assert.equal(arguments.length, 0)
+          calls++
         },
+        // Note: see if we can remove this line? If we remove the previous `arguments.length` assertion,
+        // TS infers the plugin fine. But with it, it thinks it’s a tuple?
+        /**
+         * @satisfies {import('unified').Plugin<[]>}
+         * @this {import('unified').Processor}
+         */
         function () {
-          assert.equal(this, processor, 'should support a list of plugins (#2)')
+          assert.equal(this, processor)
+          assert.equal(arguments.length, 0)
+          calls++
         }
       ])
       .freeze()
+
+    assert.equal(calls, 2)
   })
 
-  await t.test('should support a list of one plugin', () => {
-    const processor = unified()
-
-    processor
-      .use([
-        function () {
-          assert.equal(this, processor, 'should support a list of plugins (#2)')
-        }
-      ])
-      .freeze()
-  })
-
-  await t.test('should support a list of plugins and arguments', () => {
-    const processor = unified()
-    const givenOptions = {}
-
-    processor
-      .use([
-        [
-          /** @param {unknown} options */
-          function (options) {
-            assert.equal(
-              options,
-              givenOptions,
-              'should support arguments with options'
-            )
-          },
-          givenOptions
-        ],
-        [
-          function () {
-            assert.equal(
-              this,
-              processor,
-              'should support a arguments without options'
-            )
-          }
-        ]
-      ])
-      .freeze()
-  })
-
-  await t.test('should throw when given invalid values in lists', () => {
-    assert.throws(
-      () => {
-        // @ts-expect-error: runtime.
-        unified().use([false])
-      },
-      /^TypeError: Expected usable value, not `false`$/,
-      '`false`'
-    )
-
-    assert.throws(
-      () => {
-        // @ts-expect-error: runtime.
-        unified().use([true])
-      },
-      /^TypeError: Expected usable value, not `true`$/,
-      '`true`'
-    )
-
-    assert.throws(
-      () => {
-        // @ts-expect-error: runtime.
-        unified().use(['alfred'])
-      },
-      /^TypeError: Expected usable value, not `alfred`$/,
-      '`string`'
-    )
-  })
-
-  await t.test('should reconfigure objects', () => {
-    const leftOptions = {foo: true, bar: true}
-    const rightOptions = {foo: false, qux: true}
-
-    unified().use(change, 'this').use(change, rightOptions).freeze()
-    unified().use(change).use(change, rightOptions).freeze()
-    unified().use(change, [1, 2, 3]).use(change, rightOptions).freeze()
-    unified().use(merge, leftOptions).use(merge, rightOptions).freeze()
-
-    /** @param {unknown} [options] */
-    function change(options) {
-      assert.deepEqual(
-        options,
-        {foo: false, qux: true},
-        'should reconfigure (set)'
-      )
-    }
-
-    /** @param {Record<string, boolean>} options */
-    function merge(options) {
-      assert.deepEqual(
-        options,
-        {foo: false, bar: true, qux: true},
-        'should reconfigure (merge)'
-      )
-    }
-  })
-
-  await t.test('should reconfigure strings', () => {
-    unified().use(plugin, 'this').use(plugin, 'that').freeze()
-    unified().use(plugin).use(plugin, 'that').freeze()
-    unified().use(plugin, [1, 2, 3]).use(plugin, 'that').freeze()
-    unified().use(plugin, {foo: 'bar'}).use(plugin, 'that').freeze()
-
-    /** @param {unknown} [options] */
-    function plugin(options) {
-      assert.equal(options, 'that', 'should reconfigure')
-    }
-  })
-
-  await t.test('should reconfigure arrays', () => {
-    unified().use(plugin, [1, 2, 3]).use(plugin, [4, 5, 6]).freeze()
-    unified().use(plugin).use(plugin, [4, 5, 6]).freeze()
-    unified().use(plugin, {foo: 'true'}).use(plugin, [4, 5, 6]).freeze()
-    unified().use(plugin, 'foo').use(plugin, [4, 5, 6]).freeze()
-
-    /** @param {unknown} [options] */
-    function plugin(options) {
-      assert.deepEqual(options, [4, 5, 6], 'should reconfigure')
-    }
-  })
-
-  await t.test('should reconfigure to turn off', () => {
-    const processor = unified()
-
-    assert.doesNotThrow(() => {
-      processor.use([[plugin], [plugin, false]]).freeze()
-
-      function plugin() {
-        throw new Error('Error')
-      }
-    })
-  })
-
-  await t.test('should reconfigure to turn on (boolean)', () => {
+  await t.test('should support a list w/ a single plugin', function () {
     const processor = unified()
     let called = false
 
     processor
       .use([
-        [plugin, false],
-        [plugin, true]
+        function () {
+          assert.equal(this, processor)
+          assert.equal(arguments.length, 0)
+          called = true
+        }
       ])
       .freeze()
 
-    assert.ok(called, 'should reconfigure')
-
-    function plugin() {
-      called = true
-    }
+    assert(called)
   })
 
-  await t.test('should reconfigure to turn on (options)', () => {
+  await t.test('should support a list of tuples and plugins', function () {
     const processor = unified()
+    let calls = 0
 
     processor
       .use([
-        [plugin, false],
-        [plugin, {foo: true}]
+        [
+          /**
+           * @param {unknown} options
+           */
+          function (options) {
+            assert.equal(options, givenOptions)
+            calls++
+          },
+          givenOptions
+        ],
+        [
+          function () {
+            calls++
+          }
+        ]
       ])
       .freeze()
 
-    /** @param {unknown} [options] */
-    function plugin(options) {
-      assert.deepEqual(options, {foo: true}, 'should reconfigure')
-    }
+    assert.equal(calls, 2)
   })
 
-  await t.test('should attach transformers', () => {
+  await t.test(
+    'should throw when given invalid values (`false`) in lists',
+    function () {
+      assert.throws(function () {
+        // @ts-expect-error: check how the runtime handles `false`.
+        unified().use([false])
+      }, /Expected usable value, not `false`/)
+    }
+  )
+
+  await t.test(
+    'should throw when given invalid values (`true`) in lists',
+    async function () {
+      assert.throws(function () {
+        // @ts-expect-error: check how the runtime handles `true`.
+        unified().use([true])
+      }, /Expected usable value, not `true`/)
+    }
+  )
+
+  await t.test(
+    'should throw when given invalid values (`string`) in lists',
+    async function () {
+      assert.throws(function () {
+        // @ts-expect-error: check how the runtime handles `string`.
+        unified().use(['alfred'])
+      }, /Expected usable value, not `alfred`/)
+    }
+  )
+
+  await t.test('should attach transformers', function () {
     const processor = unified()
-    const givenNode = {type: 'test'}
-    const condition = true
+    let called = false
 
     processor
-      .use(
-        () =>
-          function (node, file) {
-            assert.equal(node, givenNode, 'should attach a transformer (#1)')
-            assert.ok('message' in file, 'should attach a transformer (#2)')
-
-            if (condition) {
-              throw new Error('Alpha bravo charlie')
-            }
-          }
-      )
+      .use(function () {
+        return function () {
+          called = true
+        }
+      })
       .freeze()
 
-    assert.throws(
-      () => {
-        processor.runSync(givenNode)
-      },
-      /Error: Alpha bravo charlie/,
-      'should attach a transformer (#3)'
-    )
+    processor.runSync({type: 'test'})
+
+    assert.equal(called, true)
   })
-})
 
-test('use(preset)', async (t) => {
-  assert.throws(
-    () => {
-      // @ts-expect-error: runtime.
-      unified().use({plugins: false})
-    },
-    /^TypeError: Expected a list of plugins, not `false`$/,
-    'should throw on invalid `plugins` (1)'
+  await t.test(
+    'should throw when given a preset w/ invalid `plugins` (`false`)',
+    async function () {
+      assert.throws(function () {
+        unified().use({
+          // @ts-expect-error: check how invalid `plugins` is handled.
+          plugins: false
+        })
+      }, /Expected a list of plugins, not `false`/)
+    }
   )
 
-  assert.throws(
-    () => {
-      // @ts-expect-error: runtime.
-      unified().use({plugins: {foo: true}})
-    },
-    /^TypeError: Expected a list of plugins, not `\[object Object]`$/,
-    'should throw on invalid `plugins` (2)'
+  await t.test(
+    'should throw when given a preset w/ invalid `plugins` (`object`)',
+    async function () {
+      assert.throws(function () {
+        // @ts-expect-error: check how invalid `plugins` is handled.
+        unified().use({plugins: {foo: true}})
+      }, /Expected a list of plugins, not `\[object Object]`/)
+    }
   )
 
-  assert.throws(
-    () => {
-      unified().use({}).freeze()
-    },
-    /Expected usable value but received an empty preset/,
-    'should throw on empty presets'
+  await t.test(
+    'should throw when given a preset w/o `settings` or `plugins`',
+    async function () {
+      assert.throws(function () {
+        unified().use({}).freeze()
+      }, /Expected usable value but received an empty preset/)
+    }
   )
 
-  await t.test('should support presets with empty plugins', () => {
+  await t.test('should support a preset w/ empty `plugins`', function () {
     const processor = unified().use({plugins: []}).freeze()
     assert.equal(processor.attachers.length, 0)
   })
 
-  await t.test('should support presets with empty settings', () => {
+  await t.test('should support a preset w/ empty `settings`', function () {
     const processor = unified().use({settings: {}}).freeze()
     assert.deepEqual(processor.data(), {settings: {}})
   })
 
-  await t.test('should support presets with a plugin', () => {
+  await t.test('should support a preset w/ a plugin', function () {
     let called = false
     const processor = unified()
       .use({plugins: [plugin]})
@@ -326,7 +262,7 @@ test('use(preset)', async (t) => {
     }
   })
 
-  await t.test('should support presets with plugins', () => {
+  await t.test('should support a preset w/ plugins', function () {
     let calls = 0
     const processor = unified()
       .use({plugins: [plugin1, plugin2]})
@@ -344,32 +280,36 @@ test('use(preset)', async (t) => {
     }
   })
 
-  await t.test('should support presets with settings', () => {
-    const processor = unified()
-      .use({settings: {foo: true}})
-      .freeze()
-    assert.deepEqual(processor.data('settings'), {foo: true})
+  await t.test('should support a preset w/ settings', function () {
+    assert.deepEqual(
+      unified()
+        .use({settings: {foo: true}})
+        .freeze()
+        .data(),
+      {settings: {foo: true}}
+    )
   })
 
-  await t.test('should merge multiple presets with settings', () => {
-    const data = unified()
-      .use({settings: {foo: true, bar: true}})
-      .use({settings: {qux: true, foo: false}})
-      .data()
-
-    assert.deepEqual(data.settings, {foo: false, bar: true, qux: true})
+  await t.test('should support presets w/ settings and merge', function () {
+    assert.deepEqual(
+      unified()
+        .use({settings: {foo: true, bar: true}})
+        .use({settings: {qux: true, foo: false}})
+        .data(),
+      {settings: {foo: false, bar: true, qux: true}}
+    )
   })
 
-  await t.test('should support extending presets', () => {
+  await t.test('should support extending presets', function () {
     let calls = 0
     const processor = unified()
       .use({settings: {alpha: true}, plugins: [plugin1, plugin2]})
       .freeze()
     const otherProcessor = processor().freeze()
 
-    assert.equal(processor.attachers.length, 2, '1')
-    assert.equal(otherProcessor.attachers.length, 2, '2')
-    assert.deepEqual(otherProcessor.data('settings'), {alpha: true}, '3')
+    assert.equal(processor.attachers.length, 2)
+    assert.equal(otherProcessor.attachers.length, 2)
+    assert.deepEqual(otherProcessor.data(), {settings: {alpha: true}})
     assert.equal(calls, 4)
 
     function plugin1() {
@@ -381,7 +321,7 @@ test('use(preset)', async (t) => {
     }
   })
 
-  await t.test('should support presets with plugins as a matrix', () => {
+  await t.test('should support a preset w/ plugin tuples', function () {
     const one = {}
     const two = {}
     const processor = unified()
@@ -394,25 +334,25 @@ test('use(preset)', async (t) => {
       .freeze()
     const otherProcessor = processor().freeze()
 
-    assert.equal(processor.attachers.length, 2, '1')
-    assert.equal(otherProcessor.attachers.length, 2, '2')
+    assert.equal(processor.attachers.length, 2)
+    assert.equal(otherProcessor.attachers.length, 2)
 
     /**
      * @param {unknown} options
      */
     function plugin1(options) {
-      assert.equal(options, one, 'a')
+      assert.equal(options, one)
     }
 
     /**
      * @param {unknown} options
      */
     function plugin2(options) {
-      assert.equal(options, two, 'b')
+      assert.equal(options, two)
     }
   })
 
-  await t.test('should support nested presets', () => {
+  await t.test('should support presets w/ presets', function () {
     const one = {}
     const two = {}
     const processor = unified()
@@ -422,17 +362,947 @@ test('use(preset)', async (t) => {
       .freeze()
     const otherProcessor = processor().freeze()
 
-    assert.equal(processor.attachers.length, 2, '1')
-    assert.equal(otherProcessor.attachers.length, 2, '2')
+    assert.equal(processor.attachers.length, 2)
+    assert.equal(otherProcessor.attachers.length, 2)
 
-    /** @param {unknown} [options] */
+    /**
+     * @param {unknown} options
+     */
     function plugin1(options) {
-      assert.equal(options, one, 'a')
+      assert.equal(options, one)
     }
 
-    /** @param {unknown} [options] */
+    /**
+     * @param {unknown} options
+     */
     function plugin2(options) {
-      assert.equal(options, two, 'b')
+      assert.equal(options, two)
     }
+  })
+
+  await t.test('reconfigure (to `object`)', async function (t) {
+    await t.test(
+      'should reconfigure plugins: nothing -> `object`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change).use(change, givenOptions).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} [options]
+         */
+        function change(options) {
+          assert.equal(options, givenOptions)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `undefined` -> `object`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change, undefined).use(change, givenOptions).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, givenOptions)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `null` -> `object`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change, null).use(change, givenOptions).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, givenOptions)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `false` -> `object`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change, false).use(change, givenOptions).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, givenOptions)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `true` -> `object`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change, true).use(change, givenOptions).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, givenOptions)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `string` -> `object`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change, 'this').use(change, givenOptions).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, givenOptions)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `array` -> `object`, right wins',
+      async function () {
+        let calls = 0
+
+        unified()
+          .use(change, givenOptionsList)
+          .use(change, givenOptions)
+          .freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, givenOptions)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `object` -> `object`, merge',
+      async function () {
+        let calls = 0
+
+        unified().use(change, givenOptions).use(change, otherOptions).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          // Deep, not strict, equal expected.
+          assert.deepEqual(options, mergedOptions)
+          calls++
+        }
+      }
+    )
+  })
+
+  await t.test('reconfigure (to `array`)', async function (t) {
+    await t.test(
+      'should reconfigure plugins: nothing -> `array`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change).use(change, givenOptionsList).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} [options]
+         */
+        function change(options) {
+          assert.equal(options, givenOptionsList)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `undefined` -> `array`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change, undefined).use(change, givenOptionsList).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, givenOptionsList)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `null` -> `array`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change, null).use(change, givenOptionsList).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, givenOptionsList)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `false` -> `array`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change, false).use(change, givenOptionsList).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, givenOptionsList)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `true` -> `array`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change, true).use(change, givenOptionsList).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, givenOptionsList)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `string` -> `array`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change, 'this').use(change, givenOptionsList).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, givenOptionsList)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `array` -> `array`, right wins',
+      async function () {
+        let calls = 0
+
+        unified()
+          .use(change, givenOptionsList)
+          .use(change, otherOptionsList)
+          .freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, otherOptionsList)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `object` -> `array`, right wins',
+      async function () {
+        let calls = 0
+
+        unified()
+          .use(change, givenOptions)
+          .use(change, givenOptionsList)
+          .freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, givenOptionsList)
+          calls++
+        }
+      }
+    )
+  })
+
+  await t.test('reconfigure (to `string`)', async function (t) {
+    await t.test(
+      'should reconfigure plugins: nothing -> `string`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change).use(change, 'x').freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} [options]
+         */
+        function change(options) {
+          assert.equal(options, 'x')
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `undefined` -> `string`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change, undefined).use(change, 'x').freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, 'x')
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `null` -> `string`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change, null).use(change, 'x').freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, 'x')
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `false` -> `string`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change, false).use(change, 'x').freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, 'x')
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `true` -> `string`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change, true).use(change, 'x').freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, 'x')
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `string` -> `string`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change, 'this').use(change, 'x').freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, 'x')
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `array` -> `string`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change, givenOptionsList).use(change, 'x').freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, 'x')
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `object` -> `string`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change, givenOptions).use(change, 'x').freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, 'x')
+          calls++
+        }
+      }
+    )
+  })
+
+  await t.test('reconfigure (to `undefined`)', async function (t) {
+    await t.test(
+      'should reconfigure plugins: nothing -> `undefined`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change).use(change, undefined).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} [options]
+         */
+        function change(options) {
+          assert.equal(options, undefined)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `undefined` -> `undefined`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change, undefined).use(change, undefined).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, undefined)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `null` -> `undefined`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change, null).use(change, undefined).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, undefined)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `false` -> `undefined`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change, false).use(change, undefined).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, undefined)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `true` -> `undefined`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change, true).use(change, undefined).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, undefined)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `string` -> `undefined`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change, 'this').use(change, undefined).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, undefined)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `array` -> `undefined`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change, givenOptionsList).use(change, undefined).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, undefined)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `object` -> `undefined`, right wins',
+      async function () {
+        let calls = 0
+
+        unified().use(change, givenOptions).use(change, undefined).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, undefined)
+          calls++
+        }
+      }
+    )
+  })
+
+  await t.test('reconfigure (to `true`, to turn on)', async function (t) {
+    await t.test(
+      'should reconfigure plugins: nothing -> `true`, used',
+      async function () {
+        let calls = 0
+
+        unified().use(change).use(change, true).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} [options]
+         */
+        function change(options) {
+          assert.equal(options, undefined)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `undefined` -> `true`, used',
+      async function () {
+        let calls = 0
+
+        unified().use(change, undefined).use(change, true).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, undefined)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `null` -> `true`, used',
+      async function () {
+        let calls = 0
+
+        unified().use(change, null).use(change, true).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, undefined)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `false` -> `true`, used',
+      async function () {
+        let calls = 0
+
+        unified().use(change, false).use(change, true).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, undefined)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `true` -> `true`, used',
+      async function () {
+        let calls = 0
+
+        unified().use(change, true).use(change, true).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, undefined)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `string` -> `true`, used',
+      async function () {
+        let calls = 0
+
+        unified().use(change, 'this').use(change, true).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, undefined)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `array` -> `true`, used',
+      async function () {
+        let calls = 0
+
+        unified().use(change, givenOptionsList).use(change, true).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, undefined)
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `object` -> `true`, used',
+      async function () {
+        let calls = 0
+
+        unified().use(change, givenOptions).use(change, true).freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} options
+         */
+        function change(options) {
+          assert.equal(options, undefined)
+          calls++
+        }
+      }
+    )
+  })
+
+  await t.test('reconfigure (to `false`, to turn off)', async function (t) {
+    await t.test(
+      'should reconfigure plugins: nothing -> `false`, not used',
+      async function () {
+        let calls = 0
+
+        unified().use(change).use(change, false).freeze()
+
+        assert.equal(calls, 0)
+
+        /**
+         * @param {unknown} [_]
+         */
+        function change(_) {
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `undefined` -> `false`, not used',
+      async function () {
+        let calls = 0
+
+        unified().use(change, undefined).use(change, false).freeze()
+
+        assert.equal(calls, 0)
+
+        /**
+         * @param {unknown} [_]
+         */
+        function change(_) {
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `null` -> `false`, not used',
+      async function () {
+        let calls = 0
+
+        unified().use(change, null).use(change, false).freeze()
+
+        assert.equal(calls, 0)
+
+        /**
+         * @param {unknown} [_]
+         */
+        function change(_) {
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `false` -> `false`, not used',
+      async function () {
+        let calls = 0
+
+        unified().use(change, false).use(change, false).freeze()
+
+        assert.equal(calls, 0)
+
+        /**
+         * @param {unknown} [_]
+         */
+        function change(_) {
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `true` -> `false`, not used',
+      async function () {
+        let calls = 0
+
+        unified().use(change, true).use(change, false).freeze()
+
+        assert.equal(calls, 0)
+
+        /**
+         * @param {unknown} [_]
+         */
+        function change(_) {
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `string` -> `false`, not used',
+      async function () {
+        let calls = 0
+
+        unified().use(change, 'this').use(change, false).freeze()
+
+        assert.equal(calls, 0)
+
+        /**
+         * @param {unknown} [_]
+         */
+        function change(_) {
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `array` -> `false`, not used',
+      async function () {
+        let calls = 0
+
+        unified().use(change, givenOptionsList).use(change, false).freeze()
+
+        assert.equal(calls, 0)
+
+        /**
+         * @param {unknown} [_]
+         */
+        function change(_) {
+          calls++
+        }
+      }
+    )
+
+    await t.test(
+      'should reconfigure plugins: `object` -> `false`, not used',
+      async function () {
+        let calls = 0
+
+        unified().use(change, givenOptions).use(change, false).freeze()
+
+        assert.equal(calls, 0)
+
+        /**
+         * @param {unknown} [_]
+         */
+        function change(_) {
+          calls++
+        }
+      }
+    )
   })
 })

@@ -1,8 +1,11 @@
 /**
- * @typedef {import('unist').Literal} Literal
  * @typedef {import('unified').Parser} Parser
  * @typedef {import('unified').Compiler} Compiler
+ * @typedef {import('unist').Literal} Literal
  */
+
+// Make references to the above types visible in VS Code.
+''
 
 /** @type {Parser} */
 export class SimpleParser {

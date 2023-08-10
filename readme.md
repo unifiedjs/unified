@@ -389,7 +389,7 @@ import concatStream from 'concat-stream'
 import {remark} from 'remark'
 
 process.stdin.pipe(
-  concatStream((buf) => {
+  concatStream(function (buf) {
     process.stdout.write(String(remark().processSync(buf)))
   })
 )

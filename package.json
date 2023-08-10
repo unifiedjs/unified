@@ -54,6 +54,8 @@
     "vfile": "^6.0.0"
   },
   "devDependencies": {
+    "@types/hast": "^3.0.0",
+    "@types/mdast": "^4.0.0",
     "@types/node": "^20.0.0",
     "@types/ungap__structured-clone": "^0.3.0",
     "c8": "^8.0.0",
@@ -107,7 +109,8 @@
           "**/*.ts"
         ],
         "rules": {
-          "@typescript-eslint/ban-types": "off"
+          "@typescript-eslint/ban-types": "off",
+          "@typescript-eslint/naming-convention": "off"
         }
       }
     ],

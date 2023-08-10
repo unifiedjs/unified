@@ -4,83 +4,84 @@
 
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import {VFile} from 'vfile'
 import {unified} from 'unified'
+import {VFile} from 'vfile'
 
-test('stringify(node[, file])', () => {
-  const processor = unified()
-  const givenFile = new VFile('charlie')
-  const givenNode = {type: 'delta'}
+test('`stringify`', async function (t) {
+  const givenFile = new VFile('alpha')
+  const givenNode = {type: 'bravo'}
 
-  assert.throws(
-    () => {
-      processor.stringify({type: 'x'})
-    },
-    /Cannot `stringify` without `Compiler`/,
-    'should throw without `Compiler`'
-  )
+  await t.test('should throw without `Compiler`', async function () {
+    assert.throws(function () {
+      unified().stringify(givenNode)
+    }, /Cannot `stringify` without `Compiler`/)
+  })
 
-  processor.Compiler = function (node, file) {
-    assert.equal(node, givenNode, 'should pass a node')
-    assert.ok('message' in file, 'should pass a file')
-  }
+  await t.test('should support a plain function', async function () {
+    const processor = unified()
 
-  // `prototype`s are objects.
-  // type-coverage:ignore-next-line
-  processor.Compiler.prototype.compile = function () {
-    assert.equal(arguments.length, 0, 'should not pass anything to `compile`')
-    return 'echo'
-  }
-
-  assert.equal(
-    processor.stringify(givenNode, givenFile),
-    'echo',
-    'should return the result `Compiler#compile` returns'
-  )
-
-  processor.Compiler = function (node, file) {
-    assert.equal(node, givenNode, 'should pass a node')
-    assert.ok('message' in file, 'should pass a file')
-    return 'echo'
-  }
-
-  assert.equal(
-    processor.stringify(givenNode, givenFile),
-    'echo',
-    'should return the result `compiler` returns if it’s not a constructor'
-  )
-
-  processor.Compiler = (node, file) => {
-    assert.equal(node, givenNode, 'should pass a node')
-    assert.ok('message' in file, 'should pass a file')
-    return 'echo'
-  }
-
-  assert.equal(
-    processor.stringify(givenNode, givenFile),
-    'echo',
-    'should return the result `compiler` returns if it’s an arrow function'
-  )
-
-  processor.Compiler = class ESCompiler {
-    /**
-     * @param {Node} node
-     * @param {VFile} file
-     */
-    constructor(node, file) {
-      assert.equal(node, givenNode, 'should pass a node')
-      assert.ok('message' in file, 'should pass a file')
-    }
-
-    compile() {
-      assert.equal(arguments.length, 0, 'should not pass anything to `compile`')
+    processor.Compiler = function (node, file) {
+      assert.equal(node, givenNode)
+      assert.ok(file instanceof VFile)
+      assert.equal(arguments.length, 2)
       return 'echo'
     }
-  }
 
-  assert.equal(
-    processor.stringify(givenNode, givenFile),
-    'echo',
-    'should return the result `Compiler#compile` returns on an ES class'
+    assert.equal(processor.stringify(givenNode, givenFile), 'echo')
+  })
+
+  await t.test('should support an arrow function', async function () {
+    const processor = unified()
+
+    // Note: arrow function intended (which doesn’t have a prototype).
+    processor.Compiler = (node, file) => {
+      assert.equal(node, givenNode, 'should pass a node')
+      assert.ok(file instanceof VFile, 'should pass a file')
+      return 'echo'
+    }
+
+    assert.equal(processor.stringify(givenNode, givenFile), 'echo')
+  })
+
+  await t.test('should support a class', async function () {
+    const processor = unified()
+
+    processor.Compiler = class {
+      /**
+       * @param {Node} node
+       * @param {VFile} file
+       */
+      constructor(node, file) {
+        assert.equal(node, givenNode)
+        assert.ok(file instanceof VFile)
+      }
+
+      compile() {
+        assert.equal(arguments.length, 0)
+        return 'echo'
+      }
+    }
+
+    assert.equal(processor.stringify(givenNode, givenFile), 'echo')
+  })
+
+  await t.test(
+    'should support a constructor w/ `compile` in prototype',
+    async function () {
+      const processor = unified()
+
+      processor.Compiler = function (node, file) {
+        assert.equal(node, givenNode, 'should pass a node')
+        assert.ok(file instanceof VFile, 'should pass a file')
+        assert.equal(arguments.length, 2)
+      }
+
+      processor.Compiler.prototype.compile = function () {
+        assert.equal(arguments.length, 0)
+        return 'echo'
+      }
+
+      assert.equal(processor.stringify(givenNode, givenFile), 'echo')
+    }
   )
 })

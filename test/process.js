@@ -1,251 +1,96 @@
-/**
- * @typedef {import('unist').Literal} Literal
- * @typedef {import('unified').Parser} Parser
- * @typedef {import('unified').Compiler} Compiler
- */
-
-import {Buffer} from 'node:buffer'
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import {VFile} from 'vfile'
 import {unified} from 'unified'
+import {VFile} from 'vfile'
 import {SimpleCompiler, SimpleParser} from './util/simple.js'
 
-test('process(file, done)', () => {
+test('`process`', async function (t) {
   const givenFile = new VFile('alpha')
   const givenNode = {type: 'bravo'}
 
-  assert.throws(
-    () => {
+  await t.test('should throw w/o `Parser`', async function () {
+    assert.throws(function () {
       unified().process('')
-    },
-    /Cannot `process` without `Parser`/,
-    'should throw without `Parser`'
-  )
+    }, /Cannot `process` without `Parser`/)
+  })
 
-  assert.throws(
-    () => {
+  await t.test('should throw w/o `Compiler`', async function () {
+    assert.throws(function () {
       const processor = unified()
       processor.Parser = SimpleParser
       processor.process('')
-    },
-    /Cannot `process` without `Compiler`/,
-    'should throw without `Compiler`'
-  )
+    }, /Cannot `process` without `Compiler`/)
+  })
 
-  unified()
-    .use(function () {
-      Object.assign(this, {
-        /** @type {Parser} */
-        Parser(doc, file) {
-          assert.equal(typeof doc, 'string', 'should pass `doc` to `Parser`')
-          assert.equal(file, givenFile, 'should pass `file` to `Parser`')
-          return givenNode
-        }
-      })
-    })
-    .use(
-      () =>
-        function (tree, file) {
-          assert.equal(tree, givenNode, 'should pass `tree` to transformers')
-          assert.equal(file, givenFile, 'should pass `file` to transformers')
-        }
-    )
-    .use(function () {
-      Object.assign(this, {
-        /** @type {Compiler} */
-        Compiler(tree, file) {
-          assert.equal(tree, givenNode, 'should pass `tree` to `Compiler`')
-          assert.equal(file, givenFile, 'should pass `file` to `Compiler`')
-          return 'charlie'
-        }
-      })
-    })
-    .process(givenFile, (error, file) => {
-      assert.ifError(error)
+  await t.test('should pass/yield expected values', async function () {
+    const processor = unified()
 
-      assert.equal(
-        String(file),
-        'charlie',
-        'should store the result of `compile()` on `file`'
-      )
+    processor.Parser = function (doc, file) {
+      assert.equal(typeof doc, 'string')
+      assert.equal(file, givenFile)
+      assert.equal(arguments.length, 2)
+      return givenNode
+    }
+
+    processor.Compiler = function (tree, file) {
+      assert.equal(tree, givenNode)
+      assert.equal(file, givenFile)
+      assert.equal(arguments.length, 2)
+      return 'charlie'
+    }
+
+    processor.use(function () {
+      return function (tree, file) {
+        assert.equal(tree, givenNode)
+        assert.equal(file, givenFile)
+        assert.equal(arguments.length, 2)
+      }
     })
 
-  assert.throws(() => {
-    unified()
-      .use(function () {
-        Object.assign(this, {Parser: SimpleParser, Compiler: SimpleCompiler})
+    await new Promise(function (resolve) {
+      processor.process(givenFile, function (error, file) {
+        assert.ifError(error)
+        assert.equal(String(file), 'charlie')
+        resolve(undefined)
       })
-      .process(givenFile, () => {
+    })
+  })
+
+  await t.test('should rethrow errors in `done` throws', async function () {
+    const processor = unified()
+
+    processor.Parser = SimpleParser
+    processor.Compiler = SimpleCompiler
+
+    assert.throws(function () {
+      processor.process(givenFile, function () {
         throw new Error('Alfred')
       })
-  }, /^Error: Alfred$/)
-})
+    }, /^Error: Alfred$/)
+  })
 
-test('process(file)', () => {
-  const givenFile = new VFile('alpha')
-  const givenNode = {type: 'bravo'}
-
-  unified()
-    .use(function () {
-      Object.assign(this, {
-        /** @type {Parser} */
-        Parser(doc, file) {
-          assert.equal(typeof doc, 'string', 'should pass `doc` to `Parser`')
-          assert.equal(file, givenFile, 'should pass `file` to `Parser`')
-          return givenNode
-        }
-      })
-    })
-    .use(
-      () =>
-        function (tree, file) {
-          assert.equal(tree, givenNode, 'should pass `tree` to transformers')
-          assert.equal(file, givenFile, 'should pass `file` to transformers')
-        }
-    )
-    .use(function () {
-      Object.assign(this, {
-        /** @type {Compiler} */
-        Compiler(tree, file) {
-          assert.equal(tree, givenNode, 'should pass `tree` to `Compiler`')
-          assert.equal(file, givenFile, 'should pass `file` to `Compiler`')
-          return 'charlie'
-        }
-      })
-    })
-    .process(givenFile)
-    .then(
-      (file) => {
-        assert.equal(file.toString(), 'charlie', 'should resolve the file')
-      },
-      () => {
-        assert.fail('should resolve, not reject, the file')
-      }
-    )
-})
-
-test('processSync(file)', () => {
-  assert.throws(
-    () => {
-      unified().processSync('')
-    },
-    /Cannot `processSync` without `Parser`/,
-    'should throw without `Parser`'
-  )
-
-  assert.throws(
-    () => {
+  await t.test(
+    'should support `process` w/o `done` (promise)',
+    async function () {
       const processor = unified()
+
       processor.Parser = SimpleParser
-      processor.processSync('')
-    },
-    /Cannot `processSync` without `Compiler`/,
-    'should throw without `Compiler`'
-  )
+      processor.Compiler = SimpleCompiler
 
-  assert.throws(
-    () => {
-      unified()
-        .use(function () {
-          Object.assign(this, {Parser: SimpleParser, Compiler: SimpleCompiler})
-          return function () {
-            return new Error('bravo')
+      await new Promise(function (resolve, reject) {
+        processor.process(givenFile).then(
+          function (file) {
+            assert.equal(String(file), 'charlie')
+            resolve(undefined)
+          },
+          /**
+           * @param {unknown} error
+           */
+          function (error) {
+            reject(error)
           }
-        })
-        .processSync('delta')
-    },
-    /Error: bravo/,
-    'should throw error from `processSync`'
-  )
-
-  assert.equal(
-    unified()
-      .use(function () {
-        Object.assign(this, {Parser: SimpleParser, Compiler: SimpleCompiler})
-        return function (node) {
-          const text = /** @type {Literal} */ (node)
-          text.value = 'alpha'
-        }
+        )
       })
-      .processSync('delta')
-      .toString(),
-    'alpha',
-    'should pass the result file'
-  )
-})
-
-test('compilers', () => {
-  assert.equal(
-    unified()
-      .use(function () {
-        Object.assign(this, {
-          Parser: SimpleParser,
-          Compiler() {
-            return 'bravo'
-          }
-        })
-      })
-      .processSync('alpha').value,
-    'bravo',
-    'should compile strings'
-  )
-
-  assert.deepEqual(
-    unified()
-      .use(function () {
-        Object.assign(this, {
-          Parser: SimpleParser,
-          Compiler() {
-            return Buffer.from('bravo')
-          }
-        })
-      })
-      .processSync('alpha').value,
-    Buffer.from('bravo'),
-    'should compile buffers'
-  )
-
-  assert.deepEqual(
-    unified()
-      .use(function () {
-        Object.assign(this, {
-          Parser: SimpleParser,
-          Compiler() {
-            return null
-          }
-        })
-      })
-      .processSync('alpha').value,
-    'alpha',
-    'should compile null'
-  )
-
-  assert.deepEqual(
-    unified()
-      .use(function () {
-        Object.assign(this, {
-          Parser: SimpleParser,
-          Compiler() {
-            // Somewhat like a React node.
-            return {
-              _owner: null,
-              type: 'p',
-              ref: null,
-              key: 'h-1',
-              props: {children: ['bravo']}
-            }
-          }
-        })
-      })
-      .processSync('alpha').result,
-    {
-      _owner: null,
-      type: 'p',
-      ref: null,
-      key: 'h-1',
-      props: {children: ['bravo']}
-    },
-    'should compile non-text'
+    }
   )
 })

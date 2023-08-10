@@ -2,40 +2,32 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import {unified} from 'unified'
 
-test('unified()', () => {
-  /** @type {number} */
-  let count
-
-  assert.throws(
-    () => {
-      // @ts-expect-error: `use` does not exist on frozen processors.
-      unified.use(() => {})
-    },
-    /Cannot call `use` on a frozen processor/,
-    'should be frozen'
-  )
-
-  const processor = unified()
-
-  assert.equal(typeof processor, 'function', 'should return a function')
-
-  processor.use(function () {
-    count++
-    this.data('foo', 'bar')
+test('core', async function (t) {
+  await t.test('should expose the public api', async function () {
+    assert.deepEqual(Object.keys(await import('unified')).sort(), ['unified'])
   })
 
-  count = 0
-  const otherProcessor = processor().freeze()
+  await t.test('should expose a frozen processor', async function () {
+    assert.throws(function () {
+      // @ts-expect-error: check that `use` cannot be used on frozen processors.
+      unified.use(function () {})
+    }, /Cannot call `use` on a frozen processor/)
+  })
 
-  assert.equal(
-    count,
-    1,
-    'should create a new processor implementing the ancestral processor when called (#1)'
-  )
+  await t.test(
+    'should create a new processor implementing the ancestral processor when called',
+    async function () {
+      let count = 0
 
-  assert.equal(
-    otherProcessor.data('foo'),
-    'bar',
-    'should create a new processor implementing the ancestral processor when called (#2)'
+      const processor = unified().use(function () {
+        count++
+        this.data('foo', 'bar')
+      })
+
+      const otherProcessor = processor().freeze()
+
+      assert.equal(count, 1)
+      assert.deepEqual(otherProcessor.data(), {foo: 'bar'})
+    }
   )
 })
