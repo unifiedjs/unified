@@ -672,7 +672,7 @@ export type Transformer<
  *   Nothing.
  */
 export type TransformCallback<Tree extends Node = Node> = (
-  error?: Error | null | undefined,
+  error?: Error | undefined,
   node?: Tree | undefined,
   file?: VFile | undefined
 ) => void
@@ -834,7 +834,7 @@ export type CompilerFunction<Tree extends Node = Node, Result = unknown> = (
  *   Nothing.
  */
 export type RunCallback<Tree extends Node = Node> = (
-  error?: Error | null | undefined,
+  error?: Error | undefined,
   node?: Tree | undefined,
   file?: VFile | undefined
 ) => void
@@ -852,7 +852,7 @@ export type RunCallback<Tree extends Node = Node> = (
  *   Nothing.
  */
 export type ProcessCallback<File extends VFile = VFile> = (
-  error?: Error | null | undefined,
+  error?: Error | undefined,
   file?: File | undefined
 ) => void
 

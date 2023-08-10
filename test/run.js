@@ -12,7 +12,7 @@ test('`run`', async function (t) {
   await t.test('should pass/yield expected values', async function () {
     await new Promise(function (resolve) {
       unified().run(givenNode, givenFile, function (error, tree, file) {
-        assert.equal(error, null)
+        assert.equal(error, undefined)
         assert.equal(tree, givenNode)
         assert.equal(file, givenFile)
         assert.equal(arguments.length, 3)
@@ -24,7 +24,7 @@ test('`run`', async function (t) {
   await t.test('should pass a file if implicitly not given', async function () {
     await new Promise(function (resolve) {
       unified().run(givenNode, function (error, _, file) {
-        assert.equal(error, null)
+        assert.equal(error, undefined)
         assert.ok(file instanceof VFile)
         resolve(undefined)
       })
@@ -34,7 +34,7 @@ test('`run`', async function (t) {
   await t.test('should pass a file if explicitly not given', async function () {
     await new Promise(function (resolve) {
       unified().run(givenNode, undefined, function (error, _, file) {
-        assert.equal(error, null)
+        assert.equal(error, undefined)
         assert.ok(file instanceof VFile)
         resolve(undefined)
       })
@@ -70,7 +70,7 @@ test('`run`', async function (t) {
             }
           })
           .run(givenNode, function (error, tree) {
-            assert.equal(error, null)
+            assert.equal(error, undefined)
             assert.equal(tree, otherNode)
             resolve(undefined)
           })
@@ -128,7 +128,7 @@ test('`run`', async function (t) {
             }
           })
           .run(givenNode, function (error, tree) {
-            assert.equal(error, null)
+            assert.equal(error, undefined)
             assert.equal(tree, otherNode)
             resolve(undefined)
           })
@@ -150,7 +150,7 @@ test('`run`', async function (t) {
             }
           })
           .run(givenNode, function (error, tree) {
-            assert.equal(error, null)
+            assert.equal(error, undefined)
             assert.equal(tree, otherNode)
             resolve(undefined)
           })
@@ -191,7 +191,7 @@ test('`run`', async function (t) {
             }
           })
           .run(givenNode, function (error, tree) {
-            assert.equal(error, null)
+            assert.equal(error, undefined)
             assert.equal(tree, otherNode)
             resolve(undefined)
           })
@@ -212,7 +212,7 @@ test('`run`', async function (t) {
             }
           })
           .run(givenNode, function (error) {
-            assert.equal(error, null)
+            assert.equal(error, undefined)
             resolve(undefined)
           })
       })
@@ -239,7 +239,7 @@ test('`run`', async function (t) {
             }
           })
           .run(givenNode, function (error) {
-            assert.equal(error, null)
+            assert.equal(error, undefined)
             resolve(undefined)
           })
       })
@@ -277,7 +277,7 @@ test('`run`', async function (t) {
           }
         })
         .run(givenNode, givenFile, function (error, tree, file) {
-          assert.equal(error, null)
+          assert.equal(error, undefined)
           assert.equal(tree, otherNode)
           assert.equal(file, givenFile)
           resolve(undefined)

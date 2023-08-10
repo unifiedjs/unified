@@ -10,7 +10,7 @@ test('`data`', async function (t) {
   })
 
   await t.test('should yield data as getter (not defined)', async function () {
-    assert.equal(unified().data('foo'), null)
+    assert.equal(unified().data('foo'), undefined)
   })
 
   await t.test('should yield data as getter (defined)', async function () {
@@ -18,7 +18,7 @@ test('`data`', async function (t) {
   })
 
   await t.test('should not yield data prototypal fields', async function () {
-    assert.equal(unified().data('toString'), null)
+    assert.equal(unified().data('toString'), undefined)
   })
 
   await t.test('should yield dataset as getter w/o key', async function () {
