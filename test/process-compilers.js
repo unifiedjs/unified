@@ -1,4 +1,3 @@
-import {Buffer} from 'node:buffer'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {unified} from 'unified'
@@ -20,9 +19,9 @@ test('process (compilers)', async function (t) {
     assert.equal(file.result, undefined)
   })
 
-  await t.test('should compile `buffer`', async function () {
+  await t.test('should compile `Uint8Array`', async function () {
     const processor = unified()
-    const result = Buffer.from('bravo')
+    const result = new Uint8Array([0xef, 0xbb, 0xbf, 0x61, 0x62, 0x63])
 
     processor.Parser = SimpleParser
     processor.Compiler = function () {

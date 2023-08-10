@@ -524,27 +524,32 @@ expectType<string>(processorWithRehypeStringify.stringify(hastRoot))
 processorWithRehypeStringify.stringify(mdastRoot)
 expectType<VFile>(processorWithRehypeStringify.processSync(''))
 
-// Compile plugin (to a buffer).
-const rehypeStringifyBuffer: Plugin<[], HastRoot, Uint8Array> = function () {
-  // Empty.
-}
+// Compile plugin (to an `Uint8Array`).
+const rehypeStringifyUint8Array: Plugin<[], HastRoot, Uint8Array> =
+  function () {
+    // Empty.
+  }
 
-const processorWithRehypeStringifyBuffer = unified().use(rehypeStringifyBuffer)
+const processorWithRehypeStringifyUint8Array = unified().use(
+  rehypeStringifyUint8Array
+)
 
 // To do: ?
 expectType<Processor<HastRoot, HastRoot, HastRoot>>(
-  processorWithRehypeStringifyBuffer
+  processorWithRehypeStringifyUint8Array
 )
 // To do: yield `UnistNode`?
-expectType<HastRoot>(processorWithRehypeStringifyBuffer.parse(''))
+expectType<HastRoot>(processorWithRehypeStringifyUint8Array.parse(''))
 // @ts-expect-error: to do: accept `UnistNode`?
-processorWithRehypeStringifyBuffer.runSync(mdastRoot)
+processorWithRehypeStringifyUint8Array.runSync(mdastRoot)
 // To do: accept, yield `UnistNode`?
-expectType<HastRoot>(processorWithRehypeStringifyBuffer.runSync(hastRoot))
-expectType<Uint8Array>(processorWithRehypeStringifyBuffer.stringify(hastRoot))
+expectType<HastRoot>(processorWithRehypeStringifyUint8Array.runSync(hastRoot))
+expectType<Uint8Array>(
+  processorWithRehypeStringifyUint8Array.stringify(hastRoot)
+)
 // @ts-expect-error: not the correct node type.
-processorWithRehypeStringifyBuffer.stringify(mdastRoot)
-expectType<VFile>(processorWithRehypeStringifyBuffer.processSync(''))
+processorWithRehypeStringifyUint8Array.stringify(mdastRoot)
+expectType<VFile>(processorWithRehypeStringifyUint8Array.processSync(''))
 
 // Compile plugin (to a non-node).
 const rehypeReact: Plugin<[], HastRoot, ReactNode> = function () {

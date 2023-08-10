@@ -526,10 +526,10 @@ Compile a syntax tree.
 
 ###### Returns
 
-Textual representation of the tree (`string` or `Buffer`, see note).
+Textual representation of the tree (`string` or `Uint8Array`, see note).
 
 > 👉 **Note**: unified typically compiles by serializing: most
-> [compilers][compiler] return `string` (or `Buffer`).
+> [compilers][compiler] return `string` (or `Uint8Array`).
 > Some compilers, such as the one configured with
 > [`rehype-react`][rehype-react], return other values (in this case, a React
 > tree).
@@ -575,7 +575,7 @@ Instances must have a `compile` method that is called without arguments and
 should return a `string`.
 
 > 👉 **Note**: unified typically compiles by serializing: most compilers
-> return `string` (or `Buffer`).
+> return `string` (or `Uint8Array`).
 > Some compilers, such as the one configured with
 > [`rehype-react`][rehype-react], return other values (in this case, a React
 > tree).
@@ -693,7 +693,7 @@ The parsed, transformed, and compiled value is available at
 [`file.value`][vfile-value] (see note).
 
 > 👉 **Note**: unified typically compiles by serializing: most
-> [compilers][compiler] return `string` (or `Buffer`).
+> [compilers][compiler] return `string` (or `Uint8Array`).
 > Some compilers, such as the one configured with
 > [`rehype-react`][rehype-react], result in other values (in this case, a React
 > tree).
@@ -805,7 +805,7 @@ The parsed, transformed, and compiled value is available at
 [`file.value`][vfile-value] (see note).
 
 > 👉 **Note**: unified typically compiles by serializing: most
-> [compilers][compiler] return `string` (or `Buffer`).
+> [compilers][compiler] return `string` (or `Uint8Array`).
 > Some compilers, such as the one configured with
 > [`rehype-react`][rehype-react], result in other values (in this case, a React
 > tree).

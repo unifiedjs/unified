@@ -111,7 +111,7 @@ export type Processor<
    *   *   If the plugin sets a parser, then this should be the node type that
    *       the parser yields.
    *   *   If the plugin sets a compiler, then this should be the result that
-   *       the compiler yields (`string`, `Buffer`, or something else).
+   *       the compiler yields (`string`, `Uint8Array`, or something else).
    * @param plugin
    *   Plugin (function) to use.
    *   Plugins are deduped based on identity: passing a function in twice will
@@ -162,7 +162,7 @@ export type Processor<
    *   *   If the plugin sets a parser, then this should be the node type that
    *       the parser yields.
    *   *   If the plugin sets a compiler, then this should be the result that
-   *       the compiler yields (`string`, `Buffer`, or something else).
+   *       the compiler yields (`string`, `Uint8Array`, or something else).
    * @param tuple
    *   A tuple where the first item is a plugin (function) to use and other
    *   items are options.
@@ -260,7 +260,7 @@ export type FrozenProcessor<
    * @param file
    *   `VFile` or anything that can be given to `new VFile()`, optional.
    * @returns
-   *   New content: compiled text (`string` or `Buffer`) or something else.
+   *   New content: compiled text (`string` or `Uint8Array`) or something else.
    *   This depends on which plugins you use: typically text, but could for
    *   example be a React node.
    */
@@ -347,8 +347,8 @@ export type FrozenProcessor<
    *
    * The result from the compiler is stored on the file.
    * What the result is depends on which plugins you use.
-   * The result is typically text (`string` or `Buffer`), which can be retrieved
-   * with `file.toString()` (or `String(file)`).
+   * The result is typically text (`string` or `Uint8Array`), which can be
+   * retrieved with `file.toString()` (or `String(file)`).
    * In some cases, such as when using `rehypeReact` to create a React node,
    * the result is stored on `file.result`.
    *
@@ -375,8 +375,8 @@ export type FrozenProcessor<
    *
    * The result from the compiler is stored on the file.
    * What the result is depends on which plugins you use.
-   * The result is typically text (`string` or `Buffer`), which can be retrieved
-   * with `file.toString()` (or `String(file)`).
+   * The result is typically text (`string` or `Uint8Array`), which can be
+   * retrieved with `file.toString()` (or `String(file)`).
    * In some cases, such as when using `rehypeReact` to create a React node,
    * the result is stored on `file.result`.
    *
@@ -399,8 +399,8 @@ export type FrozenProcessor<
    *
    * The result from the compiler is stored on the file.
    * What the result is depends on which plugins you use.
-   * The result is typically text (`string` or `Buffer`), which can be retrieved
-   * with `file.toString()` (or `String(file)`).
+   * The result is typically text (`string` or `Uint8Array`), which can be
+   * retrieved with `file.toString()` (or `String(file)`).
    * In some cases, such as when using `rehypeReact` to create a React node,
    * the result is stored on `file.result`.
    *
@@ -502,7 +502,7 @@ export type FrozenProcessor<
  *   *   If the plugin sets a parser, then this should be the node type that
  *       the parser yields.
  *   *   If the plugin sets a compiler, then this should be the result that
- *       the compiler yields (`string`, `Buffer`, or something else).
+ *       the compiler yields (`string`, `Uint8Array`, or something else).
  * @this
  *   The current processor.
  *   Plugins can configure the processor by interacting with `this.Parser` or
@@ -580,7 +580,7 @@ export type Preset = {
  *   *   If the plugin sets a parser, then this should be the node type that
  *       the parser yields.
  *   *   If the plugin sets a compiler, then this should be the result that
- *       the compiler yields (`string`, `Buffer`, or something else).
+ *       the compiler yields (`string`, `Uint8Array`, or something else).
  */
 export type PluginTuple<
   PluginParameters extends any[] = any[],
@@ -780,8 +780,8 @@ export class CompilerClass<Tree extends Node = Node, Result = unknown> {
      * Compile a tree.
      *
      * @returns
-     *   New content: compiled text (`string` or `Buffer`, for `file.value`) or
-     *   something else (for `file.result`).
+     *   New content: compiled text (`string` or `Uint8Array`, for
+     *   `file.value`) or something else (for `file.result`).
      */
     compile(): Result
   }
@@ -811,7 +811,7 @@ export class CompilerClass<Tree extends Node = Node, Result = unknown> {
  * @param file
  *   File associated with `tree`.
  * @returns
- *   New content: compiled text (`string` or `Buffer`, for `file.value`) or
+ *   New content: compiled text (`string` or `Uint8Array`, for `file.value`) or
  *   something else (for `file.result`).
  */
 export type CompilerFunction<Tree extends Node = Node, Result = unknown> = (
