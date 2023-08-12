@@ -152,17 +152,11 @@ test('`runSync`', async function (t) {
 
         assert.throws(function () {
           unified()
-            .use(
-              // Note: TS doesn’t understand `Promise<never>`.
-              /**
-               * @type {import('unified').Plugin<[]>}
-               */
-              function () {
-                return async function () {
-                  throw givenError
-                }
+            .use(function () {
+              return async function () {
+                throw givenError
               }
-            )
+            })
             .runSync(givenNode)
         }, /`runSync` finished async. Use `run` instead/)
       })

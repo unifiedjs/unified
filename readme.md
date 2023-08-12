@@ -460,7 +460,8 @@ Parse text to a syntax tree.
 
 ###### Parameters
 
-*   `file` ([`VFile`][vfile]) — any value accepted  as `x` in `new VFile(x)`
+*   `file` ([`VFile`][vfile]) — file to parse; typically `string`; any value
+    accepted as `x` in `new VFile(x)`
 
 ###### Returns
 
@@ -497,14 +498,15 @@ Yields:
 #### `processor.Parser`
 
 A **parser** handles the parsing of text to a syntax tree.
+
 It is used in the [parse phase][overview] and is called with a `string` and
 [`VFile`][vfile] of the document to parse.
 
 `Parser` can be a normal function, in which case it must return the syntax
 tree representation of the given file ([`Node`][node]).
 
-`Parser` can also be a constructor function (a function with a `parse` field, or
-other fields, in its `prototype`), in which case it is constructed with `new`.
+`Parser` can also be a constructor function (a function with a `parse` field in
+its `prototype`), in which case it is constructed with `new`.
 Instances must have a `parse` method that is called without arguments and must
 return a [`Node`][node].
 
@@ -521,8 +523,8 @@ Compile a syntax tree.
 ###### Parameters
 
 *   `tree` ([`Node`][node]) — tree to compile
-*   `file` ([`VFile`][vfile], optional) — any value accepted as `x` in
-    `new VFile(x)`
+*   `file` ([`VFile`][vfile], optional) — file associated with `node`; any
+    value accepted as `x` in `new VFile(x)`
 
 ###### Returns
 
@@ -562,6 +564,7 @@ Yields:
 
 A **compiler** handles the compiling of a syntax tree to something else (in
 most cases, text).
+
 It is used in the [stringify phase][overview] and called with a [`Node`][node]
 and [`VFile`][file] representation of the document to compile.
 
@@ -569,7 +572,7 @@ and [`VFile`][file] representation of the document to compile.
 representation of the given tree (`string`).
 
 `Compiler` can also be a constructor function (a function with a `compile`
-field, or other fields, in its `prototype`), in which case it is constructed
+field in its `prototype`), in which case it is constructed
 with `new`.
 Instances must have a `compile` method that is called without arguments and
 should return a `string`.
@@ -599,7 +602,7 @@ Run *[transformers][transformer]* on a syntax tree.
 
 ###### Returns
 
-Nothing if `done` is given (`void`).
+Nothing if `done` is given (`undefined`).
 A [`Promise`][promise] otherwise.
 The promise is rejected with a fatal error or resolved with the transformed
 tree ([`Node`][node]).
@@ -639,6 +642,7 @@ Yields:
 #### `function done(err[, tree, file])`
 
 Callback called when transformers are done.
+
 Called with either an error or results.
 
 ###### Parameters
@@ -679,12 +683,13 @@ Process the given file as configured on the processor.
 
 ###### Parameters
 
-*   `file` ([`VFile`][vfile]) — any value accepted as `x` in `new VFile(x)`
+*   `file` ([`VFile`][vfile]) — file; any value accepted as `x` in
+    `new VFile(x)`
 *   `done` ([`Function`][process-done], optional) — callback
 
 ###### Returns
 
-Nothing if `done` is given (`void`).
+Nothing if `done` is given (`undefined`).
 A [`Promise`][promise] otherwise.
 The promise is rejected with a fatal error or resolved with the processed
 file ([`VFile`][vfile]).
@@ -742,6 +747,7 @@ Yields:
 #### `function done(err, file)`
 
 Callback called when the process is done.
+
 Called with either an error or a result.
 
 ###### Parameters
@@ -905,6 +911,7 @@ processor.data() // => {charlie: 'delta'}
 ### `processor.freeze()`
 
 Freeze a processor.
+
 Frozen processors are meant to be extended and not to be configured directly.
 
 When a processor is frozen it cannot be unfrozen.
@@ -1073,6 +1080,7 @@ Optional transform ([`Transformer`][transformer]).
 ### `function transformer(tree, file[, next])`
 
 Transformers handle syntax trees and files.
+
 They are functions that are called each time a syntax tree and file are passed
 through the [run phase][overview].
 When an error occurs in them (either because it’s thrown, returned, rejected,
@@ -1084,16 +1092,18 @@ exact semantics of these functions.
 ###### Parameters
 
 *   `tree` ([`Node`][node]) — tree to handle
-*   `file` ([`VFile`][vfile]) —file to handle
-*   `next` ([`Function`][next], optional)
+*   `file` ([`VFile`][vfile]) — file to handle
+*   `next` ([`Function`][next], optional) — callback
 
 ###### Returns
 
-*   `void` — the next transformer keeps using same tree
+If you accept `next`, nothing.
+Otherwise:
+
 *   `Error` — fatal error to stop the process
-*   [`Node`][node] — new, changed, tree
-*   `Promise<Node>` — resolved with a new, changed, tree or rejected with an
-    `Error`
+*   `Promise<undefined>` or `undefined` — the next transformer keeps using same
+    tree
+*   `Promise<Node>` or [`Node`][node] — new, changed, tree
 
 #### `function next(err[, tree[, file]])`
 
@@ -1109,6 +1119,7 @@ may perform asynchronous operations, and must call `next()`.
 ## `Preset`
 
 Presets are sharable configuration.
+
 They can contain plugins and settings.
 
 ###### Example

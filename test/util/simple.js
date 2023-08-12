@@ -1,35 +1,23 @@
 /**
- * @typedef {import('unified').Parser} Parser
- * @typedef {import('unified').Compiler} Compiler
+ * @typedef {import('unist').Node} Node
  * @typedef {import('unist').Literal} Literal
  */
 
 // Make references to the above types visible in VS Code.
 ''
 
-/** @type {Parser} */
-export class SimpleParser {
-  /** @param {string} doc */
-  constructor(doc) {
-    /** @type {string} */
-    this.value = doc
-  }
-
-  /** @returns {Literal} */
-  parse() {
-    return {type: 'text', value: this.value}
-  }
+/**
+ * @param {string} value
+ * @returns {Literal}
+ */
+export function simpleParser(value) {
+  return /** @type {Literal} */ ({type: 'text', value})
 }
 
-/** @type {Compiler} */
-export class SimpleCompiler {
-  /** @param {Literal} node */
-  constructor(node) {
-    /** @type {Literal} */
-    this.node = node
-  }
-
-  compile() {
-    return this.node.value
-  }
+/**
+ * @param {Node} node
+ * @returns {string}
+ */
+export function simpleCompiler(node) {
+  return 'value' in node && typeof node.value === 'string' ? node.value : ''
 }

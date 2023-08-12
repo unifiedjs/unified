@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import {unified} from 'unified'
 import {VFile} from 'vfile'
-import {SimpleCompiler, SimpleParser} from './util/simple.js'
+import {simpleCompiler, simpleParser} from './util/simple.js'
 
 test('`process`', async function (t) {
   const givenFile = new VFile('alpha')
@@ -17,7 +17,7 @@ test('`process`', async function (t) {
   await t.test('should throw w/o `Compiler`', async function () {
     assert.throws(function () {
       const processor = unified()
-      processor.Parser = SimpleParser
+      processor.Parser = simpleParser
       processor.process('')
     }, /Cannot `process` without `Compiler`/)
   })
@@ -59,8 +59,8 @@ test('`process`', async function (t) {
   await t.test('should rethrow errors in `done` throws', async function () {
     const processor = unified()
 
-    processor.Parser = SimpleParser
-    processor.Compiler = SimpleCompiler
+    processor.Parser = simpleParser
+    processor.Compiler = simpleCompiler
 
     assert.throws(function () {
       processor.process(givenFile, function () {
@@ -74,8 +74,8 @@ test('`process`', async function (t) {
     async function () {
       const processor = unified()
 
-      processor.Parser = SimpleParser
-      processor.Compiler = SimpleCompiler
+      processor.Parser = simpleParser
+      processor.Compiler = simpleCompiler
 
       await new Promise(function (resolve, reject) {
         processor.process(givenFile).then(

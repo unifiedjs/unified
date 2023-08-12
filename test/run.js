@@ -256,18 +256,11 @@ test('`run`', async function (t) {
           return async function () {}
         })
         // Async transformer w/ explicit `undefined`.
-        .use(
-          // Note: TS doesn’t understand w/o explicit `this` type.
-          /**
-           * @satisfies {import('unified').Plugin<[]>}
-           * @this {import('unified').Processor}
-           */
-          function () {
-            return async function () {
-              return undefined
-            }
+        .use(function () {
+          return async function () {
+            return undefined
           }
-        )
+        })
         .use(function () {
           return async function (tree, file) {
             assert.equal(tree, givenNode)
@@ -342,6 +335,9 @@ test('`run`', async function (t) {
             function () {
               reject(new Error('should reject'))
             },
+            /**
+             * @param {unknown} error
+             */
             function (error) {
               assert.equal(error, givenError)
               resolve(undefined)
@@ -385,6 +381,9 @@ test('`run`', async function (t) {
             function () {
               reject(new Error('should reject'))
             },
+            /**
+             * @param {unknown} error
+             */
             function (error) {
               assert.equal(error, givenError)
               resolve(undefined)
@@ -411,6 +410,9 @@ test('`run`', async function (t) {
             function () {
               reject(new Error('should reject'))
             },
+            /**
+             * @param {unknown} error
+             */
             function (error) {
               assert.equal(error, givenError)
               resolve(undefined)
@@ -477,6 +479,9 @@ test('`run`', async function (t) {
             function () {
               reject(new Error('should reject'))
             },
+            /**
+             * @param {unknown} error
+             */
             function (error) {
               assert.equal(error, givenError)
               resolve(undefined)
@@ -557,18 +562,11 @@ test('`run`', async function (t) {
           return async function () {}
         })
         // Async transformer w/ explicit `undefined`.
-        .use(
-          // Note: TS doesn’t understand w/o explicit `this` type.
-          /**
-           * @satisfies {import('unified').Plugin<[]>}
-           * @this {import('unified').Processor}
-           */
-          function () {
-            return async function () {
-              return undefined
-            }
+        .use(function () {
+          return async function () {
+            return undefined
           }
-        )
+        })
         .use(function () {
           return async function (tree, file) {
             assert.equal(tree, givenNode)

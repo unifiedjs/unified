@@ -1,14 +1,14 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {unified} from 'unified'
-import {SimpleParser} from './util/simple.js'
+import {simpleParser} from './util/simple.js'
 
 test('process (compilers)', async function (t) {
   await t.test('should compile `string`', async function () {
     const processor = unified()
     const result = 'bravo'
 
-    processor.Parser = SimpleParser
+    processor.Parser = simpleParser
     processor.Compiler = function () {
       return result
     }
@@ -23,7 +23,7 @@ test('process (compilers)', async function (t) {
     const processor = unified()
     const result = new Uint8Array([0xef, 0xbb, 0xbf, 0x61, 0x62, 0x63])
 
-    processor.Parser = SimpleParser
+    processor.Parser = simpleParser
     processor.Compiler = function () {
       return result
     }
@@ -37,14 +37,13 @@ test('process (compilers)', async function (t) {
   await t.test('should compile `null`', async function () {
     const processor = unified()
 
-    processor.Parser = SimpleParser
+    processor.Parser = simpleParser
     processor.Compiler = function () {
       return null
     }
 
     const file = await processor.process('alpha')
 
-    // To do: is this right?
     assert.equal(file.value, 'alpha')
     assert.equal(file.result, undefined)
   })
@@ -59,7 +58,7 @@ test('process (compilers)', async function (t) {
       props: {children: ['bravo']}
     }
 
-    processor.Parser = SimpleParser
+    processor.Parser = simpleParser
     processor.Compiler = function () {
       return result
     }

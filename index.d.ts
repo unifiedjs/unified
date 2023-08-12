@@ -14,427 +14,686 @@
 // accept type parameters cannot be re-exported as such easily.
 
 import type {Node} from 'unist'
-import type {VFile, VFileCompatible} from 'vfile'
-
-type VFileWithOutput<Result> = Result extends Uint8Array
-  ? VFile
-  : Result extends object // Custom result type
-  ? VFile & {result: Result}
-  : VFile
-
-// Get the right most non-void thing.
-type Specific<Left = void, Right = void> = Right extends undefined | void
-  ? Left
-  : Right
-
-// Create a processor based on the input/output of a plugin.
-type UsePlugin<
-  ParseTree extends Node | void = void,
-  CurrentTree extends Node | void = void,
-  CompileTree extends Node | void = void,
-  CompileResult = void,
-  Input = void,
-  Output = void
-> = Output extends Node
-  ? Input extends string
-    ? // If `Input` is `string` and `Output` is `Node`, then this plugin
-      // defines a parser, so set `ParseTree`.
-      Processor<
-        Output,
-        Specific<Output, CurrentTree>,
-        Specific<Output, CompileTree>,
-        CompileResult
-      >
-    : Input extends Node
-    ? // If `Input` is `Node` and `Output` is `Node`, then this plugin defines a
-      // transformer, its output defines the input of the next, so set
-      // `CurrentTree`.
-      Processor<
-        Specific<Input, ParseTree>,
-        Output,
-        Specific<CompileTree, Output>,
-        CompileResult
-      >
-    : // Else, `Input` is something else and `Output` is `Node`:
-      never
-  : Input extends Node
-  ? // If `Input` is `Node` and `Output` is not a `Node`, then this plugin
-    // defines a compiler, so set `CompileTree` and `CompileResult`
-    Processor<
-      Specific<Input, ParseTree>,
-      Specific<Input, CurrentTree>,
-      Input,
-      Output
-    >
-  : // Else, `Input` is not a `Node` and `Output` is not a `Node`.
-    // Maybe it’s untyped, or the plugin throws an error (`never`), so lets
-    // just keep it as it was.
-    Processor<ParseTree, CurrentTree, CompileTree, CompileResult>
+import type {VFile, VFileCompatible, VFileValue} from 'vfile'
 
 /**
- * Processor allows plugins to be chained together to transform content.
- * The chain of plugins defines how content flows through it.
+ * Interface of known results from compilers.
+ *
+ * Normally, compilers result in text ({@link VFileValue `VFileValue`}).
+ * When you compile to something else, such as a React node (as in,
+ * `rehype-react`), you can augment this interface to include that type.
+ *
+ * ```ts
+ * import type {ReactNode} from 'somewhere'
+ *
+ * declare module 'unified' {
+ *   interface CompileResultMap {
+ *     // Register a new result (value is used, key should match it).
+ *     ReactNode: ReactNode
+ *   }
+ * }
+ * ```
+ *
+ * Use {@link CompileResults `CompileResults`} to access the values.
+ */
+// Note: if `Value` from `VFile` is changed, this should too.
+export interface CompileResultMap {
+  Uint8Array: Uint8Array
+  string: string
+}
+
+/**
+ * Acceptable results from compilers.
+ *
+ * To register custom results, add them to
+ * {@link CompileResultMap `CompileResultMap`}.
+ */
+type CompileResults = CompileResultMap[keyof CompileResultMap]
+
+/**
+ * Type to generate a {@link VFile `VFile`} corresponding to a compiler result.
+ *
+ * If a result that is not acceptable on a `VFile` is used, that will
+ * be stored on the `result` field of {@link VFile `VFile`}.
+ *
+ * @typeParam Result
+ *   Compile result.
+ */
+type VFileWithOutput<Result extends CompileResults | undefined> =
+  Result extends VFileValue | undefined ? VFile : VFile & {result: Result}
+
+/**
+ * Create a processor based on the input/output of a {@link Plugin plugin}.
  *
  * @typeParam ParseTree
- *   The node that the parser yields (and `run` receives).
- * @typeParam CurrentTree
- *   The node that the last attached plugin yields.
+ *   Output of `parse`.
+ * @typeParam HeadTree
+ *   Input for `run`.
+ * @typeParam TailTree
+ *   Output for `run`.
  * @typeParam CompileTree
- *   The node that the compiler receives (and `run` yields).
+ *   Input of `stringify`.
  * @typeParam CompileResult
- *   The thing that the compiler yields.
+ *   Output of `stringify`.
+ * @typeParam Input
+ *   Input of plugin.
+ * @typeParam Output
+ *   Output of plugin.
+ */
+type UsePlugin<
+  ParseTree extends Node | undefined,
+  HeadTree extends Node | undefined,
+  TailTree extends Node | undefined,
+  CompileTree extends Node | undefined,
+  CompileResult extends CompileResults | undefined,
+  Input extends Node | string | undefined,
+  Output
+> = Input extends string
+  ? Output extends Node | undefined
+    ? // Parser.
+      Processor<
+        Output extends undefined ? ParseTree : Output,
+        HeadTree,
+        TailTree,
+        CompileTree,
+        CompileResult
+      >
+    : // Unknown.
+      Processor<ParseTree, HeadTree, TailTree, CompileTree, CompileResult>
+  : Output extends CompileResults
+  ? Input extends Node | undefined
+    ? // Compiler.
+      Processor<
+        ParseTree,
+        HeadTree,
+        TailTree,
+        Input extends undefined ? CompileTree : Input,
+        Output extends undefined ? CompileResult : Output
+      >
+    : // Unknown.
+      Processor<ParseTree, HeadTree, TailTree, CompileTree, CompileResult>
+  : Input extends Node | undefined
+  ? Output extends Node | undefined
+    ? // Transform.
+      Processor<
+        ParseTree,
+        // No `HeadTree` yet? Set `Input`.
+        HeadTree extends undefined ? Input : HeadTree,
+        Output extends undefined ? TailTree : Output,
+        CompileTree,
+        CompileResult
+      >
+    : // Unknown.
+      Processor<ParseTree, HeadTree, TailTree, CompileTree, CompileResult>
+  : // Unknown.
+    Processor<ParseTree, HeadTree, TailTree, CompileTree, CompileResult>
+
+/**
+ * Processor.
+ *
+ * @typeParam ParseTree
+ *   Output of `parse`.
+ * @typeParam HeadTree
+ *   Input for `run`.
+ * @typeParam TailTree
+ *   Output for `run`.
+ * @typeParam CompileTree
+ *   Input of `stringify`.
+ * @typeParam CompileResult
+ *   Output of `stringify`.
  */
 export type Processor<
-  ParseTree extends Node | void = void,
-  CurrentTree extends Node | void = void,
-  CompileTree extends Node | void = void,
-  CompileResult = void
+  ParseTree extends Node | undefined = undefined,
+  HeadTree extends Node | undefined = undefined,
+  TailTree extends Node | undefined = undefined,
+  CompileTree extends Node | undefined = undefined,
+  CompileResult extends CompileResults | undefined = undefined
 > = {
   /**
-   * Configure the processor to use a plugin.
+   * Configure the processor with a preset.
    *
-   * @typeParam PluginParameters
-   *   Plugin settings.
-   * @typeParam Input
-   *   Value that is accepted by the plugin.
+   * If the processor is already using a plugin, the previous plugin
+   * configuration is changed based on the options that are passed in.
+   * In other words, the plugin is not added a second time.
    *
-   *   *   If the plugin returns a transformer, then this should be the node
-   *       type that the transformer expects.
-   *   *   If the plugin sets a parser, then this should be `string`.
-   *   *   If the plugin sets a compiler, then this should be the node type that
-   *       the compiler expects.
-   * @typeParam Output
-   *   Value that the plugin yields.
+   * @example
+   *   ```js
+   *   import {unified} from 'unified'
    *
-   *   *   If the plugin returns a transformer, then this should be the node
-   *       type that the transformer yields, and defaults to `Input`.
-   *   *   If the plugin sets a parser, then this should be the node type that
-   *       the parser yields.
-   *   *   If the plugin sets a compiler, then this should be the result that
-   *       the compiler yields (`string`, `Uint8Array`, or something else).
-   * @param plugin
-   *   Plugin (function) to use.
-   *   Plugins are deduped based on identity: passing a function in twice will
-   *   cause it to run only once.
-   * @param settings
-   *   Configuration for plugin, optional.
-   *   Plugins typically receive one options object, but could receive other and
-   *   more values.
-   *   It’s also possible to pass a boolean instead of settings: `true` (to turn
-   *   a plugin on) or `false` (to turn a plugin off).
-   * @returns
-   *   Current processor.
-   */
-  use<
-    PluginParameters extends any[] = any[],
-    Input = Specific<Node, CurrentTree>,
-    Output = Input
-  >(
-    plugin: Plugin<PluginParameters, Input, Output>,
-    ...settings: PluginParameters | [boolean]
-  ): UsePlugin<
-    ParseTree,
-    CurrentTree,
-    CompileTree,
-    CompileResult,
-    Input,
-    Output
-  >
-
-  /**
-   * Configure the processor with a tuple of a plugin and setting(s).
+   *   unified()
+   *     // Preset with plugins and settings:
+   *     .use({plugins: [pluginA, [pluginB, {}]], settings: {position: false}})
+   *     // Settings only:
+   *     .use({settings: {position: false}})
+   *   ```
    *
-   * @typeParam PluginParameters
-   *   Plugin settings.
-   * @typeParam Input
-   *   Value that is accepted by the plugin.
-   *
-   *   *   If the plugin returns a transformer, then this should be the node
-   *       type that the transformer expects.
-   *   *   If the plugin sets a parser, then this should be `string`.
-   *   *   If the plugin sets a compiler, then this should be the node type that
-   *       the compiler expects.
-   * @typeParam Output
-   *   Value that the plugin yields.
-   *
-   *   *   If the plugin returns a transformer, then this should be the node
-   *       type that the transformer yields, and defaults to `Input`.
-   *   *   If the plugin sets a parser, then this should be the node type that
-   *       the parser yields.
-   *   *   If the plugin sets a compiler, then this should be the result that
-   *       the compiler yields (`string`, `Uint8Array`, or something else).
-   * @param tuple
-   *   A tuple where the first item is a plugin (function) to use and other
-   *   items are options.
-   *   Plugins are deduped based on identity: passing a function in twice will
-   *   cause it to run only once.
-   *   It’s also possible to pass a boolean instead of settings: `true` (to turn
-   *   a plugin on) or `false` (to turn a plugin off).
-   * @returns
-   *   Current processor.
-   */
-  use<
-    PluginParameters extends any[] = any[],
-    Input = Specific<Node, CurrentTree>,
-    Output = Input
-  >(
-    tuple:
-      | PluginTuple<PluginParameters, Input, Output>
-      | [Plugin<PluginParameters, Input, Output>, boolean]
-  ): UsePlugin<
-    ParseTree,
-    CurrentTree,
-    CompileTree,
-    CompileResult,
-    Input,
-    Output
-  >
-
-  /**
-   * Configure the processor with a preset or list of plugins and presets.
-   *
-   * @param presetOrList
-   *   Either a list of plugins, presets, and tuples, or a single preset: an
-   *   object with a `plugins` (list) and/or `settings`
-   *   (`Record<string, unknown>`).
+   * @param preset
+   *   Single preset ({@link Preset `Preset`}): an object with a `plugins`
+   *   and/or `settings`.
    * @returns
    *   Current processor.
    */
   use(
-    presetOrList: PluggableList | Preset
-  ): Processor<ParseTree, CurrentTree, CompileTree, CompileResult>
-} & FrozenProcessor<ParseTree, CurrentTree, CompileTree, CompileResult>
+    preset?: Preset | null | undefined
+  ): Processor<ParseTree, HeadTree, TailTree, CompileTree, CompileResult>
+
+  /**
+   * Configure the processor with a list of usable values.
+   *
+   * If the processor is already using a plugin, the previous plugin
+   * configuration is changed based on the options that are passed in.
+   * In other words, the plugin is not added a second time.
+   *
+   * @example
+   *   ```js
+   *   import {unified} from 'unified'
+   *
+   *   unified()
+   *     // Plugins:
+   *     .use([pluginA, pluginB])
+   *     // Two plugins, the second with options:
+   *     .use([pluginC, [pluginD, {}]])
+   *   ```
+   *
+   * @param list
+   *   List of plugins plugins, presets, and tuples
+   *   ({@link PluggableList `PluggableList`}).
+   * @returns
+   *   Current processor.
+   */
+  use(
+    list: PluggableList
+  ): Processor<ParseTree, HeadTree, TailTree, CompileTree, CompileResult>
+
+  /**
+   * Configure the processor to use a {@link Plugin `Plugin`}.
+   *
+   * If the processor is already using a plugin, the previous plugin
+   * configuration is changed based on the options that are passed in.
+   * In other words, the plugin is not added a second time.
+   *
+   * @example
+   *   ```js
+   *   import {unified} from 'unified'
+   *
+   *   unified()
+   *     // Plugin with options:
+   *     .use(pluginA, {x: true, y: true})
+   *     // Passing the same plugin again merges configuration (to `{x: true, y: false, z: true}`):
+   *     .use(pluginA, {y: false, z: true})
+   *   ```
+   *
+   * @typeParam Parameters
+   *   Arguments passed to the plugin.
+   * @typeParam Input
+   *   Value that is expected as input.
+   *
+   *   *   If the plugin returns a {@link Transformer `Transformer`}, this
+   *       should be the node it expects.
+   *   *   If the plugin sets a {@link Parser `Parser`}, this should be
+   *       `string`.
+   *   *   If the plugin sets a {@link Compiler `Compiler`}, this should be the
+   *       node it expects.
+   * @typeParam Output
+   *   Value that is yielded as output.
+   *
+   *   *   If the plugin returns a {@link Transformer `Transformer`}, this
+   *       should be the node that that yields.
+   *   *   If the plugin sets a {@link Parser `Parser`}, this should be the
+   *       node that it yields.
+   *   *   If the plugin sets a {@link Compiler `Compiler`}, this should be
+   *       result it yields.
+   * @param plugin
+   *   {@link Plugin `Plugin`} to use.
+   * @param parameters
+   *   Arguments passed to the {@link Plugin plugin}.
+   *
+   *   Plugins typically receive one options object, but could receive other and
+   *   more values.
+   *   It’s also possible to pass a boolean: `true` (to turn a plugin on),
+   *   `false` (to turn a plugin off).
+   * @returns
+   *   Current processor.
+   */
+  use<
+    Parameters extends unknown[] = [],
+    Input extends Node | string | undefined = undefined,
+    Output = Input
+  >(
+    plugin: Plugin<Parameters, Input, Output>,
+    ...parameters: Parameters | [boolean]
+  ): UsePlugin<
+    ParseTree,
+    HeadTree,
+    TailTree,
+    CompileTree,
+    CompileResult,
+    Input,
+    Output
+  >
+
+  /**
+   * Configure the processor to use a tuple of a {@link Plugin `Plugin`} with
+   * its parameters.
+   *
+   * If the processor is already using a plugin, the previous plugin
+   * configuration is changed based on the options that are passed in.
+   * In other words, the plugin is not added a second time.
+   *
+   * @example
+   *   ```js
+   *   import {unified} from 'unified'
+   *
+   *   unified()
+   *     // Plugin with options:
+   *     .use([pluginA, {x: true, y: true}])
+   *   ```
+   *
+   * @typeParam Parameters
+   *   Arguments passed to the plugin.
+   * @typeParam Input
+   *   Value that is expected as input.
+   *
+   *   *   If the plugin returns a {@link Transformer `Transformer`}, this
+   *       should be the node it expects.
+   *   *   If the plugin sets a {@link Parser `Parser`}, this should be
+   *       `string`.
+   *   *   If the plugin sets a {@link Compiler `Compiler`}, this should be the
+   *       node it expects.
+   * @typeParam Output
+   *   Value that is yielded as output.
+   *
+   *   *   If the plugin returns a {@link Transformer `Transformer`}, this
+   *       should be the node that that yields.
+   *   *   If the plugin sets a {@link Parser `Parser`}, this should be the
+   *       node that it yields.
+   *   *   If the plugin sets a {@link Compiler `Compiler`}, this should be
+   *       result it yields.
+   * @param tuple
+   *   {@link Plugin `Plugin`} with arguments to use.
+   *
+   *   Plugins typically receive one options object, but could receive other and
+   *   more values.
+   *   It’s also possible to pass a boolean: `true` (to turn a plugin on),
+   *   `false` (to turn a plugin off).
+   * @returns
+   *   Current processor.
+   */
+  use<
+    Parameters extends unknown[] = [],
+    Input extends Node | string | undefined = undefined,
+    Output = Input
+  >(
+    tuple:
+      | [plugin: Plugin<Parameters, Input, Output>, enable: boolean] // Enable or disable the plugin.
+      | [plugin: Plugin<Parameters, Input, Output>, ...parameters: Parameters] // Configure the plugin.
+  ): UsePlugin<
+    ParseTree,
+    HeadTree,
+    TailTree,
+    CompileTree,
+    CompileResult,
+    Input,
+    Output
+  >
+} & FrozenProcessor<ParseTree, HeadTree, TailTree, CompileTree, CompileResult>
 
 /**
- * A frozen processor is just like a regular processor, except no additional
- * plugins can be added.
- * A frozen processor can be created by calling `.freeze()` on a processor.
- * An unfrozen processor can be created by calling a processor.
+ * Frozen processor.
+ *
+ * @typeParam ParseTree
+ *   Output of `parse`.
+ * @typeParam HeadTree
+ *   Input for `run`.
+ * @typeParam TailTree
+ *   Output for `run`.
+ * @typeParam CompileTree
+ *   Input of `stringify`.
+ * @typeParam CompileResult
+ *   Output of `stringify`.
  */
 export type FrozenProcessor<
-  ParseTree extends Node | void = void,
-  CurrentTree extends Node | void = void,
-  CompileTree extends Node | void = void,
-  CompileResult = void
+  ParseTree extends Node | undefined = undefined,
+  HeadTree extends Node | undefined = undefined,
+  TailTree extends Node | undefined = undefined,
+  CompileTree extends Node | undefined = undefined,
+  CompileResult extends CompileResults | undefined = undefined
 > = {
   /**
-   * Clone current processor
+   * Create a processor.
    *
    * @returns
-   *   New unfrozen processor that is configured to function the same as its
-   *   ancestor.
-   *   But when the descendant processor is configured it does not affect the
-   *   ancestral processor.
+   *   New *unfrozen* processor ({@link Processor `Processor`}) that is
+   *   configured to work the same as its ancestor.
+   *   When the descendant processor is configured in the future it does not
+   *   affect the ancestral processor.
    */
-  (): Processor<ParseTree, CurrentTree, CompileTree, CompileResult>
+  (): Processor<ParseTree, HeadTree, TailTree, CompileTree, CompileResult>
 
   /**
    * Internal list of configured plugins.
    *
    * @private
    */
-  attachers: Array<[Plugin, ...unknown[]]>
+  attachers: Array<PluginTuple<unknown[]>>
 
-  Parser?: Parser<Specific<Node, ParseTree>> | undefined
+  /**
+   * A **parser** handles the parsing of text to a syntax tree.
+   *
+   * It is used in the parse phase and is called with a `string` and
+   * {@link VFile `VFile`} of the document to parse.
+   *
+   * `Parser` can be a normal function, in which case it must return the syntax
+   * tree representation of the given file ({@link Node `Node`}).
+   *
+   * `Parser` can also be a constructor function (a function with a `parse`
+   * field in its `prototype`), in which case it is constructed with `new`.
+   * Instances must have a `parse` method that is called without arguments and must
+   * return a {@link Node `Node`}.
+   */
+  Parser?: Parser<ParseTree extends undefined ? Node : ParseTree> | undefined
 
+  /**
+   * A **compiler** handles the compiling of a syntax tree to something else (in
+   * most cases, text).
+   *
+   * It is used in the stringify phase and called with a {@link Node `Node`}
+   * and {@link VFile `VFile`} representation of the document to compile.
+   *
+   * `Compiler` can be a normal function, in which case it should return the
+   * textual representation of the given tree (`string`).
+   *
+   * `Compiler` can also be a constructor function (a function with a `compile`
+   * field in its `prototype`), in which case it is constructed with `new`.
+   * Instances must have a `compile` method that is called without arguments and
+   * should return a `string`.
+   *
+   * > 👉 **Note**: unified typically compiles by serializing: most compilers
+   * > return `string` (or `Uint8Array`).
+   * > Some compilers, such as the one configured with
+   * > [`rehype-react`][rehype-react], return other values (in this case, a
+   * > React tree).
+   * > If you’re using a compiler that doesn’t serialize, expect different result
+   * > values.
+   * >
+   * > To register custom results in TypeScript, add them to
+   * > {@link CompileResultMap `CompileResultMap`}.
+   *
+   * [rehype-react]: https://github.com/rehypejs/rehype-react
+   */
   Compiler?:
-    | Compiler<Specific<Node, CompileTree>, Specific<unknown, CompileResult>>
+    | Compiler<
+        CompileTree extends undefined ? Node : CompileTree,
+        CompileResult extends undefined ? unknown : CompileResult
+      >
     | undefined
 
   /**
-   * Parse a file.
+   * Parse text to a syntax tree.
+   *
+   * > 👉 **Note**: `parse` freezes the processor if not already *frozen*.
+   *
+   * > 👉 **Note**: `parse` performs the parse phase, not the run phase or other
+   * > phases.
    *
    * @param file
-   *   File to parse.
-   *   `VFile` or anything that can be given to `new VFile()`, optional.
+   *   file to parse; typically `string`; any value accepted as `x` in
+   *   `new VFile(x)`.
    * @returns
-   *   Resulting tree.
+   *   Syntax tree representing `file`.
    */
-  parse(file?: VFileCompatible | undefined): Specific<Node, ParseTree>
+  parse(
+    file?: VFileCompatible | undefined
+  ): ParseTree extends undefined ? Node : ParseTree
 
   /**
-   * Compile a file.
+   * Compile a syntax tree.
    *
-   * @param node
-   *   Node to compile.
+   * > 👉 **Note**: `stringify` freezes the processor if not already *frozen*.
+   *
+   * > 👉 **Note**: `stringify` performs the stringify phase, not the run phase
+   * or other phases.
+   *
+   * @param tree
+   *   Tree to compile
    * @param file
-   *   `VFile` or anything that can be given to `new VFile()`, optional.
+   *   File associated with `node` (optional); any value accepted as `x` in
+   *   `new VFile(x)`.
    * @returns
-   *   New content: compiled text (`string` or `Uint8Array`) or something else.
-   *   This depends on which plugins you use: typically text, but could for
-   *   example be a React node.
+   *   Textual representation of the tree (see note).
+   *
+   *   > 👉 **Note**: unified typically compiles by serializing: most compilers
+   *   > return `string` (or `Uint8Array`).
+   *   > Some compilers, such as the one configured with
+   *   > [`rehype-react`][rehype-react], return other values (in this case, a
+   *   > React tree).
+   *   > If you’re using a compiler that doesn’t serialize, expect different result
+   *   > values.
+   *   >
+   *   > To register custom results in TypeScript, add them to
+   *   > {@link CompileResultMap `CompileResultMap`}.
+   *
+   *   [rehype-react]: https://github.com/rehypejs/rehype-react
    */
   stringify(
-    node: Specific<Node, CompileTree>,
+    tree: CompileTree extends undefined ? Node : CompileTree,
     file?: VFileCompatible | undefined
-  ): CompileTree extends Node ? CompileResult : unknown
+  ): CompileResult extends undefined ? VFileValue : CompileResult
 
   /**
-   * Run transforms on the given tree.
+   * Run *transformers* on a syntax tree.
    *
-   * @param node
-   *   Tree to transform.
-   * @param callback
-   *   Callback called with an error or the resulting node.
+   * > 👉 **Note**: `run` freezes the processor if not already *frozen*.
+   *
+   * > 👉 **Note**: `run` performs the run phase, not other phases.
+   *
+   * @param tree
+   *   Tree to transform and inspect.
+   * @param done
+   *   Callback.
    * @returns
    *   Nothing.
    */
   run(
-    node: Specific<Node, ParseTree>,
-    callback: RunCallback<Specific<Node, CompileTree>>
-  ): void
+    tree: HeadTree extends undefined ? Node : HeadTree,
+    done: RunCallback<TailTree extends undefined ? Node : TailTree>
+  ): undefined
 
   /**
-   * Run transforms on the given node.
+   * Run *transformers* on a syntax tree.
    *
-   * @param node
-   *   Tree to transform.
+   * > 👉 **Note**: `run` freezes the processor if not already *frozen*.
+   *
+   * > 👉 **Note**: `run` performs the run phase, not other phases.
+   *
+   * @param tree
+   *   Tree to transform and inspect.
    * @param file
-   *   File associated with `node`.
-   *   `VFile` or anything that can be given to `new VFile()`.
-   * @param callback
-   *   Callback called with an error or the resulting node.
+   *   File associated with `node` (optional); any value accepted as `x` in
+   *   `new VFile(x)`.
+   * @param done
+   *   Callback.
    * @returns
    *   Nothing.
    */
   run(
-    node: Specific<Node, ParseTree>,
+    tree: HeadTree extends undefined ? Node : HeadTree,
     file: VFileCompatible | undefined,
-    callback: RunCallback<Specific<Node, CompileTree>>
-  ): void
+    done: RunCallback<TailTree extends undefined ? Node : TailTree>
+  ): undefined
 
   /**
-   * Run transforms on the given node.
+   * Run *transformers* on a syntax tree.
    *
-   * @param node
-   *   Tree to transform.
+   * > 👉 **Note**: `run` freezes the processor if not already *frozen*.
+   *
+   * > 👉 **Note**: `run` performs the run phase, not other phases.
+   *
+   * @param tree
+   *   Tree to transform and inspect.
    * @param file
-   *   File associated with `node`.
-   *   `VFile` or anything that can be given to `new VFile()`.
+   *   File associated with `node` (optional); any value accepted as `x` in
+   *   `new VFile(x)`.
    * @returns
-   *   Promise that resolves to the resulting tree.
+   *   A `Promise` rejected with a fatal error or resolved with the transformed
+   *   tree.
    */
   run(
-    node: Specific<Node, ParseTree>,
+    tree: HeadTree extends undefined ? Node : HeadTree,
     file?: VFileCompatible | undefined
-  ): Promise<Specific<Node, CompileTree>>
+  ): Promise<TailTree extends undefined ? Node : TailTree>
 
   /**
-   * Run transforms on the given node, synchronously.
-   * Throws when asynchronous transforms are configured.
+   * Run *transformers* on a syntax tree.
    *
-   * @param node
-   *   Tree to transform.
+   * An error is thrown if asynchronous transforms are configured.
+   *
+   * > 👉 **Note**: `runSync` freezes the processor if not already *frozen*.
+   *
+   * > 👉 **Note**: `runSync` performs the run phase, not other phases.
+   *
+   * @param tree
+   *   Tree to transform and inspect.
    * @param file
-   *   File associated with `node`.
-   *   `VFile` or anything that can be given to `new VFile()`, optional.
+   *   File associated with `node` (optional); any value accepted as `x` in
+   *   `new VFile(x)`.
    * @returns
-   *   Resulting tree.
+   *   Transformed tree.
    */
   runSync(
-    node: Specific<Node, ParseTree>,
+    tree: HeadTree extends undefined ? Node : HeadTree,
     file?: VFileCompatible | undefined
-  ): Specific<Node, CompileTree>
+  ): TailTree extends undefined ? Node : TailTree
 
   /**
-   * Process a file.
+   * Process the given file as configured on the processor.
    *
-   * This performs all phases of the processor:
+   * > 👉 **Note**: `process` freezes the processor if not already *frozen*.
    *
-   * 1.  Parse a file into a unist node using the configured `Parser`
-   * 2.  Run transforms on that node
-   * 3.  Compile the resulting node using the `Compiler`
-   *
-   * The result from the compiler is stored on the file.
-   * What the result is depends on which plugins you use.
-   * The result is typically text (`string` or `Uint8Array`), which can be
-   * retrieved with `file.toString()` (or `String(file)`).
-   * In some cases, such as when using `rehypeReact` to create a React node,
-   * the result is stored on `file.result`.
+   * > 👉 **Note**: `process` performs the parse, run, and stringify phases.
    *
    * @param file
-   *   `VFile` or anything that can be given to `new VFile()`.
-   * @param callback
-   *   Callback called with an error or the resulting file.
+   *   File; any value accepted as `x` in `new VFile(x)`.
+   * @param done
+   *   Callback.
    * @returns
    *   Nothing.
    */
   process(
     file: VFileCompatible | undefined,
-    callback: ProcessCallback<VFileWithOutput<CompileResult>>
-  ): void
+    done: ProcessCallback<VFileWithOutput<CompileResult>>
+  ): undefined
 
   /**
-   * Process a file.
+   * Process the given file as configured on the processor.
    *
-   * This performs all phases of the processor:
+   * > 👉 **Note**: `process` freezes the processor if not already *frozen*.
    *
-   * 1.  Parse a file into a unist node using the configured `Parser`
-   * 2.  Run transforms on that node
-   * 3.  Compile the resulting node using the `Compiler`
-   *
-   * The result from the compiler is stored on the file.
-   * What the result is depends on which plugins you use.
-   * The result is typically text (`string` or `Uint8Array`), which can be
-   * retrieved with `file.toString()` (or `String(file)`).
-   * In some cases, such as when using `rehypeReact` to create a React node,
-   * the result is stored on `file.result`.
+   * > 👉 **Note**: `process` performs the parse, run, and stringify phases.
    *
    * @param file
-   *   `VFile` or anything that can be given to `new VFile()`.
+   *   File; any value accepted as `x` in `new VFile(x)`.
    * @returns
-   *   Promise that resolves to the resulting `VFile`.
+   *   `Promise` rejected with a fatal error or resolved with the processed
+   *   file.
+   *
+   *   The parsed, transformed, and compiled value is available at
+   *   `file.value` (see note).
+   *
+   *   > 👉 **Note**: unified typically compiles by serializing: most
+   *   > compilers return `string` (or `Uint8Array`).
+   *   > Some compilers, such as the one configured with
+   *   > [`rehype-react`][rehype-react], return other values (in this case, a
+   *   > React tree).
+   *   > If you’re using a compiler that doesn’t serialize, expect different result
+   *   > values.
+   *   >
+   *   > To register custom results in TypeScript, add them to
+   *   > {@link CompileResultMap `CompileResultMap`}.
+   *
+   *   [rehype-react]: https://github.com/rehypejs/rehype-react
    */
-  process(file: VFileCompatible): Promise<VFileWithOutput<CompileResult>>
+  process(
+    file?: VFileCompatible | undefined
+  ): Promise<VFileWithOutput<CompileResult>>
 
   /**
-   * Process a file, synchronously.
-   * Throws when asynchronous transforms are configured.
+   * Process the given file as configured on the processor.
    *
-   * This performs all phases of the processor:
+   * An error is thrown if asynchronous transforms are configured.
    *
-   * 1.  Parse a file into a unist node using the configured `Parser`
-   * 2.  Run transforms on that node
-   * 3.  Compile the resulting node using the `Compiler`
+   * > 👉 **Note**: `processSync` freezes the processor if not already *frozen*.
    *
-   * The result from the compiler is stored on the file.
-   * What the result is depends on which plugins you use.
-   * The result is typically text (`string` or `Uint8Array`), which can be
-   * retrieved with `file.toString()` (or `String(file)`).
-   * In some cases, such as when using `rehypeReact` to create a React node,
-   * the result is stored on `file.result`.
+   * > 👉 **Note**: `processSync` performs the parse, run, and stringify phases.
    *
    * @param file
-   *   `VFile` or anything that can be given to `new VFile()`, optional.
+   *   File; any value accepted as `x` in `new VFile(x)`.
    * @returns
-   *   Resulting file.
+   *   The processed file.
+   *
+   *   The parsed, transformed, and compiled value is available at
+   *   `file.value` (see note).
+   *
+   *   > 👉 **Note**: unified typically compiles by serializing: most
+   *   > compilers return `string` (or `Uint8Array`).
+   *   > Some compilers, such as the one configured with
+   *   > [`rehype-react`][rehype-react], return other values (in this case, a
+   *   > React tree).
+   *   > If you’re using a compiler that doesn’t serialize, expect different result
+   *   > values.
+   *   >
+   *   > To register custom results in TypeScript, add them to
+   *   > {@link CompileResultMap `CompileResultMap`}.
+   *
+   *   [rehype-react]: https://github.com/rehypejs/rehype-react
    */
   processSync(
     file?: VFileCompatible | undefined
   ): VFileWithOutput<CompileResult>
 
   /**
-   * Get an in-memory key-value store accessible to all phases of the process.
+   * Configure the processor with info available to all plugins.
+   * Information is stored in an object.
+   *
+   * Typically, options can be given to a specific plugin, but sometimes it
+   * makes sense to have information shared with several plugins.
+   * For example, a list of HTML elements that are self-closing, which is
+   * needed during all phases.
    *
    * @returns
-   *   Key-value store.
+   *   The key-value store.
    */
   data(): Record<string, unknown>
 
   /**
-   * Set an in-memory key-value store accessible to all phases of the process.
+   * Configure the processor with info available to all plugins.
+   * Information is stored in an object.
+   *
+   * Typically, options can be given to a specific plugin, but sometimes it
+   * makes sense to have information shared with several plugins.
+   * For example, a list of HTML elements that are self-closing, which is
+   * needed during all phases.
+   *
+   * > 👉 **Note**: setting information cannot occur on *frozen* processors.
+   * > Call the processor first to create a new unfrozen processor.
    *
    * @param data
-   *   Key-value store.
+   *   Values to set.
    * @returns
-   *   Current processor.
+   *   The processor that `data` is called on.
    */
   data(
     data: Record<string, unknown>
-  ): Processor<ParseTree, CurrentTree, CompileTree, CompileResult>
+  ): Processor<ParseTree, HeadTree, TailTree, CompileTree, CompileResult>
 
   /**
-   * Get an in-memory value by key.
+   * Configure the processor with info available to all plugins.
+   * Information is stored in an object.
+   *
+   * Typically, options can be given to a specific plugin, but sometimes it
+   * makes sense to have information shared with several plugins.
+   * For example, a list of HTML elements that are self-closing, which is
+   * needed during all phases.
    *
    * @param key
    *   Key to get.
@@ -444,159 +703,185 @@ export type FrozenProcessor<
   data(key: string): unknown
 
   /**
-   * Set an in-memory value by key.
+   * Configure the processor with info available to all plugins.
+   * Information is stored in an object.
+   *
+   * Typically, options can be given to a specific plugin, but sometimes it
+   * makes sense to have information shared with several plugins.
+   * For example, a list of HTML elements that are self-closing, which is
+   * needed during all phases.
+   *
+   * > 👉 **Note**: setting information cannot occur on *frozen* processors.
+   * > Call the processor first to create a new unfrozen processor.
    *
    * @param key
    *   Key to set.
    * @param value
    *   Value to set.
    * @returns
-   *   Current processor.
+   *   The processor that `data` is called on.
    */
   data(
     key: string,
     value: unknown
-  ): Processor<ParseTree, CurrentTree, CompileTree, CompileResult>
+  ): Processor<ParseTree, HeadTree, TailTree, CompileTree, CompileResult>
 
   /**
    * Freeze a processor.
-   * Frozen processors are meant to be extended and not to be configured or
-   * processed directly.
    *
-   * Once a processor is frozen it cannot be unfrozen.
-   * New processors working just like it can be created by calling the
+   * Frozen processors are meant to be extended and not to be configured
+   * directly.
+   *
+   * When a processor is frozen it cannot be unfrozen.
+   * New processors working the same way can be created by calling the
    * processor.
    *
-   * It’s possible to freeze processors explicitly, by calling `.freeze()`, but
-   * `.parse()`, `.run()`, `.stringify()`, and `.process()` call `.freeze()` to
-   * freeze a processor too.
+   * It’s possible to freeze processors explicitly by calling `.freeze()`.
+   * Processors freeze automatically when `.parse()`, `.run()`, `.runSync()`,
+   * `.stringify()`, `.process()`, or `.processSync()` are called.
+   *
    *
    * @returns
-   *   Frozen processor.
+   *   The processor that `freeze` was called on.
    */
-  freeze(): FrozenProcessor<ParseTree, CurrentTree, CompileTree, CompileResult>
+  freeze(): FrozenProcessor<
+    ParseTree,
+    HeadTree,
+    TailTree,
+    CompileTree,
+    CompileResult
+  >
 }
 
 /**
- * A plugin is a function.
- * It configures the processor and in turn can receive options.
- * Plugins can configure processors by interacting with parsers and compilers
- * (at `this.Parser` or `this.Compiler`) or by specifying how the syntax tree
- * is handled (by returning a `Transformer`).
+ * **Plugins** configure the processors they are applied on in the following
+ * ways:
  *
- * @typeParam PluginParameters
- *   Plugin settings.
+ * *   they change the processor, such as the parser, the compiler, or by
+ *     configuring data
+ * *   they specify how to handle trees and files
+ *
+ * Plugins are a concept.
+ * They materialize as `Attacher`s.
+ *
+ * Attachers are materialized plugins.
+ * They are functions that can receive options and configure the processor.
+ *
+ * Attachers change the processor, such as the parser, the compiler, by
+ * configuring data, or by specifying how the tree and file are handled.
+ *
+ * > 👉 **Note**: attachers are called when the processor is *frozen*,
+ * > not when they are applied.
+ *
+ * @typeParam Parameters
+ *   Arguments passed to the plugin.
  * @typeParam Input
- *   Value that is accepted by the plugin.
+ *   Value that is expected as input.
  *
- *   *   If the plugin returns a transformer, then this should be the node
- *       type that the transformer expects.
- *   *   If the plugin sets a parser, then this should be `string`.
- *   *   If the plugin sets a compiler, then this should be the node type that
- *       the compiler expects.
+ *   *   If the plugin returns a {@link Transformer `Transformer`}, this
+ *       should be the node it expects.
+ *   *   If the plugin sets a {@link Parser `Parser`}, this should be
+ *       `string`.
+ *   *   If the plugin sets a {@link Compiler `Compiler`}, this should be the
+ *       node it expects.
  * @typeParam Output
- *   Value that the plugin yields.
+ *   Value that is yielded as output.
  *
- *   *   If the plugin returns a transformer, then this should be the node
- *       type that the transformer yields, and defaults to `Input`.
- *   *   If the plugin sets a parser, then this should be the node type that
- *       the parser yields.
- *   *   If the plugin sets a compiler, then this should be the result that
- *       the compiler yields (`string`, `Uint8Array`, or something else).
+ *   *   If the plugin returns a {@link Transformer `Transformer`}, this
+ *       should be the node that that yields.
+ *   *   If the plugin sets a {@link Parser `Parser`}, this should be the
+ *       node that it yields.
+ *   *   If the plugin sets a {@link Compiler `Compiler`}, this should be
+ *       result it yields.
  * @this
- *   The current processor.
- *   Plugins can configure the processor by interacting with `this.Parser` or
- *   `this.Compiler`, or by accessing the data associated with the whole process
- *   (`this.data`).
- * @param settings
- *   Configuration for plugin.
+ *   Processor the attacher is applied to.
+ * @param parameters
+ *   Arguments passed to the plugin.
+ *
  *   Plugins typically receive one options object, but could receive other and
  *   more values.
- *   Users can also pass a boolean instead of settings: `true` (to turn
- *   a plugin on) or `false` (to turn a plugin off).
- *   When a plugin is turned off, it won’t be called.
- *
- *   When creating your own plugins, please accept only a single object!
- *   It allows plugins to be reconfigured and it helps users to know that every
- *   plugin accepts one options object.
  * @returns
- *   Plugins can return a `Transformer` to specify how the syntax tree is
- *   handled.
+ *   Optional transform.
  */
 export type Plugin<
-  PluginParameters extends any[] = any[],
-  Input = Node,
+  Parameters extends unknown[] = [],
+  Input extends Node | string | undefined = undefined,
   Output = Input
 > = (
-  this: Input extends Node
-    ? Output extends Node
-      ? // This is a transform, so define `Input` as the current tree.
-        Processor<void, Input>
-      : // Compiler.
-        Processor<void, Input, Input, Output>
-    : Output extends Node
-    ? // Parser.
-      Processor<Output, Output>
-    : // No clue.
-      Processor,
-  ...settings: PluginParameters
-) => // If both `Input` and `Output` are `Node`, expect an optional `Transformer`.
-Input extends Node
-  ? Output extends Node
-    ? Transformer<Input, Output> | void
-    : void
-  : void
+  this: Processor,
+  ...parameters: Parameters
+) => Input extends string
+  ? // Parser.
+    Output extends Node | undefined
+    ? undefined | void
+    : never
+  : Output extends CompileResults
+  ? // Compiler
+    Input extends Node | undefined
+    ? undefined | void
+    : never
+  :
+      | Transformer<
+          Input extends Node ? Input : Node,
+          Output extends Node ? Output : Node
+        >
+      | undefined
+      | void
 
 /**
- * Presets provide a sharable way to configure processors with multiple plugins
- * and/or settings.
+ * Presets are sharable configuration.
+ *
+ * They can contain plugins and settings.
  */
 export type Preset = {
+  /**
+   * List of plugins and presets.
+   */
   plugins?: PluggableList
+
+  /**
+   * Shared settings for parsers and compilers.
+   */
   settings?: Record<string, unknown>
 }
 
 /**
- * A tuple of a plugin and its setting(s).
- * The first item is a plugin (function) to use and other items are options.
- * Plugins are deduped based on identity: passing a function in twice will
- * cause it to run only once.
+ * Tuple of a plugin and its setting(s).
+ * The first item is a plugin, the rest are its parameters.
  *
- * @typeParam PluginParameters
- *   Plugin settings.
+ * @typeParam Parameters
+ *   Arguments passed to the plugin.
  * @typeParam Input
- *   Value that is accepted by the plugin.
+ *   Value that is expected as input.
  *
- *   *   If the plugin returns a transformer, then this should be the node
- *       type that the transformer expects.
- *   *   If the plugin sets a parser, then this should be `string`.
- *   *   If the plugin sets a compiler, then this should be the node type that
- *       the compiler expects.
+ *   *   If the plugin returns a {@link Transformer `Transformer`}, this
+ *       should be the node it expects.
+ *   *   If the plugin sets a {@link Parser `Parser`}, this should be
+ *       `string`.
+ *   *   If the plugin sets a {@link Compiler `Compiler`}, this should be the
+ *       node it expects.
  * @typeParam Output
- *   Value that the plugin yields.
+ *   Value that is yielded as output.
  *
- *   *   If the plugin returns a transformer, then this should be the node
- *       type that the transformer yields, and defaults to `Input`.
- *   *   If the plugin sets a parser, then this should be the node type that
- *       the parser yields.
- *   *   If the plugin sets a compiler, then this should be the result that
- *       the compiler yields (`string`, `Uint8Array`, or something else).
+ *   *   If the plugin returns a {@link Transformer `Transformer`}, this
+ *       should be the node that that yields.
+ *   *   If the plugin sets a {@link Parser `Parser`}, this should be the
+ *       node that it yields.
+ *   *   If the plugin sets a {@link Compiler `Compiler`}, this should be
+ *       result it yields.
  */
 export type PluginTuple<
-  PluginParameters extends any[] = any[],
-  Input = Node,
-  Output = Input
-> = [Plugin<PluginParameters, Input, Output>, ...PluginParameters]
+  Parameters extends unknown[] = [],
+  Input extends Node | string | undefined = undefined,
+  Output = undefined
+> = [Plugin<Parameters, Input, Output>, ...Parameters]
 
 /**
  * A union of the different ways to add plugins and settings.
- *
- * @typeParam PluginParameters
- *   Plugin settings.
  */
-export type Pluggable<PluginParameters extends any[] = any[]> =
-  | PluginTuple<PluginParameters, any, any>
-  | Plugin<PluginParameters, any, any>
+export type Pluggable =
+  | Plugin<any[], any, any>
+  | PluginTuple<any[], any, any>
   | Preset
 
 /**
@@ -604,94 +889,103 @@ export type Pluggable<PluginParameters extends any[] = any[]> =
  */
 export type PluggableList = Pluggable[]
 
+// To do: remove?
 /**
+ * Attacher.
+ *
  * @deprecated
  *   Please use `Plugin`.
  */
 export type Attacher<
-  PluginParameters extends any[] = any[],
-  Input = Node,
-  Output = Input
-> = Plugin<PluginParameters, Input, Output>
+  Parameters extends unknown[] = unknown[],
+  Input extends Node | string = Node,
+  Output extends CompileResults | Node = Input
+> = Plugin<Parameters, Input, Output>
 
 /**
- * Transformers modify the syntax tree or metadata of a file.
- * A transformer is a function that is called each time a file is passed
- * through the transform phase.
- * If an error occurs (either because it’s thrown, returned, rejected, or passed
- * to `next`), the process stops.
+ * Transformers handle syntax trees and files.
+ *
+ * They are functions that are called each time a syntax tree and file are
+ * passed through the run phase.
+ * When an error occurs in them (either because it’s thrown, returned,
+ * rejected, or passed to `next`), the process stops.
+ *
+ * The run phase is handled by [`trough`][trough], see its documentation for
+ * the exact semantics of these functions.
+ *
+ * [trough]: https://github.com/wooorm/trough#function-fninput-next
  *
  * @typeParam Input
  *   Node type that the transformer expects.
  * @typeParam Output
  *   Node type that the transformer yields.
- * @param node
- *   Tree to be transformed.
+ * @param tree
+ *   Tree to handle.
  * @param file
- *   File associated with node.
+ *   File to handle.
  * @param next
- *   Callback that you must call when done.
- *   Note: this is given if you accept three parameters in your transformer.
- *   If you accept up to two parameters, it’s not given, and you can return
- *   a promise.
+ *   Callback.
  * @returns
- *   Any of the following:
+ *   If you accept `next`, nothing.
+ *   Otherwise:
  *
- *   * `void` — If nothing is returned, the next transformer keeps using same
- *     tree.
- *   * `Error` — Can be returned to stop the process.
- *   * `Node` — Can be returned and results in further transformations and
- *     `stringify`s to be performed on the new tree.
- *   * `Promise` — If a promise is returned, the function is asynchronous, and
- *      must be resolved (optionally with a `Node`) or rejected (optionally with
- *      an `Error`).
- *
- *   If you accept a `next` callback, nothing should be returned.
+ *   *   `Error` — fatal error to stop the process
+ *   *   `Promise<undefined>` or `undefined` — the next transformer keeps using
+ *       same tree
+ *   *   `Promise<Node>` or `Node` — new, changed, tree
  */
 export type Transformer<
   Input extends Node = Node,
   Output extends Node = Input
 > = (
-  node: Input,
+  tree: Input,
   file: VFile,
   next: TransformCallback<Output>
-) => Promise<Output | undefined | void> | Error | Output | undefined | void
+) =>
+  | Promise<Output | undefined | void>
+  | Promise<never> // For some reason this is needed separately.
+  | Output
+  | Error
+  | undefined
+  | void
 
 /**
- * Callback you must call when a transformer is done.
+ * If the signature of a `transformer` accepts a third argument, the
+ * transformer may perform asynchronous operations, and must call `next()`.
  *
  * @typeParam Tree
- *   Node that the plugin yields.
+ *   Node type that the transformer yields.
  * @param error
- *   Pass an error to stop the process.
- * @param node
- *   Pass a tree to continue transformations (and `stringify`) on the new tree.
+ *   Fatal error to stop the process (optional).
+ * @param tree
+ *   New, changed, tree (optional).
  * @param file
- *   Pass a file to continue transformations (and `stringify`) on the new file.
+ *   New, changed, file (optional).
  * @returns
  *   Nothing.
  */
-export type TransformCallback<Tree extends Node = Node> = (
+export type TransformCallback<Output extends Node = Node> = (
   error?: Error | undefined,
-  node?: Tree | undefined,
+  tree?: Output,
   file?: VFile | undefined
-) => void
+) => undefined
 
 /**
- * Function handling the parsing of text to a syntax tree.
- * Used in the parse phase in the process and called with a `string` and
- * `VFile` representation of the document to parse.
+ * A **parser** handles the parsing of text to a syntax tree.
  *
- * `Parser` can be a normal function, in which case it must return a `Node`:
- * the syntax tree representation of the given file.
+ * It is used in the parse phase and is called with a `string` and
+ * {@link VFile `VFile`} of the document to parse.
  *
- * `Parser` can also be a constructor function (a function with keys in its
- * `prototype`), in which case it’s called with `new`.
- * Instances must have a parse method that is called without arguments and
- * must return a `Node`.
+ * `Parser` can be a normal function, in which case it must return the syntax
+ * tree representation of the given file ({@link Node `Node`}).
+ *
+ * `Parser` can also be a constructor function (a function with a `parse`
+ * field in its `prototype`), in which case it is constructed with `new`.
+ * Instances must have a `parse` method that is called without arguments and must
+ * return a {@link Node `Node`}.
  *
  * @typeParam Tree
- *   The node that the parser yields (and `run` receives).
+ *   The node that the parser yields.
  */
 export type Parser<Tree extends Node = Node> =
   | ParserClass<Tree>
@@ -728,7 +1022,7 @@ export class ParserClass<Tree extends Node = Node> {
 }
 
 /**
- * Normal function to parse a file.
+ * Regular function to parse a file.
  *
  * @typeParam Tree
  *   The node that the parser yields.
@@ -745,17 +1039,32 @@ export type ParserFunction<Tree extends Node = Node> = (
 ) => Tree
 
 /**
- * Function handling the compilation of syntax tree to a text.
- * Used in the stringify phase in the process and called with a `Node` and
- * `VFile` representation of the document to stringify.
+ * A **compiler** handles the compiling of a syntax tree to something else (in
+ * most cases, text).
  *
- * `Compiler` can be a normal function, in which case it must return a
- * `string`: the text representation of the given syntax tree.
+ * It is used in the stringify phase and called with a {@link Node `Node`}
+ * and {@link VFile `VFile`} representation of the document to compile.
  *
- * `Compiler` can also be a constructor function (a function with keys in its
- * `prototype`), in which case it’s called with `new`.
- * Instances must have a `compile` method that is called without arguments
- * and must return a `string`.
+ * `Compiler` can be a normal function, in which case it should return the
+ * textual representation of the given tree (`string`).
+ *
+ * `Compiler` can also be a constructor function (a function with a `compile`
+ * field in its `prototype`), in which case it is constructed with `new`.
+ * Instances must have a `compile` method that is called without arguments and
+ * should return a `string`.
+ *
+ * > 👉 **Note**: unified typically compiles by serializing: most compilers
+ * > return `string` (or `Uint8Array`).
+ * > Some compilers, such as the one configured with
+ * > [`rehype-react`][rehype-react], return other values (in this case, a
+ * > React tree).
+ * > If you’re using a compiler that doesn’t serialize, expect different result
+ * > values.
+ * >
+ * > To register custom results in TypeScript, add them to
+ * > {@link CompileResultMap `CompileResultMap`}.
+ *
+ * [rehype-react]: https://github.com/rehypejs/rehype-react
  *
  * @typeParam Tree
  *   The node that the compiler receives.
@@ -800,7 +1109,7 @@ export class CompilerClass<Tree extends Node = Node, Result = unknown> {
 }
 
 /**
- * Normal function to compile a tree.
+ * Regular function to compile a tree.
  *
  * @typeParam Tree
  *   The node that the compiler receives.
@@ -814,47 +1123,52 @@ export class CompilerClass<Tree extends Node = Node, Result = unknown> {
  *   New content: compiled text (`string` or `Uint8Array`, for `file.value`) or
  *   something else (for `file.result`).
  */
-export type CompilerFunction<Tree extends Node = Node, Result = unknown> = (
-  tree: Tree,
-  file: VFile
-) => Result
+export type CompilerFunction<
+  Tree extends Node = Node,
+  Result = CompileResults
+> = (tree: Tree, file: VFile) => Result
 
 /**
- * Callback called when a done running.
+ * Callback called when transformers are done.
+ *
+ * Called with either an error or results.
+
  *
  * @typeParam Tree
  *   The tree that the callback receives.
  * @param error
- *   Error passed when unsuccessful.
- * @param node
- *   Tree to transform.
+ *   Fatal error.
+ * @param tree
+ *   Transformed tree.
  * @param file
- *   File passed when successful.
+ *   File.
  * @returns
  *   Nothing.
  */
 export type RunCallback<Tree extends Node = Node> = (
   error?: Error | undefined,
-  node?: Tree | undefined,
+  tree?: Tree | undefined,
   file?: VFile | undefined
-) => void
+) => undefined
 
 /**
- * Callback called when a done processing.
+ * Callback called when the process is done.
+ *
+ * Called with either an error or a result.
  *
  * @typeParam File
  *   The file that the callback receives.
  * @param error
- *   Error passed when unsuccessful.
+ *   Fatal error.
  * @param file
- *   File passed when successful.
+ *   Processed file.
  * @returns
  *   Nothing.
  */
 export type ProcessCallback<File extends VFile = VFile> = (
   error?: Error | undefined,
   file?: File | undefined
-) => void
+) => undefined
 
 /**
  * A frozen processor.

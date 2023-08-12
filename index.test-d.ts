@@ -39,26 +39,17 @@ const mdastRoot: MdastRoot = {
 // # Explicitly typed plugins
 
 // ## Plugin w/o options
-const pluginWithoutOptions: Plugin<[]> = function () {
+const pluginWithoutOptions: Plugin = function () {
   // Empty.
 }
 
 unified().use(pluginWithoutOptions)
-unified().use(
-  pluginWithoutOptions,
-  // @ts-expect-error: plugin does not expect options.
-  {}
-)
-unified().use(
-  pluginWithoutOptions,
-  // @ts-expect-error: plugin does not expect `string` as options.
-  ''
-)
-unified().use(
-  pluginWithoutOptions,
-  // @ts-expect-error: plugin does not expect anything.
-  undefined
-)
+// @ts-expect-error: plugin does not expect options.
+unified().use(pluginWithoutOptions, {})
+// @ts-expect-error: plugin does not expect `string` as options.
+unified().use(pluginWithoutOptions, '')
+// @ts-expect-error: plugin does not expect anything.
+unified().use(pluginWithoutOptions, undefined)
 
 // ## Plugin w/ optional options
 const pluginWithOptionalOptions: Plugin<
@@ -72,11 +63,8 @@ unified().use(pluginWithOptionalOptions, {})
 unified().use(pluginWithOptionalOptions, {example: null})
 unified().use(pluginWithOptionalOptions, {example: undefined})
 unified().use(pluginWithOptionalOptions, {example: 'asd'})
-unified().use(
-  pluginWithOptionalOptions,
-  // @ts-expect-error: plugin does not accept `whatever`.
-  {whatever: 1}
-)
+// @ts-expect-error: plugin does not accept `whatever`.
+unified().use(pluginWithOptionalOptions, {whatever: 1})
 
 // ## Plugin w/ required options
 const pluginWithOptions: Plugin<[ExampleRequiredOptions]> = function (options) {
@@ -85,11 +73,8 @@ const pluginWithOptions: Plugin<[ExampleRequiredOptions]> = function (options) {
 
 // @ts-expect-error: plugin requires options.
 unified().use(pluginWithOptions)
-unified().use(
-  pluginWithOptions,
-  // @ts-expect-error: plugin requires particular option.
-  {}
-)
+// @ts-expect-error: plugin requires particular option.
+unified().use(pluginWithOptions, {})
 unified().use(pluginWithOptions, {example: ''})
 
 // ## Plugin w/ several arguments
@@ -101,16 +86,10 @@ const pluginWithSeveralArguments: Plugin<[ExampleRequiredOptions, number]> =
 
 // @ts-expect-error: plugin requires options.
 unified().use(pluginWithSeveralArguments)
-unified().use(
-  pluginWithSeveralArguments,
-  // @ts-expect-error: plugin requires particular option.
-  {}
-)
-unified().use(
-  pluginWithSeveralArguments,
-  // @ts-expect-error: plugin requires more arguments.
-  {example: ''}
-)
+// @ts-expect-error: plugin requires particular option.
+unified().use(pluginWithSeveralArguments, {})
+// @ts-expect-error: plugin requires more arguments.
+unified().use(pluginWithSeveralArguments, {example: ''})
 unified().use(pluginWithSeveralArguments, {example: ''}, 1)
 
 // # Implicitly typed plugins.
@@ -265,7 +244,7 @@ unified()
       return undefined
     }
   })
-  // Sync yielding implicit void.
+  // Sync yielding implicit `void` (because TS).
   .use(function () {
     return function () {
       // Empty.
@@ -280,7 +259,7 @@ unified()
   // Sync throwing error.
   .use(function () {
     return function (x) {
-      // To do: investigate if we can support `never` by dropping this useless condition.
+      // Note: TS doesn’t like the `never` if we remove this useless condition.
       if (x) {
         throw new Error('x')
       }
@@ -338,14 +317,13 @@ unified()
       return {type: 'x'}
     }
   })
-  // To do: investigate why TS barfs on `Promise<undefined>`?
-  // // Resolving explicit `undefined`.
-  // .use(function () {
-  //   return async function () {
-  //     return undefined
-  //   }
-  // })
-  // Resolving implicit void.
+  // Resolving explicit `undefined`.
+  .use(function () {
+    return async function () {
+      return undefined
+    }
+  })
+  // Resolving implicit `void` (because TS).
   .use(function () {
     return async function () {
       // Empty.
@@ -354,7 +332,6 @@ unified()
   // Rejecting error.
   .use(function () {
     return async function (x) {
-      // To do: investigate if we can support `never` by dropping this useless condition.
       if (x) {
         throw new Error('x')
       }
@@ -368,23 +345,13 @@ const remarkParse: Plugin<[], string, MdastRoot> = function () {
   // Empty.
 }
 
-const processorWithRemarkParse = unified()
-  .use(remarkParse)
-  .use(function () {
-    return function (tree) {
-      expectType<MdastRoot>(tree)
-    }
-  })
+const processorWithRemarkParse = unified().use(remarkParse)
 
-expectType<Processor<MdastRoot, MdastRoot, MdastRoot>>(processorWithRemarkParse)
+expectType<Processor<MdastRoot>>(processorWithRemarkParse)
 expectType<MdastRoot>(processorWithRemarkParse.parse(''))
-// To do: accept `UnistNode`?
-expectType<MdastRoot>(processorWithRemarkParse.runSync(mdastRoot))
-// @ts-expect-error: to do: accept `UnistNode`?
-expectType<MdastRoot>(processorWithRemarkParse.runSync(hastRoot))
-// To do: yield `never`, accept `UnistNode`?
-expectType<void>(processorWithRemarkParse.stringify(mdastRoot))
-// @ts-expect-error: to do: accept `UnistNode`?
+expectType<UnistNode>(processorWithRemarkParse.runSync(mdastRoot))
+expectType<UnistNode>(processorWithRemarkParse.runSync(hastRoot))
+expectType<Uint8Array | string>(processorWithRemarkParse.stringify(mdastRoot))
 processorWithRemarkParse.stringify(hastRoot)
 expectType<VFile>(processorWithRemarkParse.processSync(''))
 
@@ -393,25 +360,15 @@ const remarkLint: Plugin<[], MdastRoot> = function () {
   // Empty.
 }
 
-const processorWithRemarkLint = unified()
-  .use(remarkLint)
-  .use(function () {
-    return function (tree) {
-      expectType<MdastRoot>(tree)
-    }
-  })
+const processorWithRemarkLint = unified().use(remarkLint)
 
-// To do: `UnistNode`, `MdastRoot`, `UnistNode`?
-expectType<Processor<MdastRoot, MdastRoot, MdastRoot>>(processorWithRemarkLint)
-// To do: yield `UnistNode`?
-expectType<MdastRoot>(processorWithRemarkLint.parse(''))
+expectType<Processor<undefined, MdastRoot, MdastRoot>>(processorWithRemarkLint)
+expectType<UnistNode>(processorWithRemarkLint.parse(''))
 expectType<MdastRoot>(processorWithRemarkLint.runSync(mdastRoot))
 // @ts-expect-error: not the correct node type.
-expectType<MdastRoot>(processorWithRemarkLint.runSync(hastRoot))
-// To do: yield `never`, accept `UnistNode`?
-expectType<void>(processorWithRemarkLint.stringify(mdastRoot))
-// @ts-expect-error: to do: accept `UnistNode`?
-processorWithRemarkLint.stringify(hastRoot)
+processorWithRemarkLint.runSync(hastRoot)
+expectType<Uint8Array | string>(processorWithRemarkLint.stringify(mdastRoot))
+expectType<Uint8Array | string>(processorWithRemarkLint.stringify(hastRoot))
 expectType<VFile>(processorWithRemarkLint.processSync(''))
 
 // Inspect/transform plugin (implicit).
@@ -422,27 +379,21 @@ function remarkLintImplicit() {
   }
 }
 
-const processorWithRemarkLintImplicit = unified()
-  .use(remarkLintImplicit)
-  .use(function () {
-    return function (tree) {
-      expectType<MdastRoot>(tree)
-    }
-  })
+const processorWithRemarkLintImplicit = unified().use(remarkLintImplicit)
 
-// To do: `UnistNode`, `MdastRoot`, `UnistNode`?
-expectType<Processor<MdastRoot, MdastRoot, MdastRoot>>(
+expectType<Processor<undefined, MdastRoot, MdastRoot>>(
   processorWithRemarkLintImplicit
 )
-// To do: yield `UnistNode`?
-expectType<MdastRoot>(processorWithRemarkLintImplicit.parse(''))
+expectType<UnistNode>(processorWithRemarkLintImplicit.parse(''))
 expectType<MdastRoot>(processorWithRemarkLintImplicit.runSync(mdastRoot))
 // @ts-expect-error: not the correct node type.
 processorWithRemarkLintImplicit.runSync(hastRoot)
-// To do: yield `never`, accept `UnistNode`?
-expectType<void>(processorWithRemarkLintImplicit.stringify(mdastRoot))
-// @ts-expect-error: to do: accept `UnistNode`?
-processorWithRemarkLintImplicit.stringify(hastRoot)
+expectType<Uint8Array | string>(
+  processorWithRemarkLintImplicit.stringify(mdastRoot)
+)
+expectType<Uint8Array | string>(
+  processorWithRemarkLintImplicit.stringify(hastRoot)
+)
 expectType<VFile>(processorWithRemarkLintImplicit.processSync(''))
 
 // Mutate  plugin (explicit).
@@ -450,25 +401,15 @@ const remarkRehype: Plugin<[], MdastRoot, HastRoot> = function () {
   // Empty.
 }
 
-const processorWithRemarkRehype = unified()
-  .use(remarkRehype)
-  .use(function () {
-    return function (tree) {
-      expectType<HastRoot>(tree)
-    }
-  })
+const processorWithRemarkRehype = unified().use(remarkRehype)
 
-// To do: `UnistNode`, `MdastRoot`, `UnistNode`?
-expectType<Processor<MdastRoot, HastRoot, HastRoot>>(processorWithRemarkRehype)
-// To do: yield `UnistNode`?
-expectType<MdastRoot>(processorWithRemarkRehype.parse(''))
+expectType<Processor<undefined, MdastRoot, HastRoot>>(processorWithRemarkRehype)
+expectType<UnistNode>(processorWithRemarkRehype.parse(''))
 expectType<HastRoot>(processorWithRemarkRehype.runSync(mdastRoot))
 // @ts-expect-error: not the correct node type.
 processorWithRemarkRehype.runSync(hastRoot)
-// To do: yield `never`?
-expectType<void>(processorWithRemarkRehype.stringify(hastRoot))
-// @ts-expect-error: to do: accept `UnistNode`?
-processorWithRemarkRehype.stringify(mdastRoot)
+expectType<Uint8Array | string>(processorWithRemarkRehype.stringify(hastRoot))
+expectType<Uint8Array | string>(processorWithRemarkRehype.stringify(mdastRoot))
 expectType<VFile>(processorWithRemarkRehype.processSync(''))
 
 // Mutate  plugin (implicit).
@@ -479,27 +420,21 @@ function remarkRehypeImplicit() {
   }
 }
 
-const processorWithRemarkRehypeImplicit = unified()
-  .use(remarkRehypeImplicit)
-  .use(function () {
-    return function (tree) {
-      expectType<HastRoot>(tree)
-    }
-  })
+const processorWithRemarkRehypeImplicit = unified().use(remarkRehypeImplicit)
 
-// To do: `UnistNode`, `MdastRoot`, `UnistNode`?
-expectType<Processor<MdastRoot, HastRoot, HastRoot>>(
+expectType<Processor<undefined, MdastRoot, HastRoot>>(
   processorWithRemarkRehypeImplicit
 )
-// To do: yield `UnistNode`?
-expectType<MdastRoot>(processorWithRemarkRehypeImplicit.parse(''))
+expectType<UnistNode>(processorWithRemarkRehypeImplicit.parse(''))
 expectType<HastRoot>(processorWithRemarkRehypeImplicit.runSync(mdastRoot))
 // @ts-expect-error: not the correct node type.
 processorWithRemarkRehypeImplicit.runSync(hastRoot)
-// To do: yield `never`?
-expectType<void>(processorWithRemarkRehypeImplicit.stringify(hastRoot))
-// @ts-expect-error: to do: accept `UnistNode`?
-processorWithRemarkRehypeImplicit.stringify(mdastRoot)
+expectType<Uint8Array | string>(
+  processorWithRemarkRehypeImplicit.stringify(hastRoot)
+)
+expectType<Uint8Array | string>(
+  processorWithRemarkRehypeImplicit.stringify(mdastRoot)
+)
 expectType<VFile>(processorWithRemarkRehypeImplicit.processSync(''))
 
 // Compile plugin.
@@ -509,16 +444,12 @@ const rehypeStringify: Plugin<[], HastRoot, string> = function () {
 
 const processorWithRehypeStringify = unified().use(rehypeStringify)
 
-// To do: ?
-expectType<Processor<HastRoot, HastRoot, HastRoot>>(
+expectType<Processor<undefined, undefined, undefined, HastRoot, string>>(
   processorWithRehypeStringify
 )
-// To do: yield `UnistNode`?
-expectType<HastRoot>(processorWithRehypeStringify.parse(''))
-// @ts-expect-error: to do: accept `UnistNode`?
-processorWithRehypeStringify.runSync(mdastRoot)
-// To do: accept, yield `UnistNode`?
-expectType<HastRoot>(processorWithRehypeStringify.runSync(hastRoot))
+expectType<UnistNode>(processorWithRehypeStringify.parse(''))
+expectType<UnistNode>(processorWithRehypeStringify.runSync(mdastRoot))
+expectType<UnistNode>(processorWithRehypeStringify.runSync(hastRoot))
 expectType<string>(processorWithRehypeStringify.stringify(hastRoot))
 // @ts-expect-error: not the correct node type.
 processorWithRehypeStringify.stringify(mdastRoot)
@@ -534,22 +465,27 @@ const processorWithRehypeStringifyUint8Array = unified().use(
   rehypeStringifyUint8Array
 )
 
-// To do: ?
-expectType<Processor<HastRoot, HastRoot, HastRoot>>(
+expectType<Processor<undefined, undefined, undefined, HastRoot, Uint8Array>>(
   processorWithRehypeStringifyUint8Array
 )
-// To do: yield `UnistNode`?
-expectType<HastRoot>(processorWithRehypeStringifyUint8Array.parse(''))
-// @ts-expect-error: to do: accept `UnistNode`?
-processorWithRehypeStringifyUint8Array.runSync(mdastRoot)
-// To do: accept, yield `UnistNode`?
-expectType<HastRoot>(processorWithRehypeStringifyUint8Array.runSync(hastRoot))
+expectType<UnistNode>(processorWithRehypeStringifyUint8Array.parse(''))
+expectType<UnistNode>(processorWithRehypeStringifyUint8Array.runSync(mdastRoot))
+expectType<UnistNode>(processorWithRehypeStringifyUint8Array.runSync(hastRoot))
 expectType<Uint8Array>(
   processorWithRehypeStringifyUint8Array.stringify(hastRoot)
 )
 // @ts-expect-error: not the correct node type.
 processorWithRehypeStringifyUint8Array.stringify(mdastRoot)
 expectType<VFile>(processorWithRehypeStringifyUint8Array.processSync(''))
+
+/**
+ * Register our custom compile result.
+ */
+declare module './index.js' {
+  interface CompileResultMap {
+    ReactNode: ReactNode
+  }
+}
 
 // Compile plugin (to a non-node).
 const rehypeReact: Plugin<[], HastRoot, ReactNode> = function () {
@@ -558,16 +494,12 @@ const rehypeReact: Plugin<[], HastRoot, ReactNode> = function () {
 
 const processorWithRehypeReact = unified().use(rehypeReact)
 
-// To do: ?
-expectType<Processor<HastRoot, HastRoot, HastRoot, ReactNode>>(
+expectType<Processor<undefined, undefined, undefined, HastRoot, ReactNode>>(
   processorWithRehypeReact
 )
-// To do: yield `UnistNode`?
-expectType<HastRoot>(processorWithRehypeReact.parse(''))
-// @ts-expect-error: to do: accept `UnistNode`?
-processorWithRehypeReact.runSync(mdastRoot)
-// To do: accept, yield `UnistNode`?
-expectType<HastRoot>(processorWithRehypeReact.runSync(hastRoot))
+expectType<UnistNode>(processorWithRehypeReact.parse(''))
+expectType<UnistNode>(processorWithRehypeReact.runSync(mdastRoot))
+expectType<UnistNode>(processorWithRehypeReact.runSync(hastRoot))
 expectType<ReactNode>(processorWithRehypeReact.stringify(hastRoot))
 // @ts-expect-error: not the correct node type.
 processorWithRehypeReact.stringify(mdastRoot)
@@ -583,7 +515,9 @@ const processorWithAll = unified()
   .use(remarkRehype)
   .use(rehypeStringify)
 
-expectType<Processor<MdastRoot, HastRoot, HastRoot>>(processorWithAll)
+expectType<Processor<MdastRoot, MdastRoot, HastRoot, HastRoot, string>>(
+  processorWithAll
+)
 expectType<MdastRoot>(processorWithAll.parse(''))
 expectType<HastRoot>(processorWithAll.runSync(mdastRoot))
 // @ts-expect-error: not the correct node type.
@@ -593,16 +527,23 @@ expectType<string>(processorWithAll.stringify(hastRoot))
 processorWithAll.stringify(mdastRoot)
 expectType<VFile>(processorWithAll.processSync(''))
 
-// # Different ways to use plugins
-
-expectType<Processor<UnistNode, UnistNode, UnistNode>>(
-  unified().use([remarkParse])
+// Doesn’t matter how you apply, compiler, transformers, parser is also fine.
+expectType<Processor<MdastRoot, MdastRoot, HastRoot, HastRoot, string>>(
+  unified()
+    .use(rehypeStringify)
+    .use(remarkLint)
+    .use(remarkLintImplicit)
+    .use(remarkRehype)
+    .use(remarkParse)
 )
 
-expectType<Processor<UnistNode, UnistNode, UnistNode>>(
+// # Different ways to use plugins
+
+expectType<Processor>(unified().use([remarkParse]))
+
+expectType<Processor>(
   unified().use([
     remarkParse,
-    // @ts-expect-error: to do: investigate.
     remarkLint,
     remarkLintImplicit,
     remarkRehype,
@@ -610,16 +551,14 @@ expectType<Processor<UnistNode, UnistNode, UnistNode>>(
   ])
 )
 
-expectType<Processor<UnistNode, UnistNode, UnistNode>>(
-  // @ts-expect-error: to do: investigate.
+expectType<Processor>(
   unified().use({
     plugins: [remarkParse]
   })
 )
 
-expectType<Processor<UnistNode, UnistNode, UnistNode>>(
+expectType<Processor>(
   unified().use({
-    // @ts-expect-error: to do: investigate.
     plugins: [
       remarkParse,
       remarkLint,
@@ -630,9 +569,8 @@ expectType<Processor<UnistNode, UnistNode, UnistNode>>(
   })
 )
 
-expectType<Processor<UnistNode, UnistNode, UnistNode>>(
+expectType<Processor>(
   unified().use({
-    // @ts-expect-error: to do: investigate.
     plugins: [
       remarkParse,
       remarkLint,
@@ -666,5 +604,7 @@ const rehypeClassNames: Plugin<[], HastRoot> = function () {
   // Empty.
 }
 
-// To do: investigate.
-unified().use(remarkLint).use(rehypeClassNames)
+// We currently only *use* types, we don’t crash if they are nonsensical.
+expectType<Processor<undefined, MdastRoot, HastRoot>>(
+  unified().use(remarkLint).use(rehypeClassNames)
+)

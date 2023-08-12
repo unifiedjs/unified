@@ -67,7 +67,7 @@
     "xo": "^0.55.0"
   },
   "scripts": {
-    "build": "tsc --build --clean && tsc --build && type-coverage",
+    "build": "tsc --build --clean && tsc --build && type-coverage && tsd",
     "format": "remark . --frail --output --quiet && prettier . --log-level warn --write && xo --fix",
     "prepack": "npm run build && npm run format",
     "test": "npm run build && npm run format && npm run test-coverage",
@@ -95,10 +95,6 @@
     "atLeast": 100,
     "detail": true,
     "ignoreCatch": true,
-    "#": "`type-coverage` currently barfs on inferring nodes in plugins, while TS gets it",
-    "ignoreFiles": [
-      "test/**/*.js"
-    ],
     "strict": true
   },
   "xo": {
@@ -109,6 +105,7 @@
         ],
         "rules": {
           "@typescript-eslint/ban-types": "off",
+          "@typescript-eslint/consistent-type-definitions": "off",
           "@typescript-eslint/naming-convention": "off"
         }
       }

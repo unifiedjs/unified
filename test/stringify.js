@@ -76,6 +76,7 @@ test('`stringify`', async function (t) {
         assert.equal(arguments.length, 2)
       }
 
+      // type-coverage:ignore-next-line -- for some reason TS does understand `Parser.prototype`, but not `Compiler.prototype`.
       processor.Compiler.prototype.compile = function () {
         assert.equal(arguments.length, 0)
         return 'echo'

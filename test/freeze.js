@@ -1,15 +1,11 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {unified} from 'unified'
-import {SimpleCompiler, SimpleParser} from './util/simple.js'
+import {simpleCompiler, simpleParser} from './util/simple.js'
 
 test('`freeze`', async function (t) {
-  const frozen = unified()
-    .use(function () {
-      this.Parser = SimpleParser
-      this.Compiler = SimpleCompiler
-    })
-    .freeze()
+  const frozen = unified().use(parse).use(compile).freeze()
+
   const unfrozen = frozen()
 
   await t.test('data', async function (t) {
@@ -189,8 +185,20 @@ test('`freeze`', async function (t) {
         .use(function () {
           index++
         })
-        .use({plugins: [freezingPlugin]})
-        .use({plugins: [freezingPlugin]})
+        .use({
+          plugins: [
+            function () {
+              this.freeze()
+            }
+          ]
+        })
+        .use({
+          plugins: [
+            function () {
+              this.freeze()
+            }
+          ]
+        })
         .freeze()
         // To show it doesn’t do anything.
         .freeze()
@@ -203,14 +211,24 @@ test('`freeze`', async function (t) {
         .freeze()
 
       assert.equal(index, 2)
-
-      /**
-       * @satisfies {import('unified').Plugin<[]>}
-       * @this {import('unified').Processor}
-       */
-      function freezingPlugin() {
-        this.freeze()
-      }
     })
   })
 })
+
+// `this` in JS is buggy in TS.
+/**
+ * @type {import('unified').Plugin<[], string, import('unist').Node>}
+ */
+function parse() {
+  // type-coverage:ignore-next-line -- something with TS being wrong.
+  this.Parser = simpleParser
+}
+
+// `this` in JS is buggy in TS.
+/**
+ * @type {import('unified').Plugin<[], import('unist').Node, string>}
+ */
+function compile() {
+  // type-coverage:ignore-next-line -- something with TS being wrong.
+  this.Compiler = simpleCompiler
+}

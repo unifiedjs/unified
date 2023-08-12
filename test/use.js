@@ -11,22 +11,16 @@ test('`use`', async function (t) {
 
   await t.test('should ignore no value', function () {
     const processor = unified()
-    // To do: investigate if we can enable it.
-    // @ts-expect-error: check how the runtime handles a missing value.
     assert.equal(processor.use(), processor)
   })
 
   await t.test('should ignore `undefined`', function () {
     const processor = unified()
-    // To do: investigate if we can enable it.
-    // @ts-expect-error: check how the runtime handles `undefined`.
     assert.equal(processor.use(undefined), processor)
   })
 
   await t.test('should ignore `null`', function () {
     const processor = unified()
-    // To do: investigate if we can enable it.
-    // @ts-expect-error: check how the runtime handles `null`.
     assert.equal(processor.use(null), processor)
   })
 
@@ -99,12 +93,6 @@ test('`use`', async function (t) {
           assert.equal(arguments.length, 0)
           calls++
         },
-        // Note: see if we can remove this line? If we remove the previous `arguments.length` assertion,
-        // TS infers the plugin fine. But with it, it thinks it’s a tuple?
-        /**
-         * @satisfies {import('unified').Plugin<[]>}
-         * @this {import('unified').Processor}
-         */
         function () {
           assert.equal(this, processor)
           assert.equal(arguments.length, 0)
@@ -211,10 +199,8 @@ test('`use`', async function (t) {
     'should throw when given a preset w/ invalid `plugins` (`false`)',
     async function () {
       assert.throws(function () {
-        unified().use({
-          // @ts-expect-error: check how invalid `plugins` is handled.
-          plugins: false
-        })
+        // @ts-expect-error: check how invalid `plugins` is handled.
+        unified().use({plugins: false})
       }, /Expected a list of plugins, not `false`/)
     }
   )
