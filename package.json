@@ -64,7 +64,7 @@
     "tsd": "^0.28.0",
     "type-coverage": "^2.0.0",
     "typescript": "^5.0.0",
-    "xo": "^0.55.0"
+    "xo": "^0.56.0"
   },
   "scripts": {
     "build": "tsc --build --clean && tsc --build && type-coverage && tsd",
