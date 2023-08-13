@@ -67,7 +67,7 @@
     "xo": "^0.56.0"
   },
   "scripts": {
-    "build": "tsc --build --clean && tsc --build && type-coverage && tsd",
+    "build": "tsc --build --clean && tsc --build && node script/fix-types.js && type-coverage && tsd",
     "format": "remark . --frail --output --quiet && prettier . --log-level warn --write && xo --fix",
     "prepack": "npm run build && npm run format",
     "test": "npm run build && npm run format && npm run test-coverage",

@@ -9,7 +9,6 @@ test('core', async function (t) {
 
   await t.test('should expose a frozen processor', async function () {
     assert.throws(function () {
-      // @ts-expect-error: check that `use` cannot be used on frozen processors.
       unified.use(function () {})
     }, /Cannot call `use` on a frozen processor/)
   })

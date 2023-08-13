@@ -70,17 +70,24 @@ test('`stringify`', async function (t) {
     async function () {
       const processor = unified()
 
-      processor.Compiler = function (node, file) {
+      /**
+       * @constructor
+       * @param {Node} node
+       * @param {VFile} file
+       */
+      function Compiler(node, file) {
         assert.equal(node, givenNode, 'should pass a node')
         assert.ok(file instanceof VFile, 'should pass a file')
         assert.equal(arguments.length, 2)
       }
 
-      // type-coverage:ignore-next-line -- for some reason TS does understand `Parser.prototype`, but not `Compiler.prototype`.
-      processor.Compiler.prototype.compile = function () {
+      // type-coverage:ignore-next-line -- for some reason TS does understand `Compiler.prototype`, but not `Compiler.prototype`.
+      Compiler.prototype.compile = function () {
         assert.equal(arguments.length, 0)
         return 'echo'
       }
+
+      processor.Compiler = Compiler
 
       assert.equal(processor.stringify(givenNode, givenFile), 'echo')
     }

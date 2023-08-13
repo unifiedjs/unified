@@ -59,6 +59,8 @@ test('process (compilers)', async function (t) {
     }
 
     processor.Parser = simpleParser
+
+    // @ts-expect-error: custom node, which should be registered!.
     processor.Compiler = function () {
       return result
     }

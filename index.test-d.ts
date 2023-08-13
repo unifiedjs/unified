@@ -3,16 +3,11 @@ import type {Root as MdastRoot} from 'mdast'
 import {expectType} from 'tsd'
 import type {Node as UnistNode} from 'unist'
 import type {VFile} from 'vfile'
-import type {
-  FrozenProcessor,
-  Plugin,
-  Processor,
-  TransformCallback
-} from './index.js'
+import type {Plugin, Processor, TransformCallback} from './index.js'
 import {unified} from './index.js'
 
 expectType<Processor>(unified())
-expectType<FrozenProcessor>(unified().freeze())
+expectType<Processor>(unified().freeze())
 
 type ReactNode = {
   kind: string
@@ -351,7 +346,9 @@ expectType<Processor<MdastRoot>>(processorWithRemarkParse)
 expectType<MdastRoot>(processorWithRemarkParse.parse(''))
 expectType<UnistNode>(processorWithRemarkParse.runSync(mdastRoot))
 expectType<UnistNode>(processorWithRemarkParse.runSync(hastRoot))
-expectType<Uint8Array | string>(processorWithRemarkParse.stringify(mdastRoot))
+expectType<Uint8Array | string | null>(
+  processorWithRemarkParse.stringify(mdastRoot)
+)
 processorWithRemarkParse.stringify(hastRoot)
 expectType<VFile>(processorWithRemarkParse.processSync(''))
 
@@ -367,8 +364,12 @@ expectType<UnistNode>(processorWithRemarkLint.parse(''))
 expectType<MdastRoot>(processorWithRemarkLint.runSync(mdastRoot))
 // @ts-expect-error: not the correct node type.
 processorWithRemarkLint.runSync(hastRoot)
-expectType<Uint8Array | string>(processorWithRemarkLint.stringify(mdastRoot))
-expectType<Uint8Array | string>(processorWithRemarkLint.stringify(hastRoot))
+expectType<Uint8Array | string | null>(
+  processorWithRemarkLint.stringify(mdastRoot)
+)
+expectType<Uint8Array | string | null>(
+  processorWithRemarkLint.stringify(hastRoot)
+)
 expectType<VFile>(processorWithRemarkLint.processSync(''))
 
 // Inspect/transform plugin (implicit).
@@ -388,10 +389,10 @@ expectType<UnistNode>(processorWithRemarkLintImplicit.parse(''))
 expectType<MdastRoot>(processorWithRemarkLintImplicit.runSync(mdastRoot))
 // @ts-expect-error: not the correct node type.
 processorWithRemarkLintImplicit.runSync(hastRoot)
-expectType<Uint8Array | string>(
+expectType<Uint8Array | string | null>(
   processorWithRemarkLintImplicit.stringify(mdastRoot)
 )
-expectType<Uint8Array | string>(
+expectType<Uint8Array | string | null>(
   processorWithRemarkLintImplicit.stringify(hastRoot)
 )
 expectType<VFile>(processorWithRemarkLintImplicit.processSync(''))
@@ -408,8 +409,12 @@ expectType<UnistNode>(processorWithRemarkRehype.parse(''))
 expectType<HastRoot>(processorWithRemarkRehype.runSync(mdastRoot))
 // @ts-expect-error: not the correct node type.
 processorWithRemarkRehype.runSync(hastRoot)
-expectType<Uint8Array | string>(processorWithRemarkRehype.stringify(hastRoot))
-expectType<Uint8Array | string>(processorWithRemarkRehype.stringify(mdastRoot))
+expectType<Uint8Array | string | null>(
+  processorWithRemarkRehype.stringify(hastRoot)
+)
+expectType<Uint8Array | string | null>(
+  processorWithRemarkRehype.stringify(mdastRoot)
+)
 expectType<VFile>(processorWithRemarkRehype.processSync(''))
 
 // Mutate  plugin (implicit).
@@ -429,10 +434,10 @@ expectType<UnistNode>(processorWithRemarkRehypeImplicit.parse(''))
 expectType<HastRoot>(processorWithRemarkRehypeImplicit.runSync(mdastRoot))
 // @ts-expect-error: not the correct node type.
 processorWithRemarkRehypeImplicit.runSync(hastRoot)
-expectType<Uint8Array | string>(
+expectType<Uint8Array | string | null>(
   processorWithRemarkRehypeImplicit.stringify(hastRoot)
 )
-expectType<Uint8Array | string>(
+expectType<Uint8Array | string | null>(
   processorWithRemarkRehypeImplicit.stringify(mdastRoot)
 )
 expectType<VFile>(processorWithRemarkRehypeImplicit.processSync(''))

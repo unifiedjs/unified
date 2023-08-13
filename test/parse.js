@@ -73,16 +73,27 @@ test('`parse`', async function (t) {
     async function () {
       const processor = unified()
 
-      processor.Parser = function (doc, file) {
+      /**
+       * @constructor
+       * @param {string} doc
+       * @param {VFile} file
+       */
+      function Parser(doc, file) {
         assert.equal(typeof doc, 'string')
         assert.ok(file instanceof VFile)
         assert.equal(arguments.length, 2)
       }
 
-      processor.Parser.prototype.parse = function () {
+      /**
+       * @returns {Node}
+       */
+      // type-coverage:ignore-next-line -- for some reason TS does understand `Parser.prototype`, but not `Compiler.prototype`.
+      Parser.prototype.parse = function () {
         assert.equal(arguments.length, 0)
         return givenNode
       }
+
+      processor.Parser = Parser
 
       assert.equal(processor.parse('charlie'), givenNode)
     }
