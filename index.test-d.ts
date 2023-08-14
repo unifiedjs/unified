@@ -162,7 +162,6 @@ unified().use(pluginWithSeveralArgumentsImplicit, {example: ''}, 1)
 
 unified()
   .use(pluginWithOptions, {example: ''})
-  .use([pluginWithOptions, {example: ''}])
   .use([[pluginWithOptions, {example: ''}]])
   .use({
     plugins: [[pluginWithOptions, {example: ''}]]
@@ -173,8 +172,6 @@ unified()
 unified()
   .use(pluginWithoutOptions, true)
   .use(pluginWithoutOptions, false)
-  .use([pluginWithoutOptions, true])
-  .use([pluginWithoutOptions, false])
   .use([
     [pluginWithoutOptions, true],
     [pluginWithoutOptions, false]

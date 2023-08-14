@@ -52,15 +52,15 @@ test('process (compilers)', async function (t) {
     const processor = unified()
     const result = {
       _owner: null,
-      type: 'p',
-      ref: null,
       key: 'h-1',
-      props: {children: ['bravo']}
+      props: {children: ['bravo']},
+      ref: null,
+      type: 'p'
     }
 
     processor.Parser = simpleParser
 
-    // @ts-expect-error: custom node, which should be registered!.
+    // @ts-expect-error: custom result, which should be registered!
     processor.Compiler = function () {
       return result
     }

@@ -48,6 +48,7 @@
     "@types/unist": "^3.0.0",
     "@ungap/structured-clone": "^1.0.0",
     "bail": "^2.0.0",
+    "devlop": "^1.0.0",
     "is-plain-obj": "^4.0.0",
     "trough": "^2.0.0",
     "vfile": "^6.0.0"
@@ -110,6 +111,9 @@
         }
       }
     ],
-    "prettier": true
+    "prettier": true,
+    "rules": {
+      "unicorn/no-this-assignment": "off"
+    }
   }
 }

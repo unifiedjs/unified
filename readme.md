@@ -1261,7 +1261,7 @@ node types for the syntax trees provided by our packages (as in,
  * @typedef Options
  *   Configuration (optional).
  * @property {boolean} [someField]
- *   Some option.
+ *   Some option (optional).
  */
 
 // To type options:
