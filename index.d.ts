@@ -7,6 +7,7 @@ export type {
   Compiler,
   CompilerClass,
   CompilerFunction,
+  // `Data` is typed and exposed below.
   Pluggable,
   PluggableList,
   Plugin,
@@ -18,6 +19,7 @@ export type {
   ProcessCallback,
   Processor,
   RunCallback,
+  // `Settings` is typed and exposed below.
   TransformCallback,
   Transformer
 } from './lib/index.js'
@@ -40,6 +42,8 @@ export {unified} from './lib/index.js'
  *     ReactNode: ReactNode
  *   }
  * }
+ *
+ * export {} // You may not need this, but it makes sure the file is a module.
  * ```
  *
  * Use {@link CompileResults `CompileResults`} to access the values.
@@ -49,3 +53,54 @@ export interface CompileResultMap {
   Uint8Array: Uint8Array
   string: string
 }
+
+/**
+ * Interface of known data that can be supported by all plugins.
+ *
+ * Typically, options can be given to a specific plugin, but sometimes it makes
+ * sense to have information shared with several plugins.
+ * For example, a list of HTML elements that are self-closing, which is needed
+ * during all phases.
+ *
+ * To type this, do something like:
+ *
+ * ```ts
+ * declare module 'unified' {
+ *   interface Data {
+ *     htmlVoidElements?: Array<string> | undefined
+ *   }
+ * }
+ *
+ * export {} // You may not need this, but it makes sure the file is a module.
+ * ```
+ */
+export interface Data {
+  settings?: Settings | undefined
+}
+
+/**
+ * Interface of known extra options, that can be supported by parser and
+ * compilers.
+ *
+ * This exists so that users can use packages such as `remark`, which configure
+ * both parsers and compilers (in this case `remark-parse` and
+ * `remark-stringify`), and still provide options for them.
+ *
+ * When you make parsers or compilers, that could be packaged up together,
+ * you should support `this.data('settings')` as input and merge it with
+ * explicitly passed `options`.
+ * Then, to type it, using `remark-stringify` as an example, do something like:
+ *
+ * ```ts
+ * declare module 'unified' {
+ *   interface Settings {
+ *     bullet: '*' | '+' | '-'
+ *     // …
+ *   }
+ * }
+ *
+ * export {} // You may not need this, but it makes sure the file is a module.
+ * ```
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Settings {}

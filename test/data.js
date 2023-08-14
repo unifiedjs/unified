@@ -18,6 +18,8 @@ test('`data`', async function (t) {
   })
 
   await t.test('should not yield data prototypal fields', async function () {
+    // @ts-expect-error: `toString` is not a typed key of `Data`.
+    // But it exists on objects, so we test that here.
     assert.equal(unified().data('toString'), undefined)
   })
 

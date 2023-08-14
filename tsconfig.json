@@ -11,5 +11,5 @@
     "target": "es2020"
   },
   "exclude": ["coverage/", "node_modules/"],
-  "include": ["**/*.js", "index.d.ts"]
+  "include": ["**/*.js", "test/types.d.ts", "index.d.ts"]
 }
