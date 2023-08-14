@@ -19,19 +19,37 @@
 *   [Overview](#overview)
 *   [API](#api)
     *   [`processor()`](#processor)
-    *   [`processor.use(plugin[, options])`](#processoruseplugin-options)
-    *   [`processor.parse(file)`](#processorparsefile)
-    *   [`processor.stringify(tree[, file])`](#processorstringifytree-file)
-    *   [`processor.run(tree[, file][, done])`](#processorruntree-file-done)
-    *   [`processor.runSync(tree[, file])`](#processorrunsynctree-file)
-    *   [`processor.process(file[, done])`](#processorprocessfile-done)
-    *   [`processor.processSync(file)`](#processorprocesssyncfile)
+    *   [`processor.Compiler`](#processorcompiler)
+    *   [`processor.Parser`](#processorparser)
     *   [`processor.data([key[, value]])`](#processordatakey-value)
     *   [`processor.freeze()`](#processorfreeze)
-*   [`Plugin`](#plugin)
-    *   [`function attacher(options?)`](#function-attacheroptions)
-    *   [`function transformer(tree, file[, next])`](#function-transformertree-file-next)
-*   [`Preset`](#preset)
+    *   [`processor.parse(file)`](#processorparsefile)
+    *   [`processor.process(file[, done])`](#processorprocessfile-done)
+    *   [`processor.processSync(file)`](#processorprocesssyncfile)
+    *   [`processor.run(tree[, file][, done])`](#processorruntree-file-done)
+    *   [`processor.runSync(tree[, file])`](#processorrunsynctree-file)
+    *   [`processor.stringify(tree[, file])`](#processorstringifytree-file)
+    *   [`processor.use(plugin[, options])`](#processoruseplugin-options)
+    *   [`CompileResultMap`](#compileresultmap)
+    *   [`CompileResults`](#compileresults)
+    *   [`Compiler`](#compiler)
+    *   [`CompilerClass`](#compilerclass)
+    *   [`CompilerFunction`](#compilerfunction)
+    *   [`Data`](#data)
+    *   [`Parser`](#parser)
+    *   [`ParserClass`](#parserclass)
+    *   [`ParserFunction`](#parserfunction)
+    *   [`Pluggable`](#pluggable)
+    *   [`PluggableList`](#pluggablelist)
+    *   [`Plugin`](#plugin)
+    *   [`PluginTuple`](#plugintuple)
+    *   [`Preset`](#preset)
+    *   [`ProcessCallback`](#processcallback)
+    *   [`Processor`](#processor-1)
+    *   [`RunCallback`](#runcallback)
+    *   [`Settings`](#settings)
+    *   [`TransformCallback`](#transformcallback)
+    *   [`Transformer`](#transformer)
 *   [Types](#types)
 *   [Compatibility](#compatibility)
 *   [Contribute](#contribute)
@@ -45,7 +63,7 @@ unified is two things:
 
 *   **unified** is a collective of 500+ free and open source packages that work
     with content as structured data (ASTs)
-*   `unified` (this project) is the core package, used in 800k+ projects on GH,
+*   `unified` (this project) is the core package, used in 1.3m+ projects on GH,
     to process content with plugins
 
 Several ecosystems are built on unified around different kinds of content.
@@ -72,8 +90,8 @@ generator.
 You can connect utilities together and make your own plugins that check for
 problems and transform from one thing to another.
 
-When you are dealing with one type of content (such as markdown), it’s
-recommended to use the main package of that ecosystem instead (so `remark`).
+When you are dealing with one type of content (such as markdown), you can use
+the main package of that ecosystem instead (so `remark`).
 When you are dealing with different kinds of content (such as markdown and
 HTML), it’s recommended to use `unified` itself, and pick and choose the plugins
 you need.
@@ -81,7 +99,7 @@ you need.
 ## Install
 
 This package is [ESM only][esm].
-In Node.js (version 12.20+, 14.14+, or 16.0+), install with [npm][]:
+In Node.js (version 16+), install with [npm][]:
 
 ```sh
 npm install unified
@@ -104,12 +122,12 @@ In browsers with [`esm.sh`][esmsh]:
 ## Use
 
 ```js
-import {unified} from 'unified'
-import remarkParse from 'remark-parse'
-import remarkRehype from 'remark-rehype'
 import rehypeDocument from 'rehype-document'
 import rehypeFormat from 'rehype-format'
 import rehypeStringify from 'rehype-stringify'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+import {unified} from 'unified'
 import {reporter} from 'vfile-reporter'
 
 const file = await unified()
@@ -152,11 +170,11 @@ no issues found
 
 `unified` is an interface for processing content with syntax trees.
 Syntax trees are a representation of content understandable to programs.
-Those programs, called *[plugins][plugin]*, take these trees and inspect and
+Those programs, called *[plugins][api-plugin]*, take these trees and inspect and
 modify them.
-To get to the syntax tree from text, there is a *[parser][]*.
-To get from that back to text, there is a *[compiler][]*.
-This is the *[process][]* of a *processor*.
+To get to the syntax tree from text, there is a *[parser][api-parser]*.
+To get from that back to text, there is a *[compiler][api-compiler]*.
+This is the *[process][api-process]* of a *processor*.
 
 ```ascii
 | ........................ process ........................... |
@@ -205,8 +223,8 @@ the ancestral processor.
 When processors are exposed from a module (for example, `unified` itself) they
 should not be configured directly, as that would change their behavior for all
 module users.
-Those processors are *[frozen][freeze]* and they should be called to create a
-new processor before they are used.
+Those processors are *[frozen][api-freeze]* and they should be called to create
+a new processor before they are used.
 
 ###### File
 
@@ -279,8 +297,8 @@ There are also a few plugins that work in any ecosystem:
 
 ###### Configuration
 
-Processors are configured with [plugins][plugin] or with the [`data`][data]
-method.
+Processors are configured with [plugins][api-plugin] or with the
+[`data`][api-data] method.
 Most plugins also accept configuration through options.
 See each plugin’s readme for more info.
 
@@ -299,14 +317,14 @@ The [API][] provided by `unified` allows multiple files to be processed and
 gives access to metadata (such as lint messages):
 
 ```js
-import {unified} from 'unified'
+import rehypeStringify from 'rehype-stringify'
 import remarkParse from 'remark-parse'
 import remarkPresetLintMarkdownStyleGuide from 'remark-preset-lint-markdown-style-guide'
+import remarkRehype from 'remark-rehype'
 import remarkRetext from 'remark-retext'
 import retextEnglish from 'retext-english'
 import retextEquality from 'retext-equality'
-import remarkRehype from 'remark-rehype'
-import rehypeStringify from 'rehype-stringify'
+import {unified} from 'unified'
 import {reporter} from 'vfile-reporter'
 
 const file = await unified()
@@ -324,8 +342,8 @@ console.log(String(file))
 Yields:
 
 ```txt
-  1:16-1:24  warning  Emphasis should use `*` as a marker                                  emphasis-marker  remark-lint
-  1:30-1:34  warning  `guys` may be insensitive, use `people`, `persons`, `folks` instead  gals-man         retext-equality
+1:16-1:24 warning Emphasis should use `*` as a marker                                 emphasis-marker remark-lint
+1:30-1:34 warning `guys` may be insensitive, use `people`, `persons`, `folks` instead gals-man        retext-equality
 
 ⚠ 2 warnings
 ```
@@ -369,14 +387,15 @@ There is no default export.
 
 ### `processor()`
 
-Create a processor.
+Create a new processor.
 
 ###### Returns
 
-New *[unfrozen][freeze]* processor (`processor`) that is configured to work the
-same as its ancestor.
-When the descendant processor is configured in the future it does not affect the
-ancestral processor.
+New *[unfrozen][api-freeze]* processor ([`processor`][api-processor]).
+
+This processor is configured to work the same as its ancestor.
+When the descendant processor is configured in the future it does not affect
+the ancestral processor.
 
 ###### Example
 
@@ -395,467 +414,13 @@ process.stdin.pipe(
 )
 ```
 
-### `processor.use(plugin[, options])`
+### `processor.Compiler`
 
-Configure the processor to use a plugin and optionally configure that plugin
-with options.
+Compiler to use ([`Compiler`][api-compiler], optional).
 
-If the processor is already using a plugin, the previous plugin configuration
-is changed based on the options that are passed in.
-In other words, the plugin is not added a second time.
+### `processor.Parser`
 
-> 👉 **Note**: `use` cannot be called on *[frozen][freeze]* processors.
-> Call the processor first to create a new unfrozen processor.
-
-###### Signatures
-
-*   `processor.use(plugin[, options])`
-*   `processor.use(preset)`
-*   `processor.use(list)`
-
-###### Parameters
-
-*   `plugin` ([`Attacher`][plugin])
-*   `options` (`*`, optional) — configuration for `plugin`
-*   `preset` (`Object`) — object with an optional `plugins` (set to `list`),
-    and/or an optional `settings` object
-*   `list` (`Array`) — list of plugins, presets, and pairs (`plugin` and
-    `options` in an array)
-
-###### Returns
-
-The processor that `use` was called on (`processor`).
-
-###### Example
-
-There are many ways to pass plugins to `.use()`.
-This example gives an overview:
-
-```js
-import {unified} from 'unified'
-
-unified()
-  // Plugin with options:
-  .use(pluginA, {x: true, y: true})
-  // Passing the same plugin again merges configuration (to `{x: true, y: false, z: true}`):
-  .use(pluginA, {y: false, z: true})
-  // Plugins:
-  .use([pluginB, pluginC])
-  // Two plugins, the second with options:
-  .use([pluginD, [pluginE, {}]])
-  // Preset with plugins and settings:
-  .use({plugins: [pluginF, [pluginG, {}]], settings: {position: false}})
-  // Settings only:
-  .use({settings: {position: false}})
-```
-
-### `processor.parse(file)`
-
-Parse text to a syntax tree.
-
-> 👉 **Note**: `parse` freezes the processor if not already *[frozen][freeze]*.
-
-> 👉 **Note**: `parse` performs the [parse phase][overview], not the run phase
-> or other phases.
-
-###### Parameters
-
-*   `file` ([`VFile`][vfile]) — file to parse; typically `string`; any value
-    accepted as `x` in `new VFile(x)`
-
-###### Returns
-
-Syntax tree representing `file` ([`Node`][node]).
-
-###### Example
-
-This example shows how `parse` can be used to create a tree from a file.
-
-```js
-import {unified} from 'unified'
-import remarkParse from 'remark-parse'
-
-const tree = unified().use(remarkParse).parse('# Hello world!')
-
-console.log(tree)
-```
-
-Yields:
-
-```js
-{
-  type: 'root',
-  children: [
-    {type: 'heading', depth: 1, children: [Array], position: [Position]}
-  ],
-  position: {
-    start: {line: 1, column: 1, offset: 0},
-    end: {line: 1, column: 15, offset: 14}
-  }
-}
-```
-
-#### `processor.Parser`
-
-A **parser** handles the parsing of text to a syntax tree.
-
-It is used in the [parse phase][overview] and is called with a `string` and
-[`VFile`][vfile] of the document to parse.
-
-`Parser` can be a normal function, in which case it must return the syntax
-tree representation of the given file ([`Node`][node]).
-
-`Parser` can also be a constructor function (a function with a `parse` field in
-its `prototype`), in which case it is constructed with `new`.
-Instances must have a `parse` method that is called without arguments and must
-return a [`Node`][node].
-
-### `processor.stringify(tree[, file])`
-
-Compile a syntax tree.
-
-> 👉 **Note**: `stringify` freezes the processor if not already
-> *[frozen][freeze]*.
-
-> 👉 **Note**: `stringify` performs the [stringify phase][overview], not the run
-> phase or other phases.
-
-###### Parameters
-
-*   `tree` ([`Node`][node]) — tree to compile
-*   `file` ([`VFile`][vfile], optional) — file associated with `node`; any
-    value accepted as `x` in `new VFile(x)`
-
-###### Returns
-
-Textual representation of the tree (`string` or `Uint8Array`, see note).
-
-> 👉 **Note**: unified typically compiles by serializing: most
-> [compilers][compiler] return `string` (or `Uint8Array`).
-> Some compilers, such as the one configured with
-> [`rehype-react`][rehype-react], return other values (in this case, a React
-> tree).
-> If you’re using a compiler that doesn’t serialize, expect different result
-> values.
-
-###### Example
-
-This example shows how `stringify` can be used to serialize a syntax tree:
-
-```js
-import {unified} from 'unified'
-import rehypeStringify from 'rehype-stringify'
-import {h} from 'hastscript'
-
-const tree = h('h1', 'Hello world!')
-
-const doc = unified().use(rehypeStringify).stringify(tree)
-
-console.log(doc)
-```
-
-Yields:
-
-```html
-<h1>Hello world!</h1>
-```
-
-#### `processor.Compiler`
-
-A **compiler** handles the compiling of a syntax tree to something else (in
-most cases, text).
-
-It is used in the [stringify phase][overview] and called with a [`Node`][node]
-and [`VFile`][file] representation of the document to compile.
-
-`Compiler` can be a normal function, in which case it should return the textual
-representation of the given tree (`string`).
-
-`Compiler` can also be a constructor function (a function with a `compile`
-field in its `prototype`), in which case it is constructed
-with `new`.
-Instances must have a `compile` method that is called without arguments and
-should return a `string`.
-
-> 👉 **Note**: unified typically compiles by serializing: most compilers
-> return `string` (or `Uint8Array`).
-> Some compilers, such as the one configured with
-> [`rehype-react`][rehype-react], return other values (in this case, a React
-> tree).
-> If you’re using a compiler that doesn’t serialize, expect different result
-> values.
-
-### `processor.run(tree[, file][, done])`
-
-Run *[transformers][transformer]* on a syntax tree.
-
-> 👉 **Note**: `run` freezes the processor if not already *[frozen][freeze]*.
-
-> 👉 **Note**: `run` performs the [run phase][overview], not other phases.
-
-###### Parameters
-
-*   `tree` ([`Node`][node]) — tree to transform and inspect
-*   `file` ([`VFile`][vfile], optional) — any value accepted as `x` in
-    `new VFile(x)`
-*   `done` ([`Function`][run-done], optional) — callback
-
-###### Returns
-
-Nothing if `done` is given (`undefined`).
-A [`Promise`][promise] otherwise.
-The promise is rejected with a fatal error or resolved with the transformed
-tree ([`Node`][node]).
-
-###### Example
-
-This example shows how `run` can be used to transform a tree:
-
-```js
-import {unified} from 'unified'
-import remarkReferenceLinks from 'remark-reference-links'
-import {u} from 'unist-builder'
-
-const tree = u('root', [
-  u('paragraph', [
-    u('link', {href: 'https://example.com'}, [u('text', 'Example Domain')])
-  ])
-])
-
-const changedTree = await unified().use(remarkReferenceLinks).run(tree)
-
-console.log(changedTree)
-```
-
-Yields:
-
-```js
-{
-  type: 'root',
-  children: [
-    {type: 'paragraph', children: [Array]},
-    {type: 'definition', identifier: '1', title: undefined, url: undefined}
-  ]
-}
-```
-
-#### `function done(err[, tree, file])`
-
-Callback called when transformers are done.
-
-Called with either an error or results.
-
-###### Parameters
-
-*   `err` (`Error`, optional) — fatal error
-*   `tree` ([`Node`][node], optional) — transformed tree
-*   `file` ([`VFile`][vfile], optional) — file
-
-### `processor.runSync(tree[, file])`
-
-Run *[transformers][transformer]* on a syntax tree.
-An error is thrown if asynchronous transforms are configured.
-
-> 👉 **Note**: `runSync` freezes the processor if not already
-> *[frozen][freeze]*.
-
-> 👉 **Note**: `runSync` performs the [run phase][overview], not other phases.
-
-###### Parameters
-
-*   `tree` ([`Node`][node]) — tree to transform and inspect
-*   `file` ([`VFile`][vfile], optional) — any value accepted as `x` in
-    `new VFile(x)`
-
-###### Returns
-
-Transformed tree ([`Node`][node]).
-
-### `processor.process(file[, done])`
-
-Process the given file as configured on the processor.
-
-> 👉 **Note**: `process` freezes the processor if not already
-> *[frozen][freeze]*.
-
-> 👉 **Note**: `process` performs the [parse, run, and stringify
-> phases][overview].
-
-###### Parameters
-
-*   `file` ([`VFile`][vfile]) — file; any value accepted as `x` in
-    `new VFile(x)`
-*   `done` ([`Function`][process-done], optional) — callback
-
-###### Returns
-
-Nothing if `done` is given (`undefined`).
-A [`Promise`][promise] otherwise.
-The promise is rejected with a fatal error or resolved with the processed
-file ([`VFile`][vfile]).
-
-The parsed, transformed, and compiled value is available at
-[`file.value`][vfile-value] (see note).
-
-> 👉 **Note**: unified typically compiles by serializing: most
-> [compilers][compiler] return `string` (or `Uint8Array`).
-> Some compilers, such as the one configured with
-> [`rehype-react`][rehype-react], result in other values (in this case, a React
-> tree).
-> If you’re using a compiler that does not serialize, the result is available
-> at `file.result`.
-
-###### Example
-
-This example shows how `process` can be used to process a file:
-
-```js
-import {unified} from 'unified'
-import remarkParse from 'remark-parse'
-import remarkRehype from 'remark-rehype'
-import rehypeDocument from 'rehype-document'
-import rehypeFormat from 'rehype-format'
-import rehypeStringify from 'rehype-stringify'
-
-const file = await unified()
-  .use(remarkParse)
-  .use(remarkRehype)
-  .use(rehypeDocument, {title: '👋🌍'})
-  .use(rehypeFormat)
-  .use(rehypeStringify)
-  .process('# Hello world!')
-
-console.log(String(file))
-```
-
-Yields:
-
-```html
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>👋🌍</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-  </head>
-  <body>
-    <h1>Hello world!</h1>
-  </body>
-</html>
-```
-
-#### `function done(err, file)`
-
-Callback called when the process is done.
-
-Called with either an error or a result.
-
-###### Parameters
-
-*   `err` (`Error`, optional) — fatal error
-*   `file` ([`VFile`][vfile]) — processed file
-
-###### Example
-
-This example shows how `process` can be used to process a file with a callback.
-
-```js
-import {unified} from 'unified'
-import remarkParse from 'remark-parse'
-import remarkGithub from 'remark-github'
-import remarkStringify from 'remark-stringify'
-import {reporter} from 'vfile-reporter'
-
-unified()
-  .use(remarkParse)
-  .use(remarkGithub)
-  .use(remarkStringify)
-  .process('@unifiedjs', function (error, file) {
-    console.error(reporter(error || file))
-    if (file) {
-      console.log(String(file))
-    }
-  })
-```
-
-Yields:
-
-```txt
-no issues found
-```
-
-```markdown
-[**@unifiedjs**](https://github.com/unifiedjs)
-```
-
-### `processor.processSync(file)`
-
-Process the given file as configured on the processor.
-An error is thrown if asynchronous transforms are configured.
-
-> 👉 **Note**: `processSync` freezes the processor if not already
-> *[frozen][freeze]*.
-
-> 👉 **Note**: `processSync` performs the [parse, run, and stringify
-> phases][overview].
-
-###### Parameters
-
-*   `file` ([`VFile`][vfile]) — any value accepted as `x` in `new VFile(x)`
-
-###### Returns
-
-The processed file ([`VFile`][vfile]).
-
-The parsed, transformed, and compiled value is available at
-[`file.value`][vfile-value] (see note).
-
-> 👉 **Note**: unified typically compiles by serializing: most
-> [compilers][compiler] return `string` (or `Uint8Array`).
-> Some compilers, such as the one configured with
-> [`rehype-react`][rehype-react], result in other values (in this case, a React
-> tree).
-> If you’re using a compiler that does not serialize, the result is available
-> at `file.result`.
-
-###### Example
-
-This example shows how `processSync` can be used to process a file, if all
-transformers are synchronous.
-
-```js
-import {unified} from 'unified'
-import remarkParse from 'remark-parse'
-import remarkRehype from 'remark-rehype'
-import rehypeDocument from 'rehype-document'
-import rehypeFormat from 'rehype-format'
-import rehypeStringify from 'rehype-stringify'
-
-const processor = unified()
-  .use(remarkParse)
-  .use(remarkRehype)
-  .use(rehypeDocument, {title: '👋🌍'})
-  .use(rehypeFormat)
-  .use(rehypeStringify)
-
-console.log(String(processor.processSync('# Hello world!')))
-```
-
-Yields:
-
-```html
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>👋🌍</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-  </head>
-  <body>
-    <h1>Hello world!</h1>
-  </body>
-</html>
-```
+Parser to use ([`Parser`][api-parser], optional).
 
 ### `processor.data([key[, value]])`
 
@@ -867,28 +432,31 @@ sense to have information shared with several plugins.
 For example, a list of HTML elements that are self-closing, which is needed
 during all [phases][overview].
 
-> 👉 **Note**: setting information cannot occur on *[frozen][freeze]*
+> 👉 **Note**: setting information cannot occur on *[frozen][api-freeze]*
 > processors.
 > Call the processor first to create a new unfrozen processor.
+
+> 👉 **Note**: to register custom data in TypeScript, augment the
+> [`Data`][api-data] interface.
 
 ###### Signatures
 
 *   `processor = processor.data(key, value)`
-*   `processor = processor.data(values)`
+*   `processor = processor.data(dataset)`
 *   `value = processor.data(key)`
-*   `info = processor.data()`
+*   `dataset = processor.data()`
 
 ###### Parameters
 
-*   `key` (`string`, optional) — identifier
-*   `value` (`*`, optional) — value to set
-*   `values` (`Object`, optional) — values to set
+*   `key` ([`keyof Data`][api-data], optional) — field to get
+*   `value` ([`Data[key]`][api-data]) — value to set
+*   `values` ([`Data`][api-data]) — values to set
 
 ###### Returns
 
-*   `processor` — when setting, the processor that `data` is called on
-*   `value` (`*`) — when getting, the value at `key`
-*   `info` (`Object`) — without arguments, the key-value store
+The current processor when setting ([`processor`][api-processor]), the value at
+`key` when getting ([`Data[key]`][api-data]), or the entire dataset when
+getting without key ([`Data`][api-data]).
 
 ###### Example
 
@@ -918,22 +486,21 @@ When a processor is frozen it cannot be unfrozen.
 New processors working the same way can be created by calling the processor.
 
 It’s possible to freeze processors explicitly by calling `.freeze()`.
-Processors freeze automatically when [`.parse()`][parse], [`.run()`][run],
-[`.runSync()`][run-sync], [`.stringify()`][stringify], [`.process()`][process],
-or [`.processSync()`][process-sync] are called.
+Processors freeze automatically when `.parse()`, `.run()`, `.runSync()`,
+`.stringify()`, `.process()`, or `.processSync()` are called.
 
 ###### Returns
 
-The processor that `freeze` was called on (`processor`).
+The current processor ([`processor`][api-processor]).
 
 ###### Example
 
 This example, `index.js`, shows how `rehype` prevents extensions to itself:
 
 ```js
-import {unified} from 'unified'
 import rehypeParse from 'rehype-parse'
 import rehypeStringify from 'rehype-stringify'
+import {unified} from 'unified'
 
 export const rehype = unified().use(rehypeParse).use(rehypeStringify).freeze()
 ```
@@ -979,16 +546,661 @@ Create a new processor first, by calling it: use `processor()` instead of `proce
     …
 ```
 
-## `Plugin`
+### `processor.parse(file)`
 
-**Plugins** configure the processors they are applied on in the following ways:
+Parse text to a syntax tree.
 
-*   they change the processor, such as the [parser][], the [compiler][], or by
-    configuring [data][]
+> 👉 **Note**: `parse` freezes the processor if not already
+> *[frozen][api-freeze]*.
+
+> 👉 **Note**: `parse` performs the [parse phase][overview], not the run phase
+> or other phases.
+
+###### Parameters
+
+*   `file` ([`Compatible`][vfile-compatible]) — file to parse; typically
+    `string` or [`VFile`][vfile]; any value accepted as `x` in `new VFile(x)`
+
+###### Returns
+
+Syntax tree representing `file` ([`Node`][node]).
+
+###### Example
+
+This example shows how `parse` can be used to create a tree from a file.
+
+```js
+import remarkParse from 'remark-parse'
+import {unified} from 'unified'
+
+const tree = unified().use(remarkParse).parse('# Hello world!')
+
+console.log(tree)
+```
+
+Yields:
+
+```js
+{
+  type: 'root',
+  children: [
+    {type: 'heading', depth: 1, children: [Array], position: [Object]}
+  ],
+  position: {
+    start: {line: 1, column: 1, offset: 0},
+    end: {line: 1, column: 15, offset: 14}
+  }
+}
+```
+
+### `processor.process(file[, done])`
+
+Process the given file as configured on the processor.
+
+> 👉 **Note**: `process` freezes the processor if not already
+> *[frozen][api-freeze]*.
+
+> 👉 **Note**: `process` performs the [parse, run, and stringify
+> phases][overview].
+
+###### Signatures
+
+*   `processor.process(file, done)`
+*   `Promise<VFile> = processor.process(file?)`
+
+###### Parameters
+
+*   `file` ([`Compatible`][vfile-compatible], optional) — file; typically
+    `string` or [`VFile`][vfile]; any value accepted as `x` in `new VFile(x)`
+*   `done` ([`ProcessCallback`][api-process-callback], optional) — callback
+
+###### Returns
+
+Nothing if `done` is given (`undefined`).
+Otherwise a promise, rejected with a fatal error or resolved with the
+processed file ([`Promise<VFile>`][vfile]).
+
+The parsed, transformed, and compiled value is available at `file.value` (see
+note).
+
+> 👉 **Note**: unified typically compiles by serializing: most
+> compilers return `string` (or `Uint8Array`).
+> Some compilers, such as the one configured with
+> [`rehype-react`][rehype-react], return other values (in this case, a React
+> tree).
+> If you’re using a compiler that doesn’t serialize, expect different result
+> values.
+>
+> To register custom results in TypeScript, add them to
+> [`CompileResultMap`][api-compile-result-map].
+
+###### Example
+
+This example shows how `process` can be used to process a file:
+
+```js
+import rehypeDocument from 'rehype-document'
+import rehypeFormat from 'rehype-format'
+import rehypeStringify from 'rehype-stringify'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+import {unified} from 'unified'
+
+const file = await unified()
+  .use(remarkParse)
+  .use(remarkRehype)
+  .use(rehypeDocument, {title: '👋🌍'})
+  .use(rehypeFormat)
+  .use(rehypeStringify)
+  .process('# Hello world!')
+
+console.log(String(file))
+```
+
+Yields:
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>👋🌍</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <h1>Hello world!</h1>
+  </body>
+</html>
+```
+
+### `processor.processSync(file)`
+
+Process the given file as configured on the processor.
+
+An error is thrown if asynchronous transforms are configured.
+
+> 👉 **Note**: `processSync` freezes the processor if not already
+> *[frozen][api-freeze]*.
+
+> 👉 **Note**: `processSync` performs the [parse, run, and stringify
+> phases][overview].
+
+###### Parameters
+
+*   `file` ([`Compatible`][vfile-compatible], optional) — file; typically
+    `string` or [`VFile`][vfile]; any value accepted as `x` in `new VFile(x)`
+
+###### Returns
+
+The processed file ([`VFile`][vfile]).
+
+The parsed, transformed, and compiled value is available at `file.value` (see
+note).
+
+> 👉 **Note**: unified typically compiles by serializing: most
+> compilers return `string` (or `Uint8Array`).
+> Some compilers, such as the one configured with
+> [`rehype-react`][rehype-react], return other values (in this case, a React
+> tree).
+> If you’re using a compiler that doesn’t serialize, expect different result
+> values.
+>
+> To register custom results in TypeScript, add them to
+> [`CompileResultMap`][api-compile-result-map].
+
+###### Example
+
+This example shows how `processSync` can be used to process a file, if all
+transformers are synchronous.
+
+```js
+import rehypeDocument from 'rehype-document'
+import rehypeFormat from 'rehype-format'
+import rehypeStringify from 'rehype-stringify'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+import {unified} from 'unified'
+
+const processor = unified()
+  .use(remarkParse)
+  .use(remarkRehype)
+  .use(rehypeDocument, {title: '👋🌍'})
+  .use(rehypeFormat)
+  .use(rehypeStringify)
+
+console.log(String(processor.processSync('# Hello world!')))
+```
+
+Yields:
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>👋🌍</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <h1>Hello world!</h1>
+  </body>
+</html>
+```
+
+### `processor.run(tree[, file][, done])`
+
+Run *[transformers][api-transformer]* on a syntax tree.
+
+> 👉 **Note**: `run` freezes the processor if not already
+> *[frozen][api-freeze]*.
+
+> 👉 **Note**: `run` performs the [run phase][overview], not other phases.
+
+###### Signatures
+
+*   `processor.run(tree, done)`
+*   `processor.run(tree, file, done)`
+*   `Promise<Node> = processor.run(tree, file?)`
+
+###### Parameters
+
+*   `tree` ([`Node`][node]) — tree to transform and inspect
+*   `file` ([`Compatible`][vfile-compatible], optional) — file associated
+    with `node`; any value accepted as `x` in `new VFile(x)`
+*   `done` ([`RunCallback`][api-run-callback], optional) — callback
+
+###### Returns
+
+Nothing if `done` is given (`undefined`).
+Otherwise, a promise rejected with a fatal error or resolved with the
+transformed tree ([`Promise<Node>`][node]).
+
+###### Example
+
+This example shows how `run` can be used to transform a tree:
+
+```js
+import remarkReferenceLinks from 'remark-reference-links'
+import {unified} from 'unified'
+import {u} from 'unist-builder'
+
+const tree = u('root', [
+  u('paragraph', [
+    u('link', {href: 'https://example.com'}, [u('text', 'Example Domain')])
+  ])
+])
+
+const changedTree = await unified().use(remarkReferenceLinks).run(tree)
+
+console.log(changedTree)
+```
+
+Yields:
+
+```js
+{
+  type: 'root',
+  children: [
+    {type: 'paragraph', children: [Array]},
+    {type: 'definition', identifier: '1', title: '', url: undefined}
+  ]
+}
+```
+
+### `processor.runSync(tree[, file])`
+
+Run *[transformers][api-transformer]* on a syntax tree.
+
+An error is thrown if asynchronous transforms are configured.
+
+> 👉 **Note**: `runSync` freezes the processor if not already
+> *[frozen][api-freeze]*.
+
+> 👉 **Note**: `runSync` performs the [run phase][overview], not other phases.
+
+###### Parameters
+
+*   `tree` ([`Node`][node]) — tree to transform and inspect
+*   `file` ([`Compatible`][vfile-compatible], optional) — file associated
+    with `node`; any value accepted as `x` in `new VFile(x)`
+
+###### Returns
+
+Transformed tree ([`Node`][node]).
+
+### `processor.stringify(tree[, file])`
+
+Compile a syntax tree.
+
+> 👉 **Note**: `stringify` freezes the processor if not already
+> *[frozen][api-freeze]*.
+
+> 👉 **Note**: `stringify` performs the [stringify phase][overview], not the run
+> phase or other phases.
+
+###### Parameters
+
+*   `tree` ([`Node`][node]) — tree to compile
+*   `file` ([`Compatible`][vfile-compatible], optional) — file associated
+    with `node`; any value accepted as `x` in `new VFile(x)`
+
+###### Returns
+
+Textual representation of the tree (`Uint8Array` or `string`, see note).
+
+> 👉 **Note**: unified typically compiles by serializing: most compilers
+> return `string` (or `Uint8Array`).
+> Some compilers, such as the one configured with
+> [`rehype-react`][rehype-react], return other values (in this case, a
+> React tree).
+> If you’re using a compiler that doesn’t serialize, expect different
+> result values.
+>
+> To register custom results in TypeScript, add them to
+> [`CompileResultMap`][api-compile-result-map].
+
+###### Example
+
+This example shows how `stringify` can be used to serialize a syntax tree:
+
+```js
+import {h} from 'hastscript'
+import rehypeStringify from 'rehype-stringify'
+import {unified} from 'unified'
+
+const tree = h('h1', 'Hello world!')
+
+const doc = unified().use(rehypeStringify).stringify(tree)
+
+console.log(doc)
+```
+
+Yields:
+
+```html
+<h1>Hello world!</h1>
+```
+
+### `processor.use(plugin[, options])`
+
+Configure the processor to use a plugin, a list of usable values, or a preset.
+
+If the processor is already using a plugin, the previous plugin configuration
+is changed based on the options that are passed in.
+In other words, the plugin is not added a second time.
+
+> 👉 **Note**: `use` cannot be called on [*frozen*][api-freeze] processors.
+> Call the processor first to create a new unfrozen processor.
+
+###### Signatures
+
+*   `processor.use(preset?)`
+*   `processor.use(list)`
+*   `processor.use(plugin[, ...parameters])`
+
+###### Parameters
+
+*   `preset` ([`Preset`][api-preset]) — plugins and settings
+*   `list` ([`PluggableList`][api-pluggable-list]) — list of usable things
+*   `plugin` ([`Plugin`][api-plugin]) — plugin
+*   `parameters` (`Array<unknown>`) — configuration for `plugin`, typically a
+    single options object
+
+###### Returns
+
+Current processor ([`processor`][api-processor]).
+
+###### Example
+
+There are many ways to pass plugins to `.use()`.
+This example gives an overview:
+
+```js
+import {unified} from 'unified'
+
+unified()
+  // Plugin with options:
+  .use(pluginA, {x: true, y: true})
+  // Passing the same plugin again merges configuration (to `{x: true, y: false, z: true}`):
+  .use(pluginA, {y: false, z: true})
+  // Plugins:
+  .use([pluginB, pluginC])
+  // Two plugins, the second with options:
+  .use([pluginD, [pluginE, {}]])
+  // Preset with plugins and settings:
+  .use({plugins: [pluginF, [pluginG, {}]], settings: {position: false}})
+  // Settings only:
+  .use({settings: {position: false}})
+```
+
+### `CompileResultMap`
+
+Interface of known results from compilers (TypeScript type).
+
+Normally, compilers result in text ([`Value`][vfile-value] of `vfile`).
+When you compile to something else, such as a React node (as in,
+`rehype-react`), you can augment this interface to include that type.
+
+```ts
+import type {ReactNode} from 'somewhere'
+
+declare module 'unified' {
+  interface CompileResultMap {
+    // Register a new result (value is used, key should match it).
+    ReactNode: ReactNode
+  }
+}
+
+export {} // You may not need this, but it makes sure the file is a module.
+```
+
+Use [`CompileResults`][api-compile-results] to access the values.
+
+###### Type
+
+```ts
+interface CompileResultMap {
+  // Note: if `Value` from `VFile` is changed, this should too.
+  Uint8Array: Uint8Array
+  string: string
+}
+```
+
+### `CompileResults`
+
+Acceptable results from compilers (TypeScript type).
+
+To register custom results, add them to
+[`CompileResultMap`][api-compile-result-map].
+
+###### Type
+
+```ts
+type CompileResults = CompileResultMap[keyof CompileResultMap]
+```
+
+### `Compiler`
+
+A **compiler** handles the compiling of a syntax tree to something else
+(in most cases, text) (TypeScript type).
+
+It is used in the stringify phase and called with a [`Node`][node]
+and [`VFile`][vfile] representation of the document to compile.
+
+`Compiler` can be a normal function, in which case it should return the
+textual representation of the given tree (typically `string`).
+
+`Compiler` can also be a constructor function (a function with a `compile`
+field in its `prototype`), in which case it is constructed with `new`.
+Instances must have a `compile` method that is called without arguments
+and typically returns a `string`.
+
+> 👉 **Note**: unified typically compiles by serializing: most compilers
+> return `string` (or `Uint8Array`).
+> Some compilers, such as the one configured with
+> [`rehype-react`][rehype-react], return other values (in this case, a
+> React tree).
+> If you’re using a compiler that doesn’t serialize, expect different
+> result values.
+>
+> To register custom results in TypeScript, add them to
+> [`CompileResultMap`][api-compile-result-map].
+
+###### Type
+
+```ts
+type Compiler<
+  Tree extends Node = Node,
+  Result extends CompileResults = CompileResults
+> = CompilerClass<Tree, Result> | CompilerFunction<Tree, Result>
+```
+
+See [`CompilerClass`][api-compiler-class] and
+[`CompilerFunction`][api-compiler-function] for more info.
+
+### `CompilerClass`
+
+Class to compile trees (TypeScript type).
+
+###### Type
+
+```ts
+type CompilerClass<
+  Tree extends Node = Node,
+  Result extends CompileResults = CompileResults
+> = {
+  new (tree: Tree, file: VFile): CompilerClass<Tree, Result>['prototype']
+  prototype: {
+    compile(): Result
+  }
+}
+```
+
+### `CompilerFunction`
+
+Regular function to compile a tree (TypeScript type).
+
+###### Type
+
+```ts
+type CompilerFunction<
+  Tree extends Node = Node,
+  Result extends CompileResults = CompileResults
+> = (tree: Tree, file: VFile) => Result
+```
+
+### `Data`
+
+Interface of known data that can be supported by all plugins (TypeScript type).
+
+Typically, options can be given to a specific plugin, but sometimes it makes
+sense to have information shared with several plugins.
+For example, a list of HTML elements that are self-closing, which is needed
+during all phases.
+
+To type this, do something like:
+
+```ts
+declare module 'unified' {
+  interface Data {
+    htmlVoidElements?: Array<string> | undefined
+  }
+}
+
+export {} // You may not need this, but it makes sure the file is a module.
+```
+
+###### Type
+
+```ts
+interface Data {
+  settings?: Settings | undefined
+}
+```
+
+See [`Settings`][api-settings] for more info.
+
+### `Parser`
+
+A **parser** handles the parsing of text to a syntax tree (TypeScript type).
+
+It is used in the parse phase and is called with a `string` and
+[`VFile`][vfile] of the document to parse.
+
+`Parser` can be a normal function, in which case it must return the syntax
+tree representation of the given file ([`Node`][node]).
+
+`Parser` can also be a constructor function (a function with a `parse`
+field in its `prototype`), in which case it is constructed with `new`.
+Instances must have a `parse` method that is called without arguments and
+must return a [`Node`][node].
+
+###### Type
+
+```ts
+type Parser<Tree extends Node = Node> = ParserClass<Tree> | ParserFunction<Tree>
+```
+
+See [`ParserClass`][api-parser-class] and
+[`ParserFunction`][api-parser-function] for more info.
+
+### `ParserClass`
+
+Class to parse files (TypeScript type).
+
+###### Type
+
+```ts
+type ParserClass<Tree extends Node = Node> = {
+  new (document: string, file: VFile): ParserClass<Tree>['prototype']
+  prototype: {
+    parse(): Tree
+  }
+}
+```
+
+### `ParserFunction`
+
+Regular function to parse a file (TypeScript type).
+
+###### Type
+
+```ts
+type ParserFunction<Tree extends Node = Node> = (document: string, file: VFile) => Tree
+```
+
+### `Pluggable`
+
+Union of the different ways to add plugins and settings (TypeScript type).
+
+###### Type
+
+```ts
+type Pluggable =
+  | Plugin<Array<any>, any, any>
+  | PluginTuple<Array<any>, any, any>
+  | Preset
+```
+
+See [`Plugin`][api-plugin], [`PluginTuple`][api-plugin-tuple],
+and [`Preset`][api-preset] for more info.
+
+### `PluggableList`
+
+List of plugins and presets (TypeScript type).
+
+###### Type
+
+```ts
+type PluggableList = Array<Pluggable>
+```
+
+See [`Pluggable`][api-pluggable] for more info.
+
+### `Plugin`
+
+Single plugin (TypeScript type).
+
+Plugins configure the processors they are applied on in the following ways:
+
+*   they change the processor, such as the parser, the compiler, or by
+    configuring data
 *   they specify how to handle trees and files
 
-Plugins are a concept.
-They materialize as [`Attacher`s][attacher].
+In practise, they are functions that can receive options and configure the
+processor (`this`).
+
+> 👉 **Note**: plugins are called when the processor is *frozen*, not when they
+> are applied.
+
+###### Type
+
+```ts
+type Plugin<
+  PluginParameters extends unknown[] = [],
+  Input extends Node | string | undefined = Node,
+  Output = Input
+> = (
+  this: Processor,
+  ...parameters: PluginParameters
+) => Input extends string // Parser.
+  ? Output extends Node | undefined
+    ? undefined | void
+    : never
+  : Output extends CompileResults // Compiler.
+  ? Input extends Node | undefined
+    ? undefined | void
+    : never
+  : // Inspect/transform.
+      | Transformer<
+          Input extends Node ? Input : Node,
+          Output extends Node ? Output : Node
+        >
+      | undefined
+      | void
+```
+
+See [`Transformer`][api-transformer] for more info.
 
 ###### Example
 
@@ -1008,7 +1220,7 @@ export function move(options) {
     throw new Error('Missing `options.extname`')
   }
 
-  return function (tree, file) {
+  return function (_, file) {
     if (file.extname && file.extname !== options.extname) {
       file.extname = options.extname
     }
@@ -1016,21 +1228,21 @@ export function move(options) {
 }
 ```
 
-`index.md`:
+`example.md`:
 
 ```markdown
 # Hello, world!
 ```
 
-`index.js`:
+`example.js`:
 
 ```js
-import {read, write} from 'to-vfile'
-import {reporter} from 'vfile-reporter'
-import {unified} from 'unified'
+import rehypeStringify from 'rehype-stringify'
 import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
-import rehypeStringify from 'rehype-stringify'
+import {read, write} from 'to-vfile'
+import {unified} from 'unified'
+import {reporter} from 'vfile-reporter'
 import {move} from './move.js'
 
 const file = await unified()
@@ -1038,103 +1250,71 @@ const file = await unified()
   .use(remarkRehype)
   .use(move, {extname: '.html'})
   .use(rehypeStringify)
-  .process(await read('index.md'))
+  .process(await read('example.md'))
 
 console.error(reporter(file))
-await write(file) // Written to `index.html`.
-
+await write(file) // Written to `example.html`.
 ```
 
 Yields:
 
 ```txt
-index.md: no issues found
+example.md: no issues found
 ```
 
-…and in `index.html`:
+…and in `example.html`:
 
 ```html
 <h1>Hello, world!</h1>
 ```
 
-### `function attacher(options?)`
+### `PluginTuple`
 
-Attachers are materialized plugins.
-They are functions that can receive options and configure the processor.
+Tuple of a plugin and its configuration (TypeScript type).
 
-Attachers change the processor, such as the [parser][], the [compiler][],
-by configuring [data][], or by specifying how the tree and file are handled.
+The first item is a plugin, the rest are its parameters.
 
-> 👉 **Note**: attachers are called when the processor is *[frozen][freeze]*,
-> not when they are applied.
+###### Type
 
-###### Parameters
+```ts
+type PluginTuple<
+  TupleParameters extends unknown[] = [],
+  Input extends Node | string | undefined = undefined,
+  Output = undefined
+> = [
+  plugin: Plugin<TupleParameters, Input, Output>,
+  ...parameters: TupleParameters
+]
+```
 
-*   `this` (`processor`) — processor the attacher is applied to
-*   `options` (`*`, optional) — configuration
+See [`Plugin`][api-plugin] for more info.
 
-###### Returns
+### `Preset`
 
-Optional transform ([`Transformer`][transformer]).
-
-### `function transformer(tree, file[, next])`
-
-Transformers handle syntax trees and files.
-
-They are functions that are called each time a syntax tree and file are passed
-through the [run phase][overview].
-When an error occurs in them (either because it’s thrown, returned, rejected,
-or passed to [`next`][next]), the process stops.
-
-The run phase is handled by [`trough`][trough], see its documentation for the
-exact semantics of these functions.
-
-###### Parameters
-
-*   `tree` ([`Node`][node]) — tree to handle
-*   `file` ([`VFile`][vfile]) — file to handle
-*   `next` ([`Function`][next], optional) — callback
-
-###### Returns
-
-If you accept `next`, nothing.
-Otherwise:
-
-*   `Error` — fatal error to stop the process
-*   `Promise<undefined>` or `undefined` — the next transformer keeps using same
-    tree
-*   `Promise<Node>` or [`Node`][node] — new, changed, tree
-
-#### `function next(err[, tree[, file]])`
-
-If the signature of a `transformer` accepts a third argument, the transformer
-may perform asynchronous operations, and must call `next()`.
-
-###### Parameters
-
-*   `err` (`Error`, optional) — fatal error to stop the process
-*   `tree` ([`Node`][node], optional) — new, changed, tree
-*   `file` ([`VFile`][vfile], optional) — new, changed, file
-
-## `Preset`
-
-Presets are sharable configuration.
+Sharable configuration (TypeScript type).
 
 They can contain plugins and settings.
+
+###### Fields
+
+*   `plugins` ([`PluggableList`][api-pluggable-list], optional)
+    — list of plugins and presets
+*   `settings` ([`Data`][api-data], optional)
+    — shared settings for parsers and compilers
 
 ###### Example
 
 `preset.js`:
 
 ```js
-import remarkPresetLintRecommended from 'remark-preset-lint-recommended'
-import remarkPresetLintConsistent from 'remark-preset-lint-consistent'
 import remarkCommentConfig from 'remark-comment-config'
-import remarkToc from 'remark-toc'
 import remarkLicense from 'remark-license'
+import remarkPresetLintConsistent from 'remark-preset-lint-consistent'
+import remarkPresetLintRecommended from 'remark-preset-lint-recommended'
+import remarkToc from 'remark-toc'
 
-export const preset = {
-  settings: {bullet: '*', emphasis: '*', fences: true},
+/** @type {import('unified').Preset} */
+const preset = {
   plugins: [
     remarkPresetLintRecommended,
     remarkPresetLintConsistent,
@@ -1142,7 +1322,10 @@ export const preset = {
     [remarkToc, {maxDepth: 3, tight: true}],
     remarkLicense
   ]
+  settings: {bullet: '*', emphasis: '*', fences: true},
 }
+
+export default preset
 ```
 
 `example.md`:
@@ -1159,13 +1342,13 @@ _Emphasis_ and **importance**.
 ## License
 ```
 
-`index.js`:
+`example.js`:
 
 ```js
-import {read, write} from 'to-vfile'
 import {remark} from 'remark'
+import {read, write} from 'to-vfile'
 import {reporter} from 'vfile-reporter'
-import {preset} from './preset.js'
+import preset from './preset.js'
 
 const file = await remark()
   .use(preset)
@@ -1200,51 +1383,188 @@ example.md: no issues found
 [MIT](license) © [Titus Wormer](https://wooorm.com)
 ```
 
+### `ProcessCallback`
+
+Callback called when the process is done (TypeScript type).
+
+Called with either an error or a result.
+
+###### Parameters
+
+*   `error` (`Error`, optional)
+    — fatal error
+*   `file` ([`VFile`][vfile], optional)
+    — processed file
+
+###### Returns
+
+Nothing (`undefined`).
+
+###### Example
+
+This example shows how `process` can be used to process a file with a callback.
+
+```js
+import remarkGithub from 'remark-github'
+import remarkParse from 'remark-parse'
+import remarkStringify from 'remark-stringify'
+import {unified} from 'unified'
+import {reporter} from 'vfile-reporter'
+
+unified()
+  .use(remarkParse)
+  .use(remarkGithub)
+  .use(remarkStringify)
+  .process('@unifiedjs', function (error, file) {
+    if (error) throw error
+    if (file) {
+      console.error(reporter(file))
+      console.log(String(file))
+    }
+  })
+```
+
+Yields:
+
+```txt
+no issues found
+```
+
+```markdown
+[**@unifiedjs**](https://github.com/unifiedjs)
+```
+
+### `Processor`
+
+Type of a [`processor`][api-processor] (TypeScript type).
+
+### `RunCallback`
+
+Callback called when transformers are done (TypeScript type).
+
+Called with either an error or results.
+
+###### Parameters
+
+*   `error` (`Error`, optional)
+    — fatal error
+*   `tree` ([`Node`][node], optional)
+    — transformed tree
+*   `file` ([`VFile`][vfile], optional)
+    — file
+
+###### Returns
+
+Nothing (`undefined`).
+
+### `Settings`
+
+Interface of known extra options, that can be supported by parser and
+compilers.
+
+This exists so that users can use packages such as `remark`, which configure
+both parsers and compilers (in this case `remark-parse` and
+`remark-stringify`), and still provide options for them.
+
+When you make parsers or compilers, that could be packaged up together, you
+should support `this.data('settings')` as input and merge it with explicitly
+passed `options`.
+Then, to type it, using `remark-stringify` as an example, do something like:
+
+```ts
+declare module 'unified' {
+  interface Settings {
+    bullet: '*' | '+' | '-'
+    // …
+  }
+}
+
+export {} // You may not need this, but it makes sure the file is a module.
+```
+
+###### Type
+
+```ts
+interface Settings {}
+```
+
+### `TransformCallback`
+
+Callback passed to transforms (TypeScript type).
+
+If the signature of a `transformer` accepts a third argument, the transformer
+may perform asynchronous operations, and must call it.
+
+###### Parameters
+
+*   `error` (`Error`, optional)
+    — fatal error to stop the process
+*   `tree` ([`Node`][node], optional)
+    — new, changed, tree
+*   `file` ([`VFile`][vfile], optional)
+    — new, changed, file
+
+###### Returns
+
+Nothing (`undefined`).
+
+### `Transformer`
+
+Transformers handle syntax trees and files (TypeScript type).
+
+They are functions that are called each time a syntax tree and file are
+passed through the run phase.
+When an error occurs in them (either because it’s thrown, returned,
+rejected, or passed to `next`), the process stops.
+
+The run phase is handled by [`trough`][trough], see its documentation for
+the exact semantics of these functions.
+
+> 👉 **Note**: you should likely ignore `next`: don’t accept it.
+> it supports callback-style async work.
+> But promises are likely easier to reason about.
+
+###### Type
+
+```ts
+type Transformer<
+  Input extends Node = Node,
+  Output extends Node = Input
+> = (
+  tree: Input,
+  file: VFile,
+  next: TransformCallback<Output>
+) =>
+  | Promise<Output | undefined>
+  | Output
+  | Error
+  | undefined
+```
+
 ## Types
 
 This package is fully typed with [TypeScript][].
-It exports the following additional types:
-
-*   `Processor<ParseTree, CurrentTree, CompileTree, CompileResult>`
-    — processor, where `ParseTree` is the tree that the parser creates,
-    `CurrentTree` the tree that the current plugin yields, `CompileTree` the
-    tree that the compiler accepts, and `CompileResult` the thing that the
-    compiler yields
-*   `FrozenProcessor<ParseTree, CurrentTree, CompileTree, CompileResult>`
-    — like `Processor` but frozen
-*   `Plugin<PluginParameters, Input, Output>`
-    — plugin, where `PluginParameters` are the accepted arguments, `Input` the
-    input value, and `Output` the output value (see below)
-*   `Pluggable<PluginParameters>`
-*   `Preset`
-    — preset
-*   `PluginTuple<PluginParameters, Input, Output>`
-    — plugin tuple
-*   `Pluggable<PluginParameters>`
-    — any usable value, where `PluginParameters` are the accepted arguments
-*   `PluggableList`
-    — list of plugins and presets
-*   `Transformer<Input, Output>`
-    — transformer, where `Input` and `Output` are the input/output trees
-*   `TransformCallback`
-    — third argument of a transformer
-*   `Parser<Tree>`
-    — parser as a class or normal function, where `Tree` is the resulting tree
-*   `ParserClass<Tree>`
-    — parser class
-*   `ParserFunction<Tree>`
-    — parser function
-*   `Compiler<Tree, Result>`
-    — compiler as a class or normal function, where `Tree` is the accepted tree
-    and `Result` the thing that the compiler yields
-*   `CompilerClass<Tree, Result>`
-    — compiler class
-*   `CompilerFunction<Tree, Result>`
-    — compiler function
-*   `RunCallback<Tree>`
-    — callback to `run`, where `Tree` is the resulting tree
-*   `ProcessCallback<File>`
-    — callback to `process`, where `File` is the resulting file
+It exports the additional types
+[`CompileResultMap`][api-compile-result-map],
+[`CompileResults`][api-compile-results],
+[`Compiler`][api-compiler],
+[`CompilerClass`][api-compiler-class],
+[`CompilerFunction`][api-compiler-function],
+[`Data`][api-data],
+[`Parser`][api-parser],
+[`ParserClass`][api-parser-class],
+[`ParserFunction`][api-parser-function],
+[`Pluggable`][api-pluggable],
+[`PluggableList`][api-pluggable-list],
+[`Plugin`][api-plugin],
+[`PluginTuple`][api-plugin-tuple],
+[`Preset`][api-preset],
+[`ProcessCallback`][api-process-callback],
+[`Processor`][api-processor],
+[`RunCallback`][api-run-callback],
+[`Settings`][api-settings],
+[`TransformCallback`][api-transform-callback],
+and [`Transformer`][api-transformer]
 
 For TypeScript to work, it is particularly important to type your plugins
 correctly.
@@ -1255,22 +1575,25 @@ node types for the syntax trees provided by our packages (as in,
 
 ```js
 /**
- * @typedef {import('mdast').Root} MdastRoot
  * @typedef {import('hast').Root} HastRoot
- *
+ * @typedef {import('mdast').Root} MdastRoot
+ */
+
+/**
  * @typedef Options
  *   Configuration (optional).
- * @property {boolean} [someField]
+ * @property {boolean | null | undefined} [someField]
  *   Some option (optional).
  */
 
 // To type options:
-/** @type {import('unified').Plugin<[Options?]>} */
+/** @type {import('unified').Plugin<[(Options | null | undefined)?]>} */
 export function myPluginAcceptingOptions(options) {
-  // `options` is `Options?`.
+  const settings = options || {}
+  // `settings` is now `Options`.
 }
 
-// To type a plugin that works on a certain tree:
+// To type a plugin that works on a certain tree, without options:
 /** @type {import('unified').Plugin<[], MdastRoot>} */
 export function myRemarkPlugin() {
   return function (tree, file) {
@@ -1298,10 +1621,13 @@ export function rehypeStringify(options) {}
 
 ## Compatibility
 
-Projects maintained by the unified collective are compatible with all maintained
+Projects maintained by the unified collective are compatible with maintained
 versions of Node.js.
-As of now, that is Node.js 12.20+, 14.14+, and 16.0+.
-Our projects sometimes work with older versions, but this is not guaranteed.
+
+When we cut a new major release, we drop support for unmaintained versions of
+Node.
+This means we try to keep the current release line, `unified@^10`, compatible
+with Node.js 12.
 
 ## Contribute
 
@@ -1422,9 +1748,9 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 
 [downloads]: https://www.npmjs.com/package/unified
 
-[size-badge]: https://img.shields.io/bundlephobia/minzip/unified.svg
+[size-badge]: https://img.shields.io/badge/dynamic/json?label=minzipped%20size&query=$.size.compressedSize&url=https://deno.bundlejs.com/?q=unified
 
-[size]: https://bundlephobia.com/result?p=unified
+[size]: https://bundlejs.com/?q=unified
 
 [sponsors-badge]: https://opencollective.com/unified/sponsors/badge.svg
 
@@ -1478,9 +1804,9 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 
 [nlcst]: https://github.com/syntax-tree/nlcst
 
-[xast]: https://github.com/syntax-tree/xast
-
 [unist]: https://github.com/syntax-tree/unist
+
+[xast]: https://github.com/syntax-tree/xast
 
 [unified-engine]: https://github.com/unifiedjs/unified-engine
 
@@ -1492,85 +1818,43 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 
 [unified-stream]: https://github.com/unifiedjs/unified-stream
 
-[remark-rehype]: https://github.com/remarkjs/remark-rehype
-
-[remark-retext]: https://github.com/remarkjs/remark-retext
+[rehype-remark]: https://github.com/rehypejs/rehype-remark
 
 [rehype-retext]: https://github.com/rehypejs/rehype-retext
 
-[rehype-remark]: https://github.com/rehypejs/rehype-remark
+[remark-rehype]: https://github.com/remarkjs/remark-rehype
+
+[remark-retext]: https://github.com/remarkjs/remark-retext
 
 [node]: https://github.com/syntax-tree/unist#node
 
 [vfile]: https://github.com/vfile/vfile
 
-[vfile-value]: https://github.com/vfile/vfile#vfilevalue
+[vfile-compatible]: https://github.com/vfile/vfile#compatible
+
+[vfile-value]: https://github.com/vfile/vfile#value
 
 [vfile-utilities]: https://github.com/vfile/vfile#list-of-utilities
-
-[overview]: #overview
-
-[file]: #file
-
-[api]: #api
-
-[process]: #processorprocessfile-done
-
-[process-sync]: #processorprocesssyncfile
-
-[parse]: #processorparsefile
-
-[parser]: #processorparser
-
-[stringify]: #processorstringifytree-file
-
-[run]: #processorruntree-file-done
-
-[run-sync]: #processorrunsynctree-file
-
-[compiler]: #processorcompiler
-
-[data]: #processordatakey-value
-
-[attacher]: #function-attacheroptions
-
-[transformer]: #function-transformertree-file-next
-
-[next]: #function-nexterr-tree-file
-
-[freeze]: #processorfreeze
-
-[plugin]: #plugin
-
-[run-done]: #function-doneerr-tree-file
-
-[process-done]: #function-doneerr-file
-
-[contribute]: #contribute
-
-[sponsor]: #sponsor
 
 [rehype-react]: https://github.com/rehypejs/rehype-react
 
 [trough]: https://github.com/wooorm/trough#function-fninput-next
 
-[promise]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[rehype-plugins]: https://github.com/rehypejs/rehype/blob/main/doc/plugins.md#list-of-plugins
 
 [remark-plugins]: https://github.com/remarkjs/remark/blob/main/doc/plugins.md#list-of-plugins
 
-[rehype-plugins]: https://github.com/rehypejs/rehype/blob/main/doc/plugins.md#list-of-plugins
-
 [retext-plugins]: https://github.com/retextjs/retext/blob/main/doc/plugins.md#list-of-plugins
-
-[awesome-remark]: https://github.com/remarkjs/awesome-remark
 
 [awesome-rehype]: https://github.com/rehypejs/awesome-rehype
 
+[awesome-remark]: https://github.com/remarkjs/awesome-remark
+
 [awesome-retext]: https://github.com/retextjs/awesome-retext
 
-[topic-remark-plugin]: https://github.com/topics/remark-plugin
-
 [topic-rehype-plugin]: https://github.com/topics/rehype-plugin
+
+[topic-remark-plugin]: https://github.com/topics/remark-plugin
 
 [topic-retext-plugin]: https://github.com/topics/retext-plugin
 
@@ -1580,10 +1864,62 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 
 [types-nlcst]: https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/nlcst
 
-[preliminary]: https://github.com/retextjs/retext/commit/8fcb1f#diff-168726dbe96b3ce427e7fedce31bb0bc
+[preliminary]: https://github.com/retextjs/retext/commit/8fcb1f
 
-[externalised]: https://github.com/remarkjs/remark/commit/9892ec#diff-168726dbe96b3ce427e7fedce31bb0bc
+[externalised]: https://github.com/remarkjs/remark/commit/9892ec
 
 [published]: https://github.com/unifiedjs/unified/commit/2ba1cf
 
 [ware]: https://github.com/segmentio/ware
+
+[api]: #api
+
+[contribute]: #contribute
+
+[overview]: #overview
+
+[sponsor]: #sponsor
+
+[api-compile-result-map]: #compileresultmap
+
+[api-compile-results]: #compileresults
+
+[api-compiler]: #compiler
+
+[api-compiler-class]: #compilerclass
+
+[api-compiler-function]: #compilerfunction
+
+[api-data]: #data
+
+[api-freeze]: #processorfreeze
+
+[api-parser]: #parser
+
+[api-parser-class]: #parserclass
+
+[api-parser-function]: #parserfunction
+
+[api-pluggable]: #pluggable
+
+[api-pluggable-list]: #pluggablelist
+
+[api-plugin]: #plugin
+
+[api-plugin-tuple]: #plugintuple
+
+[api-preset]: #preset
+
+[api-process]: #processorprocessfile-done
+
+[api-process-callback]: #processcallback
+
+[api-processor]: #processor
+
+[api-run-callback]: #runcallback
+
+[api-settings]: #settings
+
+[api-transform-callback]: #transformcallback
+
+[api-transformer]: #transformer

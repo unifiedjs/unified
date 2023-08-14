@@ -1,4 +1,4 @@
-import type {VFileValue} from 'vfile'
+import type {Value} from 'vfile'
 import type {CompileResults} from './lib/index.js'
 
 export type {
@@ -8,13 +8,13 @@ export type {
   CompilerClass,
   CompilerFunction,
   // `Data` is typed and exposed below.
+  Parser,
+  ParserClass,
+  ParserFunction,
   Pluggable,
   PluggableList,
   Plugin,
   PluginTuple,
-  Parser,
-  ParserClass,
-  ParserFunction,
   Preset,
   ProcessCallback,
   Processor,
@@ -29,7 +29,7 @@ export {unified} from './lib/index.js'
 /**
  * Interface of known results from compilers.
  *
- * Normally, compilers result in text ({@link VFileValue `VFileValue`}).
+ * Normally, compilers result in text ({@link Value `Value`} of `vfile`).
  * When you compile to something else, such as a React node (as in,
  * `rehype-react`), you can augment this interface to include that type.
  *

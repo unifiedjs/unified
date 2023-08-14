@@ -477,6 +477,10 @@ declare module './index.js' {
   interface CompileResultMap {
     ReactNode: ReactNode
   }
+
+  interface Data {
+    something?: string | undefined
+  }
 }
 
 // Compile plugin (to a non-node).

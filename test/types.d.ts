@@ -1,7 +1,10 @@
 declare module 'unified' {
   interface Data {
+    alpha?: boolean | undefined
+    bar?: boolean | undefined
     baz?: 'qux' | undefined
-    foo?: 'bar' | undefined
+    foo?: 'bar' | boolean | undefined
+    qux?: boolean | undefined
     x?: boolean | undefined
   }
 }
