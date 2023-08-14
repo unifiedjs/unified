@@ -48,6 +48,4 @@ export interface CompileResultMap {
   // Note: if `Value` from `VFile` is changed, this should too.
   Uint8Array: Uint8Array
   string: string
-  // Empties.
-  null: null
 }

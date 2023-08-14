@@ -343,9 +343,7 @@ expectType<Processor<MdastRoot>>(processorWithRemarkParse)
 expectType<MdastRoot>(processorWithRemarkParse.parse(''))
 expectType<UnistNode>(processorWithRemarkParse.runSync(mdastRoot))
 expectType<UnistNode>(processorWithRemarkParse.runSync(hastRoot))
-expectType<Uint8Array | string | null>(
-  processorWithRemarkParse.stringify(mdastRoot)
-)
+expectType<Uint8Array | string>(processorWithRemarkParse.stringify(mdastRoot))
 processorWithRemarkParse.stringify(hastRoot)
 expectType<VFile>(processorWithRemarkParse.processSync(''))
 
@@ -361,12 +359,8 @@ expectType<UnistNode>(processorWithRemarkLint.parse(''))
 expectType<MdastRoot>(processorWithRemarkLint.runSync(mdastRoot))
 // @ts-expect-error: not the correct node type.
 processorWithRemarkLint.runSync(hastRoot)
-expectType<Uint8Array | string | null>(
-  processorWithRemarkLint.stringify(mdastRoot)
-)
-expectType<Uint8Array | string | null>(
-  processorWithRemarkLint.stringify(hastRoot)
-)
+expectType<Uint8Array | string>(processorWithRemarkLint.stringify(mdastRoot))
+expectType<Uint8Array | string>(processorWithRemarkLint.stringify(hastRoot))
 expectType<VFile>(processorWithRemarkLint.processSync(''))
 
 // Inspect/transform plugin (implicit).
@@ -386,10 +380,10 @@ expectType<UnistNode>(processorWithRemarkLintImplicit.parse(''))
 expectType<MdastRoot>(processorWithRemarkLintImplicit.runSync(mdastRoot))
 // @ts-expect-error: not the correct node type.
 processorWithRemarkLintImplicit.runSync(hastRoot)
-expectType<Uint8Array | string | null>(
+expectType<Uint8Array | string>(
   processorWithRemarkLintImplicit.stringify(mdastRoot)
 )
-expectType<Uint8Array | string | null>(
+expectType<Uint8Array | string>(
   processorWithRemarkLintImplicit.stringify(hastRoot)
 )
 expectType<VFile>(processorWithRemarkLintImplicit.processSync(''))
@@ -406,12 +400,8 @@ expectType<UnistNode>(processorWithRemarkRehype.parse(''))
 expectType<HastRoot>(processorWithRemarkRehype.runSync(mdastRoot))
 // @ts-expect-error: not the correct node type.
 processorWithRemarkRehype.runSync(hastRoot)
-expectType<Uint8Array | string | null>(
-  processorWithRemarkRehype.stringify(hastRoot)
-)
-expectType<Uint8Array | string | null>(
-  processorWithRemarkRehype.stringify(mdastRoot)
-)
+expectType<Uint8Array | string>(processorWithRemarkRehype.stringify(hastRoot))
+expectType<Uint8Array | string>(processorWithRemarkRehype.stringify(mdastRoot))
 expectType<VFile>(processorWithRemarkRehype.processSync(''))
 
 // Mutate  plugin (implicit).
@@ -431,10 +421,10 @@ expectType<UnistNode>(processorWithRemarkRehypeImplicit.parse(''))
 expectType<HastRoot>(processorWithRemarkRehypeImplicit.runSync(mdastRoot))
 // @ts-expect-error: not the correct node type.
 processorWithRemarkRehypeImplicit.runSync(hastRoot)
-expectType<Uint8Array | string | null>(
+expectType<Uint8Array | string>(
   processorWithRemarkRehypeImplicit.stringify(hastRoot)
 )
-expectType<Uint8Array | string | null>(
+expectType<Uint8Array | string>(
   processorWithRemarkRehypeImplicit.stringify(mdastRoot)
 )
 expectType<VFile>(processorWithRemarkRehypeImplicit.processSync(''))

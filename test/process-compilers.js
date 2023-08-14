@@ -34,20 +34,6 @@ test('process (compilers)', async function (t) {
     assert.equal(file.result, undefined)
   })
 
-  await t.test('should compile `null`', async function () {
-    const processor = unified()
-
-    processor.Parser = simpleParser
-    processor.Compiler = function () {
-      return null
-    }
-
-    const file = await processor.process('alpha')
-
-    assert.equal(file.value, 'alpha')
-    assert.equal(file.result, undefined)
-  })
-
   await t.test('should compile non-text', async function () {
     const processor = unified()
     const result = {
