@@ -1291,4 +1291,83 @@ test('`use`', async function (t) {
       }
     )
   })
+
+  await t.test('reconfigure (non-first parameters)', async function (t) {
+    await t.test(
+      'should reconfigure plugins (non-first parameters)',
+      async function () {
+        let calls = 0
+
+        unified()
+          .use(fn, givenOptions, givenOptions, givenOptions, undefined)
+          .use(fn, otherOptions, otherOptions, undefined, otherOptions)
+          .freeze()
+
+        assert.equal(calls, 1)
+
+        /**
+         * @param {unknown} a
+         * @param {unknown} b
+         * @param {unknown} c
+         * @param {unknown} d
+         */
+        function fn(a, b, c, d) {
+          assert.equal(arguments.length, 4)
+          assert.deepEqual(a, mergedOptions)
+          assert.deepEqual(b, otherOptions)
+          assert.deepEqual(c, undefined)
+          assert.deepEqual(d, otherOptions)
+          calls++
+        }
+      }
+    )
+
+    await t.test('should keep parameter length (#1)', async function () {
+      let calls = 0
+
+      unified().use(fn).use(fn).freeze()
+
+      assert.equal(calls, 1)
+
+      /**
+       * @param {...unknown} parameters
+       */
+      function fn(...parameters) {
+        assert.deepEqual(parameters, [])
+        calls++
+      }
+    })
+
+    await t.test('should keep parameter length (#2)', async function () {
+      let calls = 0
+
+      unified().use(fn, givenOptions).use(fn).freeze()
+
+      assert.equal(calls, 1)
+
+      /**
+       * @param {...unknown} parameters
+       */
+      function fn(...parameters) {
+        assert.deepEqual(parameters, [givenOptions])
+        calls++
+      }
+    })
+
+    await t.test('should keep parameter length (#3)', async function () {
+      let calls = 0
+
+      unified().use(fn).use(fn, givenOptions).freeze()
+
+      assert.equal(calls, 1)
+
+      /**
+       * @param {...unknown} parameters
+       */
+      function fn(...parameters) {
+        assert.deepEqual(parameters, [givenOptions])
+        calls++
+      }
+    })
+  })
 })
