@@ -4,25 +4,25 @@ import {unified} from 'unified'
 import {simpleCompiler, simpleParser} from './util/simple.js'
 
 test('`processSync`', async function (t) {
-  await t.test('should throw w/o `Parser`', async function () {
+  await t.test('should throw w/o `parser`', async function () {
     assert.throws(function () {
       unified().processSync('')
-    }, /Cannot `processSync` without `Parser`/)
+    }, /Cannot `processSync` without `parser`/)
   })
 
-  await t.test('should throw w/o `Compiler`', async function () {
+  await t.test('should throw w/o `compiler`', async function () {
     assert.throws(function () {
       const processor = unified()
-      processor.Parser = simpleParser
+      processor.parser = simpleParser
       processor.processSync('')
-    }, /Cannot `processSync` without `Compiler`/)
+    }, /Cannot `processSync` without `compiler`/)
   })
 
   await t.test('should support `processSync`', async function () {
     const processor = unified()
 
-    processor.Parser = simpleParser
-    processor.Compiler = simpleCompiler
+    processor.parser = simpleParser
+    processor.compiler = simpleCompiler
 
     assert.equal(processor.processSync('alpha').toString(), 'alpha')
   })
@@ -32,8 +32,8 @@ test('`processSync`', async function (t) {
     async function () {
       assert.throws(function () {
         const processor = unified()
-        processor.Parser = simpleParser
-        processor.Compiler = simpleCompiler
+        processor.parser = simpleParser
+        processor.compiler = simpleCompiler
 
         processor
           .use(function () {
@@ -65,7 +65,7 @@ test('`processSync`', async function (t) {
  */
 function parse() {
   // type-coverage:ignore-next-line -- something with TS being wrong.
-  this.Parser = simpleParser
+  this.parser = simpleParser
 }
 
 // `this` in JS is buggy in TS.
@@ -74,5 +74,5 @@ function parse() {
  */
 function compile() {
   // type-coverage:ignore-next-line -- something with TS being wrong.
-  this.Compiler = simpleCompiler
+  this.compiler = simpleCompiler
 }

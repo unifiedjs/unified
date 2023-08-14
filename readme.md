@@ -19,11 +19,11 @@
 *   [Overview](#overview)
 *   [API](#api)
     *   [`processor()`](#processor)
-    *   [`processor.Compiler`](#processorcompiler)
-    *   [`processor.Parser`](#processorparser)
+    *   [`processor.compiler`](#processorcompiler)
     *   [`processor.data([key[, value]])`](#processordatakey-value)
     *   [`processor.freeze()`](#processorfreeze)
     *   [`processor.parse(file)`](#processorparsefile)
+    *   [`processor.parser`](#processorparser)
     *   [`processor.process(file[, done])`](#processorprocessfile-done)
     *   [`processor.processSync(file)`](#processorprocesssyncfile)
     *   [`processor.run(tree[, file][, done])`](#processorruntree-file-done)
@@ -33,12 +33,8 @@
     *   [`CompileResultMap`](#compileresultmap)
     *   [`CompileResults`](#compileresults)
     *   [`Compiler`](#compiler)
-    *   [`CompilerClass`](#compilerclass)
-    *   [`CompilerFunction`](#compilerfunction)
     *   [`Data`](#data)
     *   [`Parser`](#parser)
-    *   [`ParserClass`](#parserclass)
-    *   [`ParserFunction`](#parserfunction)
     *   [`Pluggable`](#pluggable)
     *   [`PluggableList`](#pluggablelist)
     *   [`Plugin`](#plugin)
@@ -414,13 +410,9 @@ process.stdin.pipe(
 )
 ```
 
-### `processor.Compiler`
+### `processor.compiler`
 
 Compiler to use ([`Compiler`][api-compiler], optional).
-
-### `processor.Parser`
-
-Parser to use ([`Parser`][api-parser], optional).
 
 ### `processor.data([key[, value]])`
 
@@ -592,6 +584,10 @@ Yields:
   }
 }
 ```
+
+### `processor.parser`
+
+Parser to use ([`Parser`][api-parser], optional).
 
 ### `processor.process(file[, done])`
 
@@ -986,14 +982,8 @@ A **compiler** handles the compiling of a syntax tree to something else
 
 It is used in the stringify phase and called with a [`Node`][node]
 and [`VFile`][vfile] representation of the document to compile.
-
-`Compiler` can be a normal function, in which case it should return the
-textual representation of the given tree (typically `string`).
-
-`Compiler` can also be a constructor function (a function with a `compile`
-field in its `prototype`), in which case it is constructed with `new`.
-Instances must have a `compile` method that is called without arguments
-and typically returns a `string`.
+It should return the textual representation of the given tree (typically
+`string`).
 
 > 👉 **Note**: unified typically compiles by serializing: most compilers
 > return `string` (or `Uint8Array`).
@@ -1010,40 +1000,6 @@ and typically returns a `string`.
 
 ```ts
 type Compiler<
-  Tree extends Node = Node,
-  Result extends CompileResults = CompileResults
-> = CompilerClass<Tree, Result> | CompilerFunction<Tree, Result>
-```
-
-See [`CompilerClass`][api-compiler-class] and
-[`CompilerFunction`][api-compiler-function] for more info.
-
-### `CompilerClass`
-
-Class to compile trees (TypeScript type).
-
-###### Type
-
-```ts
-type CompilerClass<
-  Tree extends Node = Node,
-  Result extends CompileResults = CompileResults
-> = {
-  new (tree: Tree, file: VFile): CompilerClass<Tree, Result>['prototype']
-  prototype: {
-    compile(): Result
-  }
-}
-```
-
-### `CompilerFunction`
-
-Regular function to compile a tree (TypeScript type).
-
-###### Type
-
-```ts
-type CompilerFunction<
   Tree extends Node = Node,
   Result extends CompileResults = CompileResults
 > = (tree: Tree, file: VFile) => Result
@@ -1086,47 +1042,13 @@ A **parser** handles the parsing of text to a syntax tree (TypeScript type).
 
 It is used in the parse phase and is called with a `string` and
 [`VFile`][vfile] of the document to parse.
-
-`Parser` can be a normal function, in which case it must return the syntax
-tree representation of the given file ([`Node`][node]).
-
-`Parser` can also be a constructor function (a function with a `parse`
-field in its `prototype`), in which case it is constructed with `new`.
-Instances must have a `parse` method that is called without arguments and
-must return a [`Node`][node].
+It must return the syntax tree representation of the given file
+([`Node`][node]).
 
 ###### Type
 
 ```ts
-type Parser<Tree extends Node = Node> = ParserClass<Tree> | ParserFunction<Tree>
-```
-
-See [`ParserClass`][api-parser-class] and
-[`ParserFunction`][api-parser-function] for more info.
-
-### `ParserClass`
-
-Class to parse files (TypeScript type).
-
-###### Type
-
-```ts
-type ParserClass<Tree extends Node = Node> = {
-  new (document: string, file: VFile): ParserClass<Tree>['prototype']
-  prototype: {
-    parse(): Tree
-  }
-}
-```
-
-### `ParserFunction`
-
-Regular function to parse a file (TypeScript type).
-
-###### Type
-
-```ts
-type ParserFunction<Tree extends Node = Node> = (document: string, file: VFile) => Tree
+type Parser<Tree extends Node = Node> = (document: string, file: VFile) => Tree
 ```
 
 ### `Pluggable`
@@ -1548,12 +1470,8 @@ It exports the additional types
 [`CompileResultMap`][api-compile-result-map],
 [`CompileResults`][api-compile-results],
 [`Compiler`][api-compiler],
-[`CompilerClass`][api-compiler-class],
-[`CompilerFunction`][api-compiler-function],
 [`Data`][api-data],
 [`Parser`][api-parser],
-[`ParserClass`][api-parser-class],
-[`ParserFunction`][api-parser-function],
 [`Pluggable`][api-pluggable],
 [`PluggableList`][api-pluggable-list],
 [`Plugin`][api-plugin],
@@ -1886,19 +1804,11 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 
 [api-compiler]: #compiler
 
-[api-compiler-class]: #compilerclass
-
-[api-compiler-function]: #compilerfunction
-
 [api-data]: #data
 
 [api-freeze]: #processorfreeze
 
 [api-parser]: #parser
-
-[api-parser-class]: #parserclass
-
-[api-parser-function]: #parserfunction
 
 [api-pluggable]: #pluggable
 

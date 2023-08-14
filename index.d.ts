@@ -5,12 +5,8 @@ export type {
   // `CompileResultMap` is typed and exposed below.
   CompileResults,
   Compiler,
-  CompilerClass,
-  CompilerFunction,
   // `Data` is typed and exposed below.
   Parser,
-  ParserClass,
-  ParserFunction,
   Pluggable,
   PluggableList,
   Plugin,

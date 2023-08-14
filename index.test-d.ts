@@ -187,30 +187,17 @@ unified()
 
 unified().use(function () {
   // Function.
-  this.Parser = function (doc, file) {
+  this.parser = function (doc, file) {
     expectType<string>(doc)
     expectType<VFile>(file)
     return {type: ''}
   }
 
-  // Class.
-  this.Parser = class {
-    parse() {
-      return {type: 'x'}
-    }
-  }
-
   // Function.
-  this.Compiler = function (tree, file) {
+  this.compiler = function (tree, file) {
     expectType<UnistNode>(tree)
     expectType<VFile>(file)
     return ''
-  }
-
-  this.Compiler = class {
-    compile() {
-      return ''
-    }
   }
 })
 

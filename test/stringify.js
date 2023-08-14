@@ -11,16 +11,16 @@ test('`stringify`', async function (t) {
   const givenFile = new VFile('alpha')
   const givenNode = {type: 'bravo'}
 
-  await t.test('should throw without `Compiler`', async function () {
+  await t.test('should throw without `compiler`', async function () {
     assert.throws(function () {
       unified().stringify(givenNode)
-    }, /Cannot `stringify` without `Compiler`/)
+    }, /Cannot `stringify` without `compiler`/)
   })
 
   await t.test('should support a plain function', async function () {
     const processor = unified()
 
-    processor.Compiler = function (node, file) {
+    processor.compiler = function (node, file) {
       assert.equal(node, givenNode)
       assert.ok(file instanceof VFile)
       assert.equal(arguments.length, 2)
@@ -34,7 +34,7 @@ test('`stringify`', async function (t) {
     const processor = unified()
 
     // Note: arrow function intended (which doesn’t have a prototype).
-    processor.Compiler = (node, file) => {
+    processor.compiler = (node, file) => {
       assert.equal(node, givenNode, 'should pass a node')
       assert.ok(file instanceof VFile, 'should pass a file')
       return 'echo'
@@ -42,54 +42,4 @@ test('`stringify`', async function (t) {
 
     assert.equal(processor.stringify(givenNode, givenFile), 'echo')
   })
-
-  await t.test('should support a class', async function () {
-    const processor = unified()
-
-    processor.Compiler = class {
-      /**
-       * @param {Node} node
-       * @param {VFile} file
-       */
-      constructor(node, file) {
-        assert.equal(node, givenNode)
-        assert.ok(file instanceof VFile)
-      }
-
-      compile() {
-        assert.equal(arguments.length, 0)
-        return 'echo'
-      }
-    }
-
-    assert.equal(processor.stringify(givenNode, givenFile), 'echo')
-  })
-
-  await t.test(
-    'should support a constructor w/ `compile` in prototype',
-    async function () {
-      const processor = unified()
-
-      /**
-       * @constructor
-       * @param {Node} node
-       * @param {VFile} file
-       */
-      function Compiler(node, file) {
-        assert.equal(node, givenNode, 'should pass a node')
-        assert.ok(file instanceof VFile, 'should pass a file')
-        assert.equal(arguments.length, 2)
-      }
-
-      // type-coverage:ignore-next-line -- for some reason TS does understand `Compiler.prototype`, but not `Compiler.prototype`.
-      Compiler.prototype.compile = function () {
-        assert.equal(arguments.length, 0)
-        return 'echo'
-      }
-
-      processor.Compiler = Compiler
-
-      assert.equal(processor.stringify(givenNode, givenFile), 'echo')
-    }
-  )
 })

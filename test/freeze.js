@@ -221,7 +221,7 @@ test('`freeze`', async function (t) {
  */
 function parse() {
   // type-coverage:ignore-next-line -- something with TS being wrong.
-  this.Parser = simpleParser
+  this.parser = simpleParser
 }
 
 // `this` in JS is buggy in TS.
@@ -230,5 +230,5 @@ function parse() {
  */
 function compile() {
   // type-coverage:ignore-next-line -- something with TS being wrong.
-  this.Compiler = simpleCompiler
+  this.compiler = simpleCompiler
 }

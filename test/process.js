@@ -8,31 +8,31 @@ test('`process`', async function (t) {
   const givenFile = new VFile('alpha')
   const givenNode = {type: 'bravo'}
 
-  await t.test('should throw w/o `Parser`', async function () {
+  await t.test('should throw w/o `parser`', async function () {
     assert.throws(function () {
       unified().process('')
-    }, /Cannot `process` without `Parser`/)
+    }, /Cannot `process` without `parser`/)
   })
 
-  await t.test('should throw w/o `Compiler`', async function () {
+  await t.test('should throw w/o `compiler`', async function () {
     assert.throws(function () {
       const processor = unified()
-      processor.Parser = simpleParser
+      processor.parser = simpleParser
       processor.process('')
-    }, /Cannot `process` without `Compiler`/)
+    }, /Cannot `process` without `compiler`/)
   })
 
   await t.test('should pass/yield expected values', async function () {
     const processor = unified()
 
-    processor.Parser = function (doc, file) {
+    processor.parser = function (doc, file) {
       assert.equal(typeof doc, 'string')
       assert.equal(file, givenFile)
       assert.equal(arguments.length, 2)
       return givenNode
     }
 
-    processor.Compiler = function (tree, file) {
+    processor.compiler = function (tree, file) {
       assert.equal(tree, givenNode)
       assert.equal(file, givenFile)
       assert.equal(arguments.length, 2)
@@ -59,8 +59,8 @@ test('`process`', async function (t) {
   await t.test('should rethrow errors in `done` throws', async function () {
     const processor = unified()
 
-    processor.Parser = simpleParser
-    processor.Compiler = simpleCompiler
+    processor.parser = simpleParser
+    processor.compiler = simpleCompiler
 
     assert.throws(function () {
       processor.process(givenFile, function () {
@@ -74,8 +74,8 @@ test('`process`', async function (t) {
     async function () {
       const processor = unified()
 
-      processor.Parser = simpleParser
-      processor.Compiler = simpleCompiler
+      processor.parser = simpleParser
+      processor.compiler = simpleCompiler
 
       await new Promise(function (resolve, reject) {
         processor.process(givenFile).then(

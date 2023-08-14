@@ -8,8 +8,8 @@ test('process (compilers)', async function (t) {
     const processor = unified()
     const result = 'bravo'
 
-    processor.Parser = simpleParser
-    processor.Compiler = function () {
+    processor.parser = simpleParser
+    processor.compiler = function () {
       return result
     }
 
@@ -23,8 +23,8 @@ test('process (compilers)', async function (t) {
     const processor = unified()
     const result = new Uint8Array([0xef, 0xbb, 0xbf, 0x61, 0x62, 0x63])
 
-    processor.Parser = simpleParser
-    processor.Compiler = function () {
+    processor.parser = simpleParser
+    processor.compiler = function () {
       return result
     }
 
@@ -44,10 +44,10 @@ test('process (compilers)', async function (t) {
       type: 'p'
     }
 
-    processor.Parser = simpleParser
+    processor.parser = simpleParser
 
     // @ts-expect-error: custom result, which should be registered!
-    processor.Compiler = function () {
+    processor.compiler = function () {
       return result
     }
 
