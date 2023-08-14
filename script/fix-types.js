@@ -13,19 +13,25 @@ try {
 const result = file
   .replace(/declare const Processor_base: [^\n]+/, function () {
     console.log('Fixed `CallableInstance` import')
-    return "declare const CallableInstance: import('./callable-instance.js').ICallableInstance"
+    return "import {CallableInstance} from './callable-instance.js'"
   })
   .replace(/extends Processor_base/, function () {
     console.log('Fixed `CallableInstance` use')
     return 'extends CallableInstance<[], Processor<ParseTree, HeadTree, TailTree, CompileTree, CompileResult>>'
   })
   .replace(
-    /\.\.\.parameters: Parameters_1 \| \[boolean] \| undefined/,
-    function () {
+    /\.\.\.parameters: (Parameters_\d) \| \[boolean] \| undefined/,
+    /**
+     *
+     * @param {string} $0
+     * @param {string} $1
+     * @returns {string}
+     */
+    function ($0, $1) {
       console.log(
         'Fixed `use` overload with plugin, and *non-optional* parameters'
       )
-      return '...parameters: Parameters_1 | [boolean]'
+      return '...parameters: ' + $1 + ' | [boolean]'
     }
   )
 
