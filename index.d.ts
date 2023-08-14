@@ -10,8 +10,6 @@ export type {
   Pluggable,
   PluggableList,
   Plugin,
-  // To do: remove next major.
-  Plugin as Attacher,
   PluginTuple,
   Parser,
   ParserClass,
