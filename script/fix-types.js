@@ -37,7 +37,7 @@ const result = file
 
 if (file === result) {
   console.error(
-    'Could not fix `lib/index.d.ts`, was `tsc` fixed somewhow? Or were changes already applied?'
+    'Could not fix `lib/index.d.ts`, was `tsc` fixed somehow? Or were changes already applied?'
   )
 } else {
   await fs.writeFile(url, result)

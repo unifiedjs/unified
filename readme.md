@@ -1089,7 +1089,7 @@ Plugins configure the processors they are applied on in the following ways:
     configuring data
 *   they specify how to handle trees and files
 
-In practise, they are functions that can receive options and configure the
+In practice, they are functions that can receive options and configure the
 processor (`this`).
 
 > 👉 **Note**: plugins are called when the processor is *frozen*, not when they
