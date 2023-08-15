@@ -104,14 +104,14 @@ npm install unified
 In Deno with [`esm.sh`][esmsh]:
 
 ```js
-import {unified} from 'https://esm.sh/unified@10'
+import {unified} from 'https://esm.sh/unified@11'
 ```
 
 In browsers with [`esm.sh`][esmsh]:
 
 ```html
 <script type="module">
-  import {unified} from 'https://esm.sh/unified@10?bundle'
+  import {unified} from 'https://esm.sh/unified@11?bundle'
 </script>
 ```
 
