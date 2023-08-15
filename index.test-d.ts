@@ -575,7 +575,7 @@ const remarkStringify: Plugin<[], MdastRoot, string> = function () {
   // Empty.
 }
 
-expectType<Uint8Array | string>(
+expectType<string>(
   unified().use(remarkStringify).stringify({type: 'root', children: []})
 )
 
