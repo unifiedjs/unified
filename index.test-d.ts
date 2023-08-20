@@ -464,10 +464,6 @@ declare module './index.js' {
   interface CompileResultMap {
     ReactNode: ReactNode
   }
-
-  interface Data {
-    something?: string | undefined
-  }
 }
 
 // Compile plugin (to a non-node).
@@ -551,6 +547,15 @@ expectType<Processor>(
     ]
   })
 )
+
+/**
+ * Register our setting.
+ */
+declare module './index.js' {
+  interface Settings {
+    something?: string | undefined
+  }
+}
 
 expectType<Processor>(
   unified().use({

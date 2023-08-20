@@ -22,6 +22,9 @@ export type {
 
 export {unified} from './lib/index.js'
 
+// See: <https://github.com/sindresorhus/type-fest/blob/main/source/empty-object.d.ts>
+declare const emptyObjectSymbol: unique symbol
+
 /**
  * Interface of known results from compilers.
  *
@@ -98,5 +101,6 @@ export interface Data {
  * export {} // You may not need this, but it makes sure the file is a module.
  * ```
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface Settings {}
+export interface Settings {
+  [emptyObjectSymbol]?: never
+}
