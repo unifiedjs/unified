@@ -1666,7 +1666,7 @@ work on [`ware`][ware], as it was a huge initial inspiration.
 
 [downloads]: https://www.npmjs.com/package/unified
 
-[size-badge]: https://img.shields.io/badge/dynamic/json?label=minzipped%20size&query=$.size.compressedSize&url=https://deno.bundlejs.com/?q=unified
+[size-badge]: https://img.shields.io/bundlejs/size/unified
 
 [size]: https://bundlejs.com/?q=unified
 
