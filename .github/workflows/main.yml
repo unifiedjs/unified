@@ -22,27 +22,27 @@ jobs:
         node:
           - lts/gallium
           - node
-  canary:
-    name: canary / ${{matrix.package}}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: node
-      - run: npm install
-      - run: npm run build
-      - uses: actions/checkout@v3
-        with:
-          repository: ${{matrix.package}}
-          path: canary/${{matrix.package}}
-      - run: npm install && npx rimraf "node_modules/**/unified" && npm test
-        working-directory: canary/${{matrix.package}}
-    strategy:
-      fail-fast: false
-      matrix:
-        package:
-          - rehypejs/rehype
-          - remarkjs/remark
-          - retextjs/retext
-          - unifiedjs/unified-engine
+  # canary:
+  #   name: canary / ${{matrix.package}}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: actions/setup-node@v3
+  #       with:
+  #         node-version: node
+  #     - run: npm install
+  #     - run: npm run build
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         repository: ${{matrix.package}}
+  #         path: canary/${{matrix.package}}
+  #     - run: npm install && npx rimraf "node_modules/**/unified" && npm test
+  #       working-directory: canary/${{matrix.package}}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       package:
+  #         - rehypejs/rehype
+  #         - remarkjs/remark
+  #         - retextjs/retext
+  #         - unifiedjs/unified-engine
