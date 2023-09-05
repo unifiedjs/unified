@@ -39,4 +39,15 @@ test('`data`', async function (t) {
       baz: 'qux'
     })
   })
+
+  await t.test('should support functions in data', async function () {
+    const fn = unified().data('fn', func)().data('fn')
+
+    assert(typeof fn === 'function')
+    assert.equal(fn, func)
+
+    function func() {
+      return 'alpha'
+    }
+  })
 })

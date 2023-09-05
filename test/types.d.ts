@@ -3,6 +3,7 @@ declare module 'unified' {
     baz?: 'qux' | undefined
     foo?: 'bar' | undefined
     x?: boolean | undefined
+    fn?: Function | undefined
   }
 
   interface Settings {
