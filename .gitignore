@@ -3,6 +3,7 @@ node_modules/
 .DS_Store
 *.d.ts
 *.log
+*.map
 yarn.lock
 !/index.d.ts
 !/test/types.d.ts
