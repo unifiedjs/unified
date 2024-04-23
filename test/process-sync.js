@@ -64,7 +64,6 @@ test('`processSync`', async function (t) {
  * @type {import('unified').Plugin<[], string, import('unist').Node>}
  */
 function parse() {
-  // type-coverage:ignore-next-line -- something with TS being wrong.
   this.parser = simpleParser
 }
 
@@ -73,6 +72,5 @@ function parse() {
  * @type {import('unified').Plugin<[], import('unist').Node, string>}
  */
 function compile() {
-  // type-coverage:ignore-next-line -- something with TS being wrong.
   this.compiler = simpleCompiler
 }
