@@ -25,8 +25,8 @@ test('`process`', async function (t) {
   await t.test('should pass/yield expected values', async function () {
     const processor = unified()
 
-    processor.parser = function (doc, file) {
-      assert.equal(typeof doc, 'string')
+    processor.parser = function (document, file) {
+      assert.equal(typeof document, 'string')
       assert.equal(file, givenFile)
       assert.equal(arguments.length, 2)
       return givenNode

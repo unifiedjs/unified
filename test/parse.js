@@ -19,8 +19,8 @@ test('`parse`', async function (t) {
   await t.test('should support a plain function', async function () {
     const processor = unified()
 
-    processor.parser = function (doc, file) {
-      assert.equal(typeof doc, 'string')
+    processor.parser = function (document, file) {
+      assert.equal(typeof document, 'string')
       assert.ok(file instanceof VFile)
       assert.equal(arguments.length, 2)
       return givenNode
@@ -33,8 +33,8 @@ test('`parse`', async function (t) {
     const processor = unified()
 
     // Note: arrow function intended (which doesn’t have a prototype).
-    processor.parser = (doc, file) => {
-      assert.equal(typeof doc, 'string')
+    processor.parser = (document, file) => {
+      assert.equal(typeof document, 'string')
       assert.ok(file instanceof VFile)
       return givenNode
     }

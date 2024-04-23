@@ -41,12 +41,14 @@ test('`data`', async function (t) {
   })
 
   await t.test('should support functions in data', async function () {
-    const fn = unified().data('fn', func)().data('fn')
+    const actual = unified()
+      .data('functionValue', value)()
+      .data('functionValue')
 
-    assert(typeof fn === 'function')
-    assert.equal(fn, func)
+    assert(typeof actual === 'function')
+    assert.equal(actual, value)
 
-    function func() {
+    function value() {
       return 'alpha'
     }
   })

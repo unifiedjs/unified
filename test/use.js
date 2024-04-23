@@ -1299,8 +1299,8 @@ test('`use`', async function (t) {
         let calls = 0
 
         unified()
-          .use(fn, givenOptions, givenOptions, givenOptions, undefined)
-          .use(fn, otherOptions, otherOptions, undefined, otherOptions)
+          .use(value, givenOptions, givenOptions, givenOptions, undefined)
+          .use(value, otherOptions, otherOptions, undefined, otherOptions)
           .freeze()
 
         assert.equal(calls, 1)
@@ -1311,7 +1311,7 @@ test('`use`', async function (t) {
          * @param {unknown} c
          * @param {unknown} d
          */
-        function fn(a, b, c, d) {
+        function value(a, b, c, d) {
           assert.equal(arguments.length, 4)
           assert.deepEqual(a, mergedOptions)
           assert.deepEqual(b, otherOptions)
@@ -1325,14 +1325,14 @@ test('`use`', async function (t) {
     await t.test('should keep parameter length (#1)', async function () {
       let calls = 0
 
-      unified().use(fn).use(fn).freeze()
+      unified().use(value).use(value).freeze()
 
       assert.equal(calls, 1)
 
       /**
        * @param {...unknown} parameters
        */
-      function fn(...parameters) {
+      function value(...parameters) {
         assert.deepEqual(parameters, [])
         calls++
       }
@@ -1341,14 +1341,14 @@ test('`use`', async function (t) {
     await t.test('should keep parameter length (#2)', async function () {
       let calls = 0
 
-      unified().use(fn, givenOptions).use(fn).freeze()
+      unified().use(value, givenOptions).use(value).freeze()
 
       assert.equal(calls, 1)
 
       /**
        * @param {...unknown} parameters
        */
-      function fn(...parameters) {
+      function value(...parameters) {
         assert.deepEqual(parameters, [givenOptions])
         calls++
       }
@@ -1357,14 +1357,14 @@ test('`use`', async function (t) {
     await t.test('should keep parameter length (#3)', async function () {
       let calls = 0
 
-      unified().use(fn).use(fn, givenOptions).freeze()
+      unified().use(value).use(value, givenOptions).freeze()
 
       assert.equal(calls, 1)
 
       /**
        * @param {...unknown} parameters
        */
-      function fn(...parameters) {
+      function value(...parameters) {
         assert.deepEqual(parameters, [givenOptions])
         calls++
       }

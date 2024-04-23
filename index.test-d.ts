@@ -187,8 +187,8 @@ unified()
 
 unified().use(function () {
   // Function.
-  this.parser = function (doc, file) {
-    expectType<string>(doc)
+  this.parser = function (document, file) {
+    expectType<string>(document)
     expectType<VFile>(file)
     return {type: ''}
   }

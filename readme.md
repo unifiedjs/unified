@@ -12,65 +12,65 @@
 
 ## Contents
 
-*   [What is this?](#what-is-this)
-*   [When should I use this?](#when-should-i-use-this)
-*   [Install](#install)
-*   [Use](#use)
-*   [Overview](#overview)
-*   [API](#api)
-    *   [`processor()`](#processor)
-    *   [`processor.compiler`](#processorcompiler)
-    *   [`processor.data([key[, value]])`](#processordatakey-value)
-    *   [`processor.freeze()`](#processorfreeze)
-    *   [`processor.parse(file)`](#processorparsefile)
-    *   [`processor.parser`](#processorparser)
-    *   [`processor.process(file[, done])`](#processorprocessfile-done)
-    *   [`processor.processSync(file)`](#processorprocesssyncfile)
-    *   [`processor.run(tree[, file][, done])`](#processorruntree-file-done)
-    *   [`processor.runSync(tree[, file])`](#processorrunsynctree-file)
-    *   [`processor.stringify(tree[, file])`](#processorstringifytree-file)
-    *   [`processor.use(plugin[, options])`](#processoruseplugin-options)
-    *   [`CompileResultMap`](#compileresultmap)
-    *   [`CompileResults`](#compileresults)
-    *   [`Compiler`](#compiler)
-    *   [`Data`](#data)
-    *   [`Parser`](#parser)
-    *   [`Pluggable`](#pluggable)
-    *   [`PluggableList`](#pluggablelist)
-    *   [`Plugin`](#plugin)
-    *   [`PluginTuple`](#plugintuple)
-    *   [`Preset`](#preset)
-    *   [`ProcessCallback`](#processcallback)
-    *   [`Processor`](#processor-1)
-    *   [`RunCallback`](#runcallback)
-    *   [`Settings`](#settings)
-    *   [`TransformCallback`](#transformcallback)
-    *   [`Transformer`](#transformer)
-*   [Types](#types)
-*   [Compatibility](#compatibility)
-*   [Contribute](#contribute)
-*   [Sponsor](#sponsor)
-*   [Acknowledgments](#acknowledgments)
-*   [License](#license)
+* [What is this?](#what-is-this)
+* [When should I use this?](#when-should-i-use-this)
+* [Install](#install)
+* [Use](#use)
+* [Overview](#overview)
+* [API](#api)
+  * [`processor()`](#processor)
+  * [`processor.compiler`](#processorcompiler)
+  * [`processor.data([key[, value]])`](#processordatakey-value)
+  * [`processor.freeze()`](#processorfreeze)
+  * [`processor.parse(file)`](#processorparsefile)
+  * [`processor.parser`](#processorparser)
+  * [`processor.process(file[, done])`](#processorprocessfile-done)
+  * [`processor.processSync(file)`](#processorprocesssyncfile)
+  * [`processor.run(tree[, file][, done])`](#processorruntree-file-done)
+  * [`processor.runSync(tree[, file])`](#processorrunsynctree-file)
+  * [`processor.stringify(tree[, file])`](#processorstringifytree-file)
+  * [`processor.use(plugin[, options])`](#processoruseplugin-options)
+  * [`CompileResultMap`](#compileresultmap)
+  * [`CompileResults`](#compileresults)
+  * [`Compiler`](#compiler)
+  * [`Data`](#data)
+  * [`Parser`](#parser)
+  * [`Pluggable`](#pluggable)
+  * [`PluggableList`](#pluggablelist)
+  * [`Plugin`](#plugin)
+  * [`PluginTuple`](#plugintuple)
+  * [`Preset`](#preset)
+  * [`ProcessCallback`](#processcallback)
+  * [`Processor`](#processor-1)
+  * [`RunCallback`](#runcallback)
+  * [`Settings`](#settings)
+  * [`TransformCallback`](#transformcallback)
+  * [`Transformer`](#transformer)
+* [Types](#types)
+* [Compatibility](#compatibility)
+* [Contribute](#contribute)
+* [Sponsor](#sponsor)
+* [Acknowledgments](#acknowledgments)
+* [License](#license)
 
 ## What is this?
 
 unified is two things:
 
-*   **unified** is a collective of 500+ free and open source packages that work
-    with content as structured data (ASTs)
-*   `unified` (this project) is the core package, used in 1.3m+ projects on GH,
-    to process content with plugins
+* **unified** is a collective of 500+ free and open source packages that work
+  with content as structured data (ASTs)
+* `unified` (this project) is the core package, used in 1.3m+ projects on GH,
+  to process content with plugins
 
 Several ecosystems are built on unified around different kinds of content.
 Notably, [remark][] (markdown), [rehype][] (HTML), and [retext][] (natural
 language).
 These ecosystems can be connected together.
 
-*   for more about us, see [`unifiedjs.com`][site]
-*   for updates, see [@unifiedjs][twitter] on Twitter
-*   for questions, see [support][]
-*   to help, see [contribute][] and [sponsor][] below
+* for more about us, see [`unifiedjs.com`][site]
+* for updates, see [@unifiedjs][twitter] on Twitter
+* for questions, see [support][]
+* to help, see [contribute][] and [sponsor][] below
 
 ## When should I use this?
 
@@ -205,10 +205,10 @@ const processor = unified()
 That processor can do different things.
 It can:
 
-*   …parse markdown (`parse`)
-*   …turn parsed markdown into HTML and format the HTML (`run`)
-*   …compile HTML (`stringify`)
-*   …do all of the above (`process`)
+* …parse markdown (`parse`)
+* …turn parsed markdown into HTML and format the HTML (`run`)
+* …compile HTML (`stringify`)
+* …do all of the above (`process`)
 
 Every processor implements another processor.
 To create a processor, call another processor.
@@ -238,11 +238,11 @@ object with a `type` field.
 The semantics of nodes and the format of syntax trees is defined by other
 projects:
 
-*   [esast][] — JavaScript
-*   [hast][] — HTML
-*   [mdast][] — markdown
-*   [nlcst][] — natural language
-*   [xast][] — XML
+* [esast][] — JavaScript
+* [hast][] — HTML
+* [mdast][] — markdown
+* [nlcst][] — natural language
+* [xast][] — XML
 
 There are many utilities for working with trees listed in each aforementioned
 project and maintained in the [`syntax-tree`][syntax-tree] organization.
@@ -261,9 +261,9 @@ At their core, they parse text to a tree and compile that tree back to text.
 They also provide plugins that work with the syntax tree, without requiring
 that the end user has knowledge about that tree.
 
-*   [rehype][] (hast) — HTML
-*   [remark][] (mdast) — markdown
-*   [retext][] (nlcst) — natural language
+* [rehype][] (hast) — HTML
+* [remark][] (mdast) — markdown
+* [retext][] (nlcst) — natural language
 
 <a name="list-of-plugins"></a>
 
@@ -272,24 +272,24 @@ that the end user has knowledge about that tree.
 Each aforementioned ecosystem comes with a large set of plugins that you can
 pick and choose from to do all kinds of things.
 
-*   [List of remark plugins][remark-plugins] ·
-    [`remarkjs/awesome-remark`][awesome-remark] ·
-    [`remark-plugin` topic][topic-remark-plugin]
-*   [List of rehype plugins][rehype-plugins] ·
-    [`rehypejs/awesome-rehype`][awesome-rehype] ·
-    [`rehype-plugin` topic][topic-rehype-plugin]
-*   [List of retext plugins][retext-plugins] ·
-    [`retextjs/awesome-retext`][awesome-retext] ·
-    [`retext-plugin` topic][topic-retext-plugin]
+* [List of remark plugins][remark-plugins] ·
+  [`remarkjs/awesome-remark`][awesome-remark] ·
+  [`remark-plugin` topic][topic-remark-plugin]
+* [List of rehype plugins][rehype-plugins] ·
+  [`rehypejs/awesome-rehype`][awesome-rehype] ·
+  [`rehype-plugin` topic][topic-rehype-plugin]
+* [List of retext plugins][retext-plugins] ·
+  [`retextjs/awesome-retext`][awesome-retext] ·
+  [`retext-plugin` topic][topic-retext-plugin]
 
 There are also a few plugins that work in any ecosystem:
 
-*   [`unified-diff`](https://github.com/unifiedjs/unified-diff)
-    — ignore unrelated messages in GitHub Actions and Travis
-*   [`unified-infer-git-meta`](https://github.com/unifiedjs/unified-infer-git-meta)
-    — infer metadata of a document from Git
-*   [`unified-message-control`](https://github.com/unifiedjs/unified-message-control)
-    — enable, disable, and ignore messages from content
+* [`unified-diff`](https://github.com/unifiedjs/unified-diff)
+  — ignore unrelated messages in GitHub Actions and Travis
+* [`unified-infer-git-meta`](https://github.com/unifiedjs/unified-infer-git-meta)
+  — infer metadata of a document from Git
+* [`unified-message-control`](https://github.com/unifiedjs/unified-message-control)
+  — enable, disable, and ignore messages from content
 
 ###### Configuration
 
@@ -371,10 +371,10 @@ the origin tree.
 
 The following plugins lets you combine ecosystems:
 
-*   [`remark-retext`][remark-retext] — turn markdown into natural language
-*   [`remark-rehype`][remark-rehype] — turn markdown into HTML
-*   [`rehype-retext`][rehype-retext] — turn HTML into natural language
-*   [`rehype-remark`][rehype-remark] — turn HTML into markdown
+* [`remark-retext`][remark-retext] — turn markdown into natural language
+* [`remark-rehype`][remark-rehype] — turn markdown into HTML
+* [`rehype-retext`][rehype-retext] — turn HTML into natural language
+* [`rehype-remark`][rehype-remark] — turn HTML into markdown
 
 ## API
 
@@ -433,16 +433,16 @@ during all [phases][overview].
 
 ###### Signatures
 
-*   `processor = processor.data(key, value)`
-*   `processor = processor.data(dataset)`
-*   `value = processor.data(key)`
-*   `dataset = processor.data()`
+* `processor = processor.data(key, value)`
+* `processor = processor.data(dataset)`
+* `value = processor.data(key)`
+* `dataset = processor.data()`
 
 ###### Parameters
 
-*   `key` ([`keyof Data`][api-data], optional) — field to get
-*   `value` ([`Data[key]`][api-data]) — value to set
-*   `values` ([`Data`][api-data]) — values to set
+* `key` ([`keyof Data`][api-data], optional) — field to get
+* `value` ([`Data[key]`][api-data]) — value to set
+* `values` ([`Data`][api-data]) — values to set
 
 ###### Returns
 
@@ -550,8 +550,8 @@ Parse text to a syntax tree.
 
 ###### Parameters
 
-*   `file` ([`Compatible`][vfile-compatible]) — file to parse; typically
-    `string` or [`VFile`][vfile]; any value accepted as `x` in `new VFile(x)`
+* `file` ([`Compatible`][vfile-compatible]) — file to parse; typically
+  `string` or [`VFile`][vfile]; any value accepted as `x` in `new VFile(x)`
 
 ###### Returns
 
@@ -601,14 +601,14 @@ Process the given file as configured on the processor.
 
 ###### Signatures
 
-*   `processor.process(file, done)`
-*   `Promise<VFile> = processor.process(file?)`
+* `processor.process(file, done)`
+* `Promise<VFile> = processor.process(file?)`
 
 ###### Parameters
 
-*   `file` ([`Compatible`][vfile-compatible], optional) — file; typically
-    `string` or [`VFile`][vfile]; any value accepted as `x` in `new VFile(x)`
-*   `done` ([`ProcessCallback`][api-process-callback], optional) — callback
+* `file` ([`Compatible`][vfile-compatible], optional) — file; typically
+  `string` or [`VFile`][vfile]; any value accepted as `x` in `new VFile(x)`
+* `done` ([`ProcessCallback`][api-process-callback], optional) — callback
 
 ###### Returns
 
@@ -683,8 +683,8 @@ An error is thrown if asynchronous transforms are configured.
 
 ###### Parameters
 
-*   `file` ([`Compatible`][vfile-compatible], optional) — file; typically
-    `string` or [`VFile`][vfile]; any value accepted as `x` in `new VFile(x)`
+* `file` ([`Compatible`][vfile-compatible], optional) — file; typically
+  `string` or [`VFile`][vfile]; any value accepted as `x` in `new VFile(x)`
 
 ###### Returns
 
@@ -754,16 +754,16 @@ Run *[transformers][api-transformer]* on a syntax tree.
 
 ###### Signatures
 
-*   `processor.run(tree, done)`
-*   `processor.run(tree, file, done)`
-*   `Promise<Node> = processor.run(tree, file?)`
+* `processor.run(tree, done)`
+* `processor.run(tree, file, done)`
+* `Promise<Node> = processor.run(tree, file?)`
 
 ###### Parameters
 
-*   `tree` ([`Node`][node]) — tree to transform and inspect
-*   `file` ([`Compatible`][vfile-compatible], optional) — file associated
-    with `node`; any value accepted as `x` in `new VFile(x)`
-*   `done` ([`RunCallback`][api-run-callback], optional) — callback
+* `tree` ([`Node`][node]) — tree to transform and inspect
+* `file` ([`Compatible`][vfile-compatible], optional) — file associated
+  with `node`; any value accepted as `x` in `new VFile(x)`
+* `done` ([`RunCallback`][api-run-callback], optional) — callback
 
 ###### Returns
 
@@ -816,9 +816,9 @@ An error is thrown if asynchronous transforms are configured.
 
 ###### Parameters
 
-*   `tree` ([`Node`][node]) — tree to transform and inspect
-*   `file` ([`Compatible`][vfile-compatible], optional) — file associated
-    with `node`; any value accepted as `x` in `new VFile(x)`
+* `tree` ([`Node`][node]) — tree to transform and inspect
+* `file` ([`Compatible`][vfile-compatible], optional) — file associated
+  with `node`; any value accepted as `x` in `new VFile(x)`
 
 ###### Returns
 
@@ -836,9 +836,9 @@ Compile a syntax tree.
 
 ###### Parameters
 
-*   `tree` ([`Node`][node]) — tree to compile
-*   `file` ([`Compatible`][vfile-compatible], optional) — file associated
-    with `node`; any value accepted as `x` in `new VFile(x)`
+* `tree` ([`Node`][node]) — tree to compile
+* `file` ([`Compatible`][vfile-compatible], optional) — file associated
+  with `node`; any value accepted as `x` in `new VFile(x)`
 
 ###### Returns
 
@@ -866,9 +866,9 @@ import {unified} from 'unified'
 
 const tree = h('h1', 'Hello world!')
 
-const doc = unified().use(rehypeStringify).stringify(tree)
+const document = unified().use(rehypeStringify).stringify(tree)
 
-console.log(doc)
+console.log(document)
 ```
 
 Yields:
@@ -890,17 +890,17 @@ In other words, the plugin is not added a second time.
 
 ###### Signatures
 
-*   `processor.use(preset?)`
-*   `processor.use(list)`
-*   `processor.use(plugin[, ...parameters])`
+* `processor.use(preset?)`
+* `processor.use(list)`
+* `processor.use(plugin[, ...parameters])`
 
 ###### Parameters
 
-*   `preset` ([`Preset`][api-preset]) — plugins and settings
-*   `list` ([`PluggableList`][api-pluggable-list]) — list of usable things
-*   `plugin` ([`Plugin`][api-plugin]) — plugin
-*   `parameters` (`Array<unknown>`) — configuration for `plugin`, typically a
-    single options object
+* `preset` ([`Preset`][api-preset]) — plugins and settings
+* `list` ([`PluggableList`][api-pluggable-list]) — list of usable things
+* `plugin` ([`Plugin`][api-plugin]) — plugin
+* `parameters` (`Array<unknown>`) — configuration for `plugin`, typically a
+  single options object
 
 ###### Returns
 
@@ -1085,9 +1085,9 @@ Single plugin (TypeScript type).
 
 Plugins configure the processors they are applied on in the following ways:
 
-*   they change the processor, such as the parser, the compiler, or by
-    configuring data
-*   they specify how to handle trees and files
+* they change the processor, such as the parser, the compiler, or by
+  configuring data
+* they specify how to handle trees and files
 
 In practice, they are functions that can receive options and configure the
 processor (`this`).
@@ -1219,10 +1219,10 @@ They can contain plugins and settings.
 
 ###### Fields
 
-*   `plugins` ([`PluggableList`][api-pluggable-list], optional)
-    — list of plugins and presets
-*   `settings` ([`Data`][api-data], optional)
-    — shared settings for parsers and compilers
+* `plugins` ([`PluggableList`][api-pluggable-list], optional)
+  — list of plugins and presets
+* `settings` ([`Data`][api-data], optional)
+  — shared settings for parsers and compilers
 
 ###### Example
 
@@ -1313,10 +1313,10 @@ Called with either an error or a result.
 
 ###### Parameters
 
-*   `error` (`Error`, optional)
-    — fatal error
-*   `file` ([`VFile`][vfile], optional)
-    — processed file
+* `error` (`Error`, optional)
+  — fatal error
+* `file` ([`VFile`][vfile], optional)
+  — processed file
 
 ###### Returns
 
@@ -1368,12 +1368,12 @@ Called with either an error or results.
 
 ###### Parameters
 
-*   `error` (`Error`, optional)
-    — fatal error
-*   `tree` ([`Node`][node], optional)
-    — transformed tree
-*   `file` ([`VFile`][vfile], optional)
-    — file
+* `error` (`Error`, optional)
+  — fatal error
+* `tree` ([`Node`][node], optional)
+  — transformed tree
+* `file` ([`VFile`][vfile], optional)
+  — file
 
 ###### Returns
 
@@ -1419,12 +1419,12 @@ may perform asynchronous operations, and must call it.
 
 ###### Parameters
 
-*   `error` (`Error`, optional)
-    — fatal error to stop the process
-*   `tree` ([`Node`][node], optional)
-    — new, changed, tree
-*   `file` ([`VFile`][vfile], optional)
-    — new, changed, file
+* `error` (`Error`, optional)
+  — fatal error to stop the process
+* `tree` ([`Node`][node], optional)
+  — new, changed, tree
+* `file` ([`VFile`][vfile], optional)
+  — new, changed, file
 
 ###### Returns
 
