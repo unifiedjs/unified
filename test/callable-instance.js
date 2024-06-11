@@ -53,6 +53,7 @@ test('callable-instance', async function (t) {
       return destination
     }
 
+    // Es5Class is newable
     const instance = new Es5Class()
     assert.strictEqual(instance.foo, 42)
 
@@ -61,7 +62,7 @@ test('callable-instance', async function (t) {
 
     // Instance is callable
     /** @type {Es5Class} */
-    // @ts-ignore
+    // @ts-expect-error Es5Class is also callable
     const copied = instance()
     assert.strictEqual(copied.foo, 42)
     assert.strictEqual(copied.bar, 100)
