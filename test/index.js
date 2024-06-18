@@ -1,5 +1,4 @@
 /* eslint-disable import/no-unassigned-import */
-import './callable-instance.js'
 import './core.js'
 import './data.js'
 import './freeze.js'
