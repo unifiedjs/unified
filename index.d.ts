@@ -28,7 +28,7 @@ declare const emptyObjectSymbol: unique symbol
 /**
  * Interface of known results from compilers.
  *
- * Normally, compilers result in text ({@link Value `Value`} of `vfile`).
+ * Normally, compilers result in text ({@linkcode Value} of `vfile`).
  * When you compile to something else, such as a React node (as in,
  * `rehype-react`), you can augment this interface to include that type.
  *
@@ -45,7 +45,7 @@ declare const emptyObjectSymbol: unique symbol
  * export {} // You may not need this, but it makes sure the file is a module.
  * ```
  *
- * Use {@link CompileResults `CompileResults`} to access the values.
+ * Use {@linkcode CompileResults} to access the values.
  */
 export interface CompileResultMap {
   // Note: if `Value` from `VFile` is changed, this should too.
