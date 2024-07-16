@@ -29,9 +29,21 @@ const result = file
      */
     function ($0, $1) {
       console.log(
-        'Fixed `use` overload with plugin, and *non-optional* parameters'
+        'Fixed `use` overload with plugin, and *non-optional* parameters (TS pre 5.4)'
       )
       return '...parameters: ' + $1 + ' | [boolean]'
+    }
+  )
+  .replace(
+    /\.\.\.parameters: \(Parameters \| \[boolean]\)\[]/,
+    /**
+     * @returns {string}
+     */
+    function () {
+      console.log(
+        'Fixed `use` overload with plugin, and *non-optional* parameters (TS 5.5+)'
+      )
+      return '...parameters: Parameters | [boolean]'
     }
   )
 
