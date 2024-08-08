@@ -20,7 +20,7 @@ jobs:
           - ubuntu-latest
           - windows-latest
         node:
-          - lts/gallium
+          - lts/hydrogen
           - node
   canary:
     name: canary / ${{matrix.package}}
