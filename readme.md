@@ -1243,7 +1243,7 @@ const preset = {
     remarkCommentConfig,
     [remarkToc, {maxDepth: 3, tight: true}],
     remarkLicense
-  ]
+  ],
   settings: {bullet: '*', emphasis: '*', fences: true},
 }
 
