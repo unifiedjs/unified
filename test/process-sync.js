@@ -1,3 +1,8 @@
+/**
+ * @import {Plugin} from 'unified'
+ * @import {Node} from 'unist'
+ */
+
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {unified} from 'unified'
@@ -61,7 +66,7 @@ test('`processSync`', async function (t) {
 
 // `this` in JS is buggy in TS.
 /**
- * @type {import('unified').Plugin<[], string, import('unist').Node>}
+ * @type {Plugin<[], string, Node>}
  */
 function parse() {
   this.parser = simpleParser
@@ -69,7 +74,7 @@ function parse() {
 
 // `this` in JS is buggy in TS.
 /**
- * @type {import('unified').Plugin<[], import('unist').Node, string>}
+ * @type {Plugin<[], Node, string>}
  */
 function compile() {
   this.compiler = simpleCompiler

@@ -1,7 +1,3 @@
-/**
- * @typedef {import('unist').Node} Node
- */
-
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {unified} from 'unified'

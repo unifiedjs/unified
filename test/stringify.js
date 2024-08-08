@@ -1,5 +1,5 @@
 /**
- * @typedef {import('unist').Node} Node
+ * @import {Node} from 'unist'
  */
 
 import assert from 'node:assert/strict'

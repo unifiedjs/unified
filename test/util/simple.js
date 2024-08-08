@@ -1,6 +1,5 @@
 /**
- * @typedef {import('unist').Node} Node
- * @typedef {import('unist').Literal} Literal
+ * @import {Literal, Node} from 'unist'
  */
 
 // Make references to the above types visible in VS Code.

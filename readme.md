@@ -1130,13 +1130,17 @@ See [`Transformer`][api-transformer] for more info.
 
 ```js
 /**
+ * @import {Plugin} from 'unified'
+ */
+
+/**
  * @typedef Options
  *   Configuration (required).
  * @property {string} extname
  *   File extension to use (must start with `.`).
  */
 
-/** @type {import('unified').Plugin<[Options]>} */
+/** @type {Plugin<[Options]>} */
 export function move(options) {
   if (!options || !options.extname) {
     throw new Error('Missing `options.extname`')
@@ -1229,13 +1233,17 @@ They can contain plugins and settings.
 `preset.js`:
 
 ```js
+/**
+ * @import {Preset} from 'unified'
+ */
+
 import remarkCommentConfig from 'remark-comment-config'
 import remarkLicense from 'remark-license'
 import remarkPresetLintConsistent from 'remark-preset-lint-consistent'
 import remarkPresetLintRecommended from 'remark-preset-lint-recommended'
 import remarkToc from 'remark-toc'
 
-/** @type {import('unified').Preset} */
+/** @type {Preset} */
 const preset = {
   plugins: [
     remarkPresetLintRecommended,
@@ -1493,8 +1501,9 @@ node types for the syntax trees provided by our packages (as in,
 
 ```js
 /**
- * @typedef {import('hast').Root} HastRoot
- * @typedef {import('mdast').Root} MdastRoot
+ * @import {Root as HastRoot} from 'hast'
+ * @import {Root as MdastRoot} from 'mdast'
+ * @import {Plugin} from 'unified'
  */
 
 /**
@@ -1505,14 +1514,14 @@ node types for the syntax trees provided by our packages (as in,
  */
 
 // To type options:
-/** @type {import('unified').Plugin<[(Options | null | undefined)?]>} */
+/** @type {Plugin<[(Options | null | undefined)?]>} */
 export function myPluginAcceptingOptions(options) {
   const settings = options || {}
   // `settings` is now `Options`.
 }
 
 // To type a plugin that works on a certain tree, without options:
-/** @type {import('unified').Plugin<[], MdastRoot>} */
+/** @type {Plugin<[], MdastRoot>} */
 export function myRemarkPlugin() {
   return function (tree, file) {
     // `tree` is `MdastRoot`.
@@ -1520,7 +1529,7 @@ export function myRemarkPlugin() {
 }
 
 // To type a plugin that transforms one tree into another:
-/** @type {import('unified').Plugin<[], MdastRoot, HastRoot>} */
+/** @type {Plugin<[], MdastRoot, HastRoot>} */
 export function remarkRehype() {
   return function (tree) {
     // `tree` is `MdastRoot`.
@@ -1529,11 +1538,11 @@ export function remarkRehype() {
 }
 
 // To type a plugin that defines a parser:
-/** @type {import('unified').Plugin<[], string, MdastRoot>} */
+/** @type {Plugin<[], string, MdastRoot>} */
 export function remarkParse(options) {}
 
 // To type a plugin that defines a compiler:
-/** @type {import('unified').Plugin<[], HastRoot, string>} */
+/** @type {Plugin<[], HastRoot, string>} */
 export function rehypeStringify(options) {}
 ```
 
