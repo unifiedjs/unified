@@ -165,7 +165,7 @@ test('`run`', async function (t) {
         unified()
           .use(function () {
             return function () {
-              return new Promise(function (_, reject) {
+              return new Promise(function (resolve, reject) {
                 reject(givenError)
               })
             }
@@ -469,7 +469,7 @@ test('`run`', async function (t) {
         unified()
           .use(function () {
             return function () {
-              return new Promise(function (_, reject) {
+              return new Promise(function (resolve, reject) {
                 reject(givenError)
               })
             }
