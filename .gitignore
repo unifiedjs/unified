@@ -4,6 +4,7 @@ node_modules/
 *.d.ts
 *.log
 *.map
+*.tsbuildinfo
 yarn.lock
 !/index.d.ts
 !/test/types.d.ts
