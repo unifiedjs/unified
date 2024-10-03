@@ -1,8 +1,49 @@
 {
-  "name": "unified",
-  "version": "11.0.5",
+  "author": "Titus Wormer <tituswormer@gmail.com> (https://wooorm.com)",
+  "bugs": "https://github.com/unifiedjs/unified/issues",
+  "contributors": [
+    "Christian Murphy <christian.murphy.42@gmail.com>",
+    "Hernan Rajchert <hrajchert@gmail.com>",
+    "Junyoung Choi <fluke8259@gmail.com>",
+    "Richard Littauer <richard.littauer@gmail.com>",
+    "Titus Wormer <tituswormer@gmail.com> (https://wooorm.com)",
+    "Vse Mozhet Byt <vsemozhetbyt@gmail.com>"
+  ],
+  "dependencies": {
+    "@types/unist": "^3.0.0",
+    "bail": "^2.0.0",
+    "devlop": "^1.0.0",
+    "extend": "^3.0.0",
+    "is-plain-obj": "^4.0.0",
+    "trough": "^2.0.0",
+    "vfile": "^6.0.0"
+  },
   "description": "parse, inspect, transform, and serialize content through syntax trees",
-  "license": "MIT",
+  "devDependencies": {
+    "@types/extend": "^3.0.0",
+    "@types/hast": "^3.0.0",
+    "@types/mdast": "^4.0.0",
+    "@types/node": "^22.0.0",
+    "c8": "^10.0.0",
+    "prettier": "^3.0.0",
+    "remark-cli": "^12.0.0",
+    "remark-preset-wooorm": "^10.0.0",
+    "tsd": "^0.31.0",
+    "type-coverage": "^2.0.0",
+    "typescript": "^5.0.0",
+    "xo": "^0.59.0"
+  },
+  "exports": "./index.js",
+  "files": [
+    "lib/",
+    "index.d.ts",
+    "index.js"
+  ],
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/unified"
+  },
+  "homepage": "https://unifiedjs.com",
   "keywords": [
     "ast",
     "compile",
@@ -20,61 +61,8 @@
     "tree",
     "unified"
   ],
-  "homepage": "https://unifiedjs.com",
-  "repository": "unifiedjs/unified",
-  "bugs": "https://github.com/unifiedjs/unified/issues",
-  "funding": {
-    "type": "opencollective",
-    "url": "https://opencollective.com/unified"
-  },
-  "author": "Titus Wormer <tituswormer@gmail.com> (https://wooorm.com)",
-  "contributors": [
-    "Titus Wormer <tituswormer@gmail.com> (https://wooorm.com)",
-    "Junyoung Choi <fluke8259@gmail.com>",
-    "Hernan Rajchert <hrajchert@gmail.com>",
-    "Christian Murphy <christian.murphy.42@gmail.com>",
-    "Vse Mozhet Byt <vsemozhetbyt@gmail.com>",
-    "Richard Littauer <richard.littauer@gmail.com>"
-  ],
-  "sideEffects": false,
-  "type": "module",
-  "exports": "./index.js",
-  "files": [
-    "lib/",
-    "index.d.ts",
-    "index.js"
-  ],
-  "dependencies": {
-    "@types/unist": "^3.0.0",
-    "bail": "^2.0.0",
-    "devlop": "^1.0.0",
-    "extend": "^3.0.0",
-    "is-plain-obj": "^4.0.0",
-    "trough": "^2.0.0",
-    "vfile": "^6.0.0"
-  },
-  "devDependencies": {
-    "@types/extend": "^3.0.0",
-    "@types/hast": "^3.0.0",
-    "@types/mdast": "^4.0.0",
-    "@types/node": "^22.0.0",
-    "c8": "^10.0.0",
-    "prettier": "^3.0.0",
-    "remark-cli": "^12.0.0",
-    "remark-preset-wooorm": "^10.0.0",
-    "tsd": "^0.31.0",
-    "type-coverage": "^2.0.0",
-    "typescript": "^5.0.0",
-    "xo": "^0.59.0"
-  },
-  "scripts": {
-    "build": "tsc --build --clean && tsc --build && node script/fix-types.js && type-coverage && tsd",
-    "format": "remark . --frail --output --quiet && prettier . --log-level warn --write && xo --fix",
-    "prepack": "npm run build && npm run format",
-    "test": "npm run build && npm run format && npm run test-coverage",
-    "test-api": "node --conditions development test/index.js",
-    "test-coverage": "c8 --100 --check-coverage --reporter lcov npm run test-api"
-  },
+  "license": "MIT",
+  "name": "unified",
   "prettier": {
     "bracketSpacing": false,
     "singleQuote": true,
@@ -92,12 +80,24 @@
       ]
     ]
   },
+  "repository": "unifiedjs/unified",
+  "scripts": {
+    "build": "tsc --build --clean && tsc --build && node script/fix-types.js && type-coverage && tsd",
+    "format": "remark . --frail --output --quiet && prettier . --log-level warn --write && xo --fix",
+    "prepack": "npm run build && npm run format",
+    "test": "npm run build && npm run format && npm run test-coverage",
+    "test-api": "node --conditions development test/index.js",
+    "test-coverage": "c8 --100 --check-coverage --reporter lcov npm run test-api"
+  },
+  "sideEffects": false,
   "typeCoverage": {
     "atLeast": 100,
     "detail": true,
     "ignoreCatch": true,
     "strict": true
   },
+  "type": "module",
+  "version": "11.0.5",
   "xo": {
     "overrides": [
       {
